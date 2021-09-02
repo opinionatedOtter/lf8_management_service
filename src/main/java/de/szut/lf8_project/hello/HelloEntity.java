@@ -15,7 +15,7 @@ import java.util.Set;
 public class HelloEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String message;

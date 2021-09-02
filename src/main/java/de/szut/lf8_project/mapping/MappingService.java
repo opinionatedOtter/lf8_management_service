@@ -3,7 +3,9 @@ package de.szut.lf8_project.mapping;
 import de.szut.lf8_project.hello.HelloCreateDto;
 import de.szut.lf8_project.hello.HelloDto;
 import de.szut.lf8_project.hello.HelloEntity;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MappingService {
 
     public HelloDto mapHelloEntitytoDto(HelloEntity entity) {
