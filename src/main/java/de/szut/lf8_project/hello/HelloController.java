@@ -66,7 +66,7 @@ public class HelloController {
                 .collect(Collectors.toList());
     }
 
-    @Operation(summary = "deletes a qualification by id")
+    @Operation(summary = "deletes a Hello by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "delete successful"),
             @ApiResponse(responseCode = "401", description = "not authorized",
@@ -75,9 +75,9 @@ public class HelloController {
                     content = @Content)})
     @DeleteMapping
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deleteHelloById(@PathVariable long id) {
+    public void deleteHelloById(@RequestParam long id) {
         var entity = this.service.readById(id);
-        if (entity != null) {
+        if (entity == null) {
             throw new ResourceNotFoundException("HelloEntity not found on id = " + id);
         } else {
             this.service.delete(entity);
@@ -94,7 +94,7 @@ public class HelloController {
             @ApiResponse(responseCode = "401", description = "not authorized",
                     content = @Content)})
     @GetMapping("/findByMessage")
-    public List<HelloDto> findAllEmployeesByQualification(@PathVariable String message) {
+    public List<HelloDto> findAllEmployeesByQualification(@RequestParam String message) {
         return this.service
                 .findByMessage(message)
                 .stream()
