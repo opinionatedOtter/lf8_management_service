@@ -1,4 +1,4 @@
-package de.szut.lf8_project.hello;
+package de.szut.lf8_project.hello.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class HelloDto {
+public class HelloGetDto {
 
     private long id;
 

@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "Hello")
+@Table(name = "hello")
 public class HelloEntity {
 
     @Id
@@ -20,5 +20,8 @@ public class HelloEntity {
 
     private String message;
 
+    public HelloEntity(String message) {
+        this.message = message;
+    }
 }
 
