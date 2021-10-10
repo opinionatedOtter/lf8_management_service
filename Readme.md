@@ -40,6 +40,18 @@ docker volume rm local_lf8_starter_postgres_data
 docker compose up
 ```
 
+### Intellij-Ansicht für Postgres Datenbank einrichten
+```bash
+1. im Ordner resources die Datei application.properties öffnen und die URL der Datenbank kopieren
+2. rechts im Fenster den Reiter Database öffnen
+3. In der Database-Symbolleiste auf das Datenbanksymbol mit dem Schlüssel klicken
+4. auf das Pluszeichen klicken
+5. Datasource from URL auswählen
+6. URL der DB einfügen und PostgreSQL-Treiber auswählen, mit OK bestätigen
+7. Username lf8_starter und Passwort secret eintragen (siehe application.properties), mit Apply bestätigen
+8. im Reiter Schemas alle Häkchen entfernen und lediglich vor lf8_starter_db und public Häkchen setzen
+9. mit Apply und ok bestätigen 
+```
 # Keycloak
 
 ### Keycloak Token
