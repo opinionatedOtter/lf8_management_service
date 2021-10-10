@@ -40,9 +40,6 @@ docker volume rm local_lf8_starter_postgres_data
 docker compose up
 ```
 
-### initialer Zustand der Datenbank (flyway)
-siehe src/main/resources/db/migrations/V1.0__init.sql. Hier können auch Ergänzungen vorgenommen werden, allerdings muss dann die Datenbank gewipt werden. Alterniv eine weitere Datei V1.1__Name.sql erstellen und dort Erweiterungen vornehmen.
-
 # Keycloak
 
 ### Keycloak Token
