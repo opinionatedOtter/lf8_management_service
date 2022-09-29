@@ -15,4 +15,4 @@ services:
       POSTGRES_USER: lf8_starter
       POSTGRES_PASSWORD: secret
     ports:
-      - "5432:5432"
+      - "5435:5432"
