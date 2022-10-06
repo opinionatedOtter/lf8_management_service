@@ -1,4 +1,4 @@
-package de.szut.lf8_project.exceptionHandling;
+package de.szut.lf8_project.hello.exceptionHandling;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
