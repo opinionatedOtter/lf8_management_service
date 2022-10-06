@@ -1,6 +1,7 @@
 package de.szut.lf8_project.repository;
 
 import de.szut.lf8_project.common.JWT;
+import de.szut.lf8_project.common.Statuscode;
 import de.szut.lf8_project.domain.Employee;
 import de.szut.lf8_project.domain.EmployeeId;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
@@ -33,12 +34,11 @@ public class EmployeeRestRepository implements EmployeeRepository {
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", jwt.jwt());
         try {
-            return restTemplate.exchange("https://employee.szut.dev/employees/1", HttpMethod.GET, new HttpEntity<String>(header), Employee.class).getBody();
-
+            return restTemplate.exchange(baseUrl+employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), Employee.class).getBody();
         } catch (HttpClientErrorException e){
-            throw new RepositoryException();
+            throw new RepositoryException(Statuscode.of(String.valueOf(e.getRawStatusCode())));
         } catch (RestClientException e){
-
+            throw new RepositoryException(Statuscode.INTERNAL_SERVER_ERROR);
         }
     }
 }

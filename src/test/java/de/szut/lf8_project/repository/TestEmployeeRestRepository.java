@@ -1,6 +1,7 @@
 package de.szut.lf8_project.repository;
 
 import de.szut.lf8_project.common.JWT;
+import de.szut.lf8_project.common.Statuscode;
 import de.szut.lf8_project.domain.EmployeeId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
@@ -21,9 +23,11 @@ public class TestEmployeeRestRepository {
     @Test
     @DisplayName("Gets a Employee by ID")
     public void getEmployee() throws RepositoryException {
-        String jwt = "";
+        String jwt = "invalid";
 
-        assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(new JWT(""), new EmployeeId(1L)));
+        RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(new JWT(""), new EmployeeId(1L)));
+
+        assertEquals(Statuscode.UNAUTHORIZED, exception.getStatuscode());
     }
 
 }
