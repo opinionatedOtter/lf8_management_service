@@ -1,4 +1,9 @@
 package de.szut.lf8_project.domain;
 
-public class Street {
+import de.szut.lf8_project.common.ValueType;
+
+public class Street extends ValueType<String> {
+    public Street(String street) {
+        super(street);
+    }
 }
