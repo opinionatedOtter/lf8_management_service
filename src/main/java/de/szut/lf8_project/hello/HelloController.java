@@ -1,6 +1,6 @@
 package de.szut.lf8_project.hello;
 
-import de.szut.lf8_project.exceptionHandling.ResourceNotFoundException;
+import de.szut.lf8_project.hello.exceptionHandling.ResourceNotFoundException;
 import de.szut.lf8_project.hello.dto.HelloCreateDto;
 import de.szut.lf8_project.hello.dto.HelloGetDto;
 import io.swagger.v3.oas.annotations.Operation;

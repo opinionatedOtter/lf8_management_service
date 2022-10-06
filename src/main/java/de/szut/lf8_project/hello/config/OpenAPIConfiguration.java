@@ -1,4 +1,4 @@
-package de.szut.lf8_project.config;
+package de.szut.lf8_project.hello.config;
 
 
 import io.swagger.v3.oas.models.Components;
