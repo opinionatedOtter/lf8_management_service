@@ -2,8 +2,7 @@ package de.szut.lf8_project.repository;
 
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.common.Statuscode;
-import de.szut.lf8_project.domain.Employee;
-import de.szut.lf8_project.domain.EmployeeId;
+import de.szut.lf8_project.domain.*;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -35,15 +34,25 @@ public class EmployeeRestRepository implements EmployeeRepository {
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", jwt.jwt());
         try {
-            return Employee.fromModel(
+            return dtoToEntity(
                     Objects.requireNonNull(
                             restTemplate.exchange(baseUrl + employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class).getBody()
-                    )
-            );
+                    ));
         } catch (HttpClientErrorException e) {
             throw new RepositoryException(Statuscode.of(String.valueOf(e.getRawStatusCode())));
         } catch (RestClientException e) {
             throw new RepositoryException(Statuscode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private Employee dtoToEntity(EmployeeRepoDto employeeDto) {
+        return Employee.builder()
+                .id(new EmployeeId(employeeDto.getId()))
+                .lastName(new LastName(employeeDto.getLastName()))
+                .firstName(new FirstName(employeeDto.getFirstName()))
+                .street(new Street(employeeDto.getStreet()))
+                .postcode(new Postcode(employeeDto.getPostcode()))
+                .skillset(employeeDto.getSkillset().stream().map(Qualification::new).toList())
+                .build();
     }
 }

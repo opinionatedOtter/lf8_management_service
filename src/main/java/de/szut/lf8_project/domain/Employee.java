@@ -1,7 +1,7 @@
 package de.szut.lf8_project.domain;
 
-import de.szut.lf8_project.repository.EmployeeRepoDto;
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
 
 import java.util.List;
 
@@ -14,16 +14,5 @@ public record Employee(@NonNull EmployeeId id,
 
     @Builder
     public Employee {
-    }
-
-    public static Employee fromModel(EmployeeRepoDto employeeModel) {
-        return Employee.builder()
-                .id(new EmployeeId(employeeModel.getId()))
-                .lastName(new LastName(employeeModel.getLastName()))
-                .firstName(new FirstName(employeeModel.getFirstName()))
-                .street(new Street(employeeModel.getStreet()))
-                .postcode(new Postcode(employeeModel.getPostcode()))
-                .skillset(employeeModel.getSkillset().stream().map(Qualification::new).toList())
-                .build();
     }
 }
