@@ -14,12 +14,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Objects;
+
 @Repository
 public class EmployeeRestRepository implements EmployeeRepository {
 
-    private RestTemplate restTemplate;
-
     private final String baseUrl;
+    private final RestTemplate restTemplate;
 
     public EmployeeRestRepository(
             @Value("${employeeapi.baseUrl}") String baseUrl
@@ -34,10 +35,14 @@ public class EmployeeRestRepository implements EmployeeRepository {
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", jwt.jwt());
         try {
-            return restTemplate.exchange(baseUrl+employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), Employee.class).getBody();
-        } catch (HttpClientErrorException e){
+            return Employee.fromModel(
+                    Objects.requireNonNull(
+                            restTemplate.exchange(baseUrl + employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class).getBody()
+                    )
+            );
+        } catch (HttpClientErrorException e) {
             throw new RepositoryException(Statuscode.of(String.valueOf(e.getRawStatusCode())));
-        } catch (RestClientException e){
+        } catch (RestClientException e) {
             throw new RepositoryException(Statuscode.INTERNAL_SERVER_ERROR);
         }
     }

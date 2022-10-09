@@ -1,18 +1,29 @@
 package de.szut.lf8_project.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import de.szut.lf8_project.repository.EmployeeRepoDto;
+import lombok.*;
 
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public record Employee (
-        @JsonProperty("id") EmployeeId id,
-        @JsonProperty("lastName") LastName lastName,
-        @JsonProperty("firstName") FirstName firstName,
-        @JsonProperty("street") Street street,
-        @JsonProperty("postcode") Postcode postcode,
-        @JsonProperty("skillset") List<Qualification> skillset
-){}
+public record Employee(@NonNull EmployeeId id,
+                       @NonNull LastName lastName,
+                       @NonNull FirstName firstName,
+                       @NonNull Street street,
+                       @NonNull Postcode postcode,
+                       @NonNull List<Qualification> skillset) {
+
+    @Builder
+    public Employee {
+    }
+
+    public static Employee fromModel(EmployeeRepoDto employeeModel) {
+        return Employee.builder()
+                .id(new EmployeeId(employeeModel.getId()))
+                .lastName(new LastName(employeeModel.getLastName()))
+                .firstName(new FirstName(employeeModel.getFirstName()))
+                .street(new Street(employeeModel.getStreet()))
+                .postcode(new Postcode(employeeModel.getPostcode()))
+                .skillset(employeeModel.getSkillset().stream().map(Qualification::new).toList())
+                .build();
+    }
+}

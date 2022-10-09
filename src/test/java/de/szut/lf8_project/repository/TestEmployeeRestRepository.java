@@ -59,7 +59,7 @@ public class TestEmployeeRestRepository {
     @Test
     @DisplayName("Gets a Employee by ID")
     public void getEmployee() throws RepositoryException {
-        //TODO - umbauen sobald wir Kontrolle über den Service haben oder Insert-Hilfsmethode schreiben
+        //TODO - umbauen sobald wir Kontrolle über den Service haben oder Insert-Hilfsmethode für Insert schreiben
         EmployeeId employeeId = new EmployeeId(115L);
 
         Employee employee = employeeRestRepository.getEmployeeById(jwt, employeeId);
