@@ -51,7 +51,7 @@ public class TestEmployeeRestRepository {
 
     // 500er test
     // create query für stuff?
-    // commit für bean config
+    // discuss: Mock-Tempalte oder Integrationtest?
 
     @Test
     @DisplayName("gets a employee by ID")
