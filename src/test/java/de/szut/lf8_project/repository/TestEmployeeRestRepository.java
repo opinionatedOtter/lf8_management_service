@@ -9,6 +9,7 @@ import de.szut.lf8_project.domain.EmployeeId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -46,8 +48,24 @@ public class TestEmployeeRestRepository {
         setUpIsDone = true;
     }
 
+
+    // 500er test
+    // create query für stuff?
+    // commit für bean config
+
     @Test
-    @DisplayName("Throws a exception with an 401 Statuscode if the jwt is invalid")
+    @DisplayName("gets a employee by ID")
+    public void getEmployee() throws RepositoryException {
+        //TODO - umbauen sobald wir Kontrolle über den Service haben oder Insert-Hilfsmethode für Insert schreiben
+        EmployeeId employeeId = new EmployeeId(115L);
+
+        Employee employee = employeeRestRepository.getEmployeeById(jwt, employeeId);
+
+        assertThat(employee.id()).isEqualTo(employeeId);
+    }
+
+    @Test
+    @DisplayName("throws a exception with an 401 statuscode if the jwt is invalid")
     public void unauthorized() {
         JWT jwt = new JWT("invalid");
 
@@ -57,9 +75,19 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("Gets a Employee by ID")
-    public void getEmployee() throws RepositoryException {
+    @DisplayName("throws a exception with an 404 statuscode if no employee is known by the id")
+    public void employee404() {
         //TODO - umbauen sobald wir Kontrolle über den Service haben oder Insert-Hilfsmethode für Insert schreiben
+        EmployeeId employeeId = new EmployeeId(9999L);
+
+        RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, employeeId));
+
+        assertEquals(Statuscode.NOT_FOUND, exception.getStatuscode());
+    }
+
+    @Test
+    @DisplayName("throws a exception with an 500 statuscode if there is an unexpected error")
+    public void unexpectedError() throws RepositoryException {
         EmployeeId employeeId = new EmployeeId(115L);
 
         Employee employee = employeeRestRepository.getEmployeeById(jwt, employeeId);
