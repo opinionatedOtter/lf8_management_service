@@ -22,10 +22,10 @@ public class EmployeeRestRepository implements EmployeeRepository {
     private final RestTemplate restTemplate;
 
     public EmployeeRestRepository(
-            @Value("${employeeapi.baseUrl}") String baseUrl
+            @Value("${employeeapi.baseUrl}") String baseUrl, RestTemplate restTemplate
     ) {
         this.baseUrl = baseUrl;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
 
 
