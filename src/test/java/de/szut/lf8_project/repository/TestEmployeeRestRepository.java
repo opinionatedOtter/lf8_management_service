@@ -77,7 +77,7 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws a exception with an 500 statuscode if there is an unexpected error")
+    @DisplayName("throws an exception with a 500 statuscode if there is an unexpected error")
     public void unexpectedError() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
