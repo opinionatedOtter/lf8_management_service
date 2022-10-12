@@ -66,7 +66,7 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws a exception with an 404 statuscode if no employee is known by the id")
+    @DisplayName("throws an exception with a 404 statuscode if no employee is known by the id")
     public void employee404() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
