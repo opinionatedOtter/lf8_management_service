@@ -1,75 +1,66 @@
 package de.szut.lf8_project.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.common.Statuscode;
-import de.szut.lf8_project.domain.Employee;
-import de.szut.lf8_project.domain.EmployeeId;
+import de.szut.lf8_project.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class TestEmployeeRestRepository {
 
-    private static boolean setUpIsDone = false;
-    @Autowired
+    private final String baseUrl = "example.org";
+    private final JWT jwt = new JWT("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
+    private final Long defaultId = 1L;
     private EmployeeRestRepository employeeRestRepository;
-    @Autowired
-    private Environment env;
-    private JWT jwt;
+    private HttpHeaders header;
+    @Mock
+    private RestTemplate mockTemplate;
 
     @BeforeEach
-    public void setUpJwt() throws JsonProcessingException {
-        if (setUpIsDone) return;
-        this.jwt = getFreshJwt();
-        setUpIsDone = true;
+    public void setUp() {
+        employeeRestRepository = new EmployeeRestRepository(baseUrl, mockTemplate);
+        header = new HttpHeaders();
+        header.set("Authorization", jwt.jwt());
     }
-
-
-    // 500er test
-    // create query für stuff?
-    // discuss: Mock-Tempalte oder Integrationtest?
 
     @Test
     @DisplayName("gets a employee by ID")
     public void getEmployee() throws RepositoryException {
-        //TODO - umbauen sobald wir Kontrolle über den Service haben oder Insert-Hilfsmethode für Insert schreiben
-        EmployeeId employeeId = new EmployeeId(115L);
+        EmployeeRepoDto employeeDto = aDefaultEmployeeDto();
+        Employee expectedEmployee = aDefaultEmployee();
+        when(mockTemplate.exchange(baseUrl + employeeDto.getId(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+                .thenReturn(new ResponseEntity<>(employeeDto, HttpStatus.OK));
 
-        Employee employee = employeeRestRepository.getEmployeeById(jwt, employeeId);
+        Employee employee = employeeRestRepository.getEmployeeById(jwt, new EmployeeId(employeeDto.getId()));
 
-        assertThat(employee.id()).isEqualTo(employeeId);
+        assertThat(employee).isEqualTo(expectedEmployee);
     }
 
     @Test
     @DisplayName("throws a exception with an 401 statuscode if the jwt is invalid")
     public void unauthorized() {
-        JWT jwt = new JWT("invalid");
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+                .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
-        RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(1L)));
+        RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
         assertEquals(Statuscode.UNAUTHORIZED, exception.getStatuscode());
     }
@@ -77,44 +68,45 @@ public class TestEmployeeRestRepository {
     @Test
     @DisplayName("throws a exception with an 404 statuscode if no employee is known by the id")
     public void employee404() {
-        //TODO - umbauen sobald wir Kontrolle über den Service haben oder Insert-Hilfsmethode für Insert schreiben
-        EmployeeId employeeId = new EmployeeId(9999L);
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, employeeId));
+        RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
         assertEquals(Statuscode.NOT_FOUND, exception.getStatuscode());
     }
 
     @Test
     @DisplayName("throws a exception with an 500 statuscode if there is an unexpected error")
-    public void unexpectedError() throws RepositoryException {
-        EmployeeId employeeId = new EmployeeId(115L);
+    public void unexpectedError() {
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+                .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        Employee employee = employeeRestRepository.getEmployeeById(jwt, employeeId);
+        RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
-        assertThat(employee.id()).isEqualTo(employeeId);
+        assertEquals(Statuscode.INTERNAL_SERVER_ERROR, exception.getStatuscode());
     }
 
-    private JWT getFreshJwt() throws JsonProcessingException {
-        String jsonString = new RestTemplate()
-                .postForEntity(
-                        Objects.requireNonNull(env.getProperty("authProvider.url")),
-                        getPostRequestBody(),
-                        String.class)
-                .getBody();
-        Map<String, String> map = new ObjectMapper().readValue(jsonString, Map.class);
-        return new JWT("Bearer " + map.get("access_token"));
+    private EmployeeRepoDto aDefaultEmployeeDto() {
+        return EmployeeRepoDto.builder()
+                .id(defaultId)
+                .firstName("Tester")
+                .lastName("Mester")
+                .postcode("28311")
+                .street("Am Graben 26")
+                .skillset(List.of("Schubsen", "Tanzen", "Smalltalk"))
+                .build();
     }
 
-    private HttpEntity<MultiValueMap<String, String>> getPostRequestBody() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        MultiValueMap<String, String> bodyParamMap = new LinkedMultiValueMap<>();
-        bodyParamMap.add("grant_type", "password");
-        bodyParamMap.add("client_id", env.getProperty("authProvider.client_id"));
-        bodyParamMap.add("username", env.getProperty("authProvider.user"));
-        bodyParamMap.add("password", env.getProperty("authProvider.password"));
-        return new HttpEntity<>(bodyParamMap, headers);
+    private Employee aDefaultEmployee() {
+        return Employee.builder()
+                .id(new EmployeeId(defaultId))
+                .firstName(new FirstName("Tester"))
+                .lastName(new LastName("Mester"))
+                .postcode(new Postcode("28311"))
+                .street(new Street("Am Graben 26"))
+                .skillset(List.of(new Qualification("Schubsen"), new Qualification("Tanzen"), new Qualification("Smalltalk")))
+                .build();
     }
 
 }
