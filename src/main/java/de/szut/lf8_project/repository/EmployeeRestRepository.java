@@ -2,7 +2,7 @@ package de.szut.lf8_project.repository;
 
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.common.Statuscode;
-import de.szut.lf8_project.domain.Employee.*;
+import de.szut.lf8_project.domain.employee.*;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -36,7 +36,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
         try {
             return dtoToEntity(
                     Objects.requireNonNull(
-                            restTemplate.exchange(baseUrl + employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class).getBody()
+                            restTemplate.exchange(baseUrl + employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class).getBody()
                     ));
         } catch (HttpClientErrorException e) {
             throw new RepositoryException(Statuscode.of(String.valueOf(e.getRawStatusCode())));
@@ -45,7 +45,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
         }
     }
 
-    private Employee dtoToEntity(EmployeeRepoDto employeeDto) {
+    private Employee dtoToEntity(EmployeeData employeeDto) {
         return Employee.builder()
                 .id(new EmployeeId(employeeDto.getId()))
                 .lastName(new LastName(employeeDto.getLastName()))

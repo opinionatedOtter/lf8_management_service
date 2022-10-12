@@ -2,7 +2,7 @@ package de.szut.lf8_project.repository;
 
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.common.Statuscode;
-import de.szut.lf8_project.domain.Employee.*;
+import de.szut.lf8_project.domain.employee.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +24,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+@DisplayName("A EmployeeRestRepository")
 public class TestEmployeeRestRepository {
 
     private final String baseUrl = "example.org";
@@ -42,11 +43,11 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("gets a employee by ID")
+    @DisplayName("should get an employee by ID")
     public void getEmployee() throws RepositoryException {
-        EmployeeRepoDto employeeDto = aDefaultEmployeeDto();
+        EmployeeData employeeDto = aDefaultEmployeeDto();
         Employee expectedEmployee = aDefaultEmployee();
-        when(mockTemplate.exchange(baseUrl + employeeDto.getId(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + employeeDto.getId(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenReturn(new ResponseEntity<>(employeeDto, HttpStatus.OK));
 
         Employee employee = employeeRestRepository.getEmployeeById(jwt, new EmployeeId(employeeDto.getId()));
@@ -55,9 +56,9 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws an exception with a 401 statuscode if the JWT is invalid")
+    @DisplayName("should throw an exception with a 401 statuscode if the JWT is invalid")
     public void unauthorized() {
-        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
@@ -66,9 +67,9 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws an exception with a 404 statuscode if no employee is known by the id")
+    @DisplayName("should throw an exception with a 404 statuscode if no employee is known by the id")
     public void employee404() {
-        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
@@ -77,9 +78,9 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws an exception with a 500 statuscode if there is an unexpected error")
+    @DisplayName("should throw an exception with a 500 statuscode if there is an unexpected error")
     public void unexpectedError() {
-        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
@@ -87,8 +88,8 @@ public class TestEmployeeRestRepository {
         assertEquals(Statuscode.INTERNAL_SERVER_ERROR, exception.getStatuscode());
     }
 
-    private EmployeeRepoDto aDefaultEmployeeDto() {
-        return EmployeeRepoDto.builder()
+    private EmployeeData aDefaultEmployeeDto() {
+        return EmployeeData.builder()
                 .id(defaultId)
                 .firstName("Tester")
                 .lastName("Mester")

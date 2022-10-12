@@ -1,4 +1,4 @@
-package de.szut.lf8_project.domain.Employee;
+package de.szut.lf8_project.domain.employee;
 
 import lombok.Builder;
 import lombok.NonNull;

@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @Jacksonized
 @Value
-public class EmployeeRepoDto {
+public class EmployeeData {
     @JsonProperty("id")
     Long id;
     @JsonProperty("lastName")
