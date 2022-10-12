@@ -1,4 +1,4 @@
-package de.szut.lf8_project.domain;
+package de.szut.lf8_project.domain.Employee;
 
 import de.szut.lf8_project.common.ValueType;
 
