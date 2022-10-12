@@ -55,7 +55,7 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws a exception with an 401 statuscode if the jwt is invalid")
+    @DisplayName("throws an exception with a 401 statuscode if the JWT is invalid")
     public void unauthorized() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
