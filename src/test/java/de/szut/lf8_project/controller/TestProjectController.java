@@ -67,6 +67,7 @@ public class TestProjectController {
                 null
         );
 
+        // TODO #MS-2 - richtigen Test implementieren
         when(projectApplicationService.createProject(validProject)).thenReturn(projectView);
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
@@ -82,8 +83,9 @@ public class TestProjectController {
 }
 """)
         );
-        result.andExpect(status().isOk()).andExpect(content().json("""
+        result.andExpect(status().isCreated()).andExpect(content().json("""
 {
+"projectId": 123,
 "projectName": "foobar",
 "projectDescription": "foobar at the beach",
 "projectLead": 456,

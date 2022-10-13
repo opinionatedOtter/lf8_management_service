@@ -16,9 +16,13 @@ import org.springframework.web.context.request.WebRequest;
 @RequestMapping(value = "/api/v1/project", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class ProjectController {
 
-    private ProjectApplicationService projectApplicationService;
+    private final ProjectApplicationService projectApplicationService;
 
-    @PostMapping("/")
+    public ProjectController(ProjectApplicationService projectApplicationService) {
+        this.projectApplicationService = projectApplicationService;
+    }
+
+    @PostMapping("")
     public ResponseEntity<ProjectView> createProject(
             @RequestBody CreateProjectDto createProjectDto
     ) {
