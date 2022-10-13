@@ -16,7 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 
 @Validated
 @RestController
-@RequestMapping(value = "/api/v1/project", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/api/v1/project", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class ProjectController {
 
     private final ProjectApplicationService projectApplicationService;
@@ -37,8 +37,8 @@ public class ProjectController {
     @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
         return new ResponseEntity<>(
-                ProblemDetails.fromErrorDetail(ex.getErrorDetail())
-                , ex.getErrorDetail().getErrorCode().getHttpRepresentation());
+                ProblemDetails.fromErrorDetail(ex.getErrorDetail()),
+                ex.getErrorDetail().getErrorCode().getHttpRepresentation());
     }
 
 }
