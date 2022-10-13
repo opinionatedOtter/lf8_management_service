@@ -1,17 +1,12 @@
 package de.szut.lf8_project.controller;
 
 import de.szut.lf8_project.application.ProjectApplicationService;
+import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.dtos.CreateProjectDto;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
-import de.szut.lf8_project.domain.project.PlannedEndDate;
-import de.szut.lf8_project.domain.project.ProjectDescription;
-import de.szut.lf8_project.domain.project.ProjectId;
-import de.szut.lf8_project.domain.project.ProjectLead;
-import de.szut.lf8_project.domain.project.ProjectLeadId;
-import de.szut.lf8_project.domain.project.ProjectName;
-import de.szut.lf8_project.domain.project.StartDate;
+import de.szut.lf8_project.domain.project.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +38,9 @@ public class TestProjectController {
     @MockBean
     private ProjectApplicationService projectApplicationService;
 
+    private JWT dummyJwt = new JWT("unused");
+
+
     @Test
     @DisplayName("accept valid json and return the created entity")
     public void acceptValidJsonHappyPath() throws Exception {
@@ -53,7 +51,7 @@ public class TestProjectController {
                 456L,
                 789L,
                 new Date(2022, Calendar.SEPTEMBER, 23),
-                new Date(2022, Calendar.NOVEMBER,15)
+                new Date(2022, Calendar.NOVEMBER, 15)
         );
 
         ProjectView projectView = new ProjectView(
@@ -63,37 +61,37 @@ public class TestProjectController {
                 new ProjectLead(new ProjectLeadId(456L)),
                 new Customer(new CustomerId(789L)),
                 new StartDate(new Date(2022, Calendar.SEPTEMBER, 23)),
-                new PlannedEndDate(new Date(2022, Calendar.NOVEMBER,15)),
+                new PlannedEndDate(new Date(2022, Calendar.NOVEMBER, 15)),
                 null
         );
 
         // TODO #MS-2 - richtigen Test implementieren
-        when(projectApplicationService.createProject(validProject)).thenReturn(projectView);
+        when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-{
-"projectName": "foobar",
-"projectDescription": "foobar at the beach",
-"projectLead": 456,
-"customerId": 789,
-"startDate": "2022-09-23",
-"plannedEndDate": "2022-11-15"
-}
-""")
+                        {
+                        "projectName": "foobar",
+                        "projectDescription": "foobar at the beach",
+                        "projectLead": 456,
+                        "customerId": 789,
+                        "startDate": "2022-09-23",
+                        "plannedEndDate": "2022-11-15"
+                        }
+                        """)
         );
         result.andExpect(status().isCreated()).andExpect(content().json("""
-{
-"projectId": 123,
-"projectName": "foobar",
-"projectDescription": "foobar at the beach",
-"projectLead": 456,
-"customerId": 789,
-"startDate": "2022-09-23",
-"plannedEndDate": "2022-11-23"
-}
-""")
+                {
+                "projectId": 123,
+                "projectName": "foobar",
+                "projectDescription": "foobar at the beach",
+                "projectLead": 456,
+                "customerId": 789,
+                "startDate": "2022-09-23",
+                "plannedEndDate": "2022-11-23"
+                }
+                """)
         );
-}
+    }
 }

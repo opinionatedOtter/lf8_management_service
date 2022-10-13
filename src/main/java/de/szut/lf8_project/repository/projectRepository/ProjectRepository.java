@@ -3,6 +3,8 @@ package de.szut.lf8_project.repository.projectRepository;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.project.*;
+import de.szut.lf8_project.repository.RepositoryException;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -12,6 +14,10 @@ public class ProjectRepository {
 
     public ProjectRepository(ProjectDataRepository projectDataRepository) {
         this.projectDataRepository = projectDataRepository;
+    }
+
+    public Project createProject(Project project) throws RepositoryException {
+        throw new NotYetImplementedException();
     }
 
     private Project mapProjectDataToProject(ProjectData projectData) {
