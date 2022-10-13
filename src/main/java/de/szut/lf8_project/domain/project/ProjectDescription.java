@@ -1,10 +1,9 @@
-package de.szut.lf8_project.domain.Project;
+package de.szut.lf8_project.domain.project;
 
 import de.szut.lf8_project.common.ValueType;
 
 public class ProjectDescription extends ValueType<String> {
-
-    ProjectDescription(String value) {
+    public ProjectDescription(String value) {
         super(value);
     }
 }
