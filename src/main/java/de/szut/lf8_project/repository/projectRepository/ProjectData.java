@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Table(name = "project")
 @Entity
@@ -23,6 +24,6 @@ public class ProjectData {
     Date plannedEndDate;
     Date actualEndDate;
 
-    @OneToMany(mappedBy = "teamMembers", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<TeamMemberData> teamMembers;
+    @OneToMany(mappedBy = "projectData", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    Set<TeamMemberData> teamMembers;
 }
