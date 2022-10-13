@@ -2,7 +2,7 @@ package de.szut.lf8_project.repository;
 
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.common.Statuscode;
-import de.szut.lf8_project.domain.Employee.*;
+import de.szut.lf8_project.domain.employee.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

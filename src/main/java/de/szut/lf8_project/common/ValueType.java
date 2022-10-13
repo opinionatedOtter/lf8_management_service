@@ -1,9 +1,11 @@
 package de.szut.lf8_project.common;
 
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public abstract class ValueType<T> {
 
+    @NotNull
     private final T innerValue;
 
     public ValueType(T generic) {

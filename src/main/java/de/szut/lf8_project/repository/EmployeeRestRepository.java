@@ -2,7 +2,7 @@ package de.szut.lf8_project.repository;
 
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.common.Statuscode;
-import de.szut.lf8_project.domain.Employee.*;
+import de.szut.lf8_project.domain.employee.*;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
