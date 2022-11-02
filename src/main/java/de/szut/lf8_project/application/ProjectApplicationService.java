@@ -1,6 +1,5 @@
 package de.szut.lf8_project.application;
 
-import de.szut.lf8_project.common.ApplicationServiceException;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.common.ServiceException;
 import de.szut.lf8_project.controller.dtos.CreateProjectDto;
@@ -9,10 +8,8 @@ import de.szut.lf8_project.domain.DateService;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
-import de.szut.lf8_project.domain.project.PlannedEndDate;
 import de.szut.lf8_project.domain.project.Project;
 import de.szut.lf8_project.domain.project.ProjectService;
-import de.szut.lf8_project.domain.project.StartDate;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.hibernate.cfg.NotYetImplementedException;
@@ -36,11 +33,16 @@ public class ProjectApplicationService {
 
     public ProjectView createProject(CreateProjectDto createProjectDto, JWT jwt) throws ApplicationServiceException {
         //TODO ApplicationServicexception ausformulieren - Runtime? Catch in controller to Json etc.
-        Project project = null; // mapping?
-        validateProjectStartAndEnd(createProjectDto);
+        Project pendingProject = Project.fromDto(createProjectDto);
+        validateProjectStartAndEnd(pendingProject);
+        // TODO: check if customer exists
+
         // loop here later
-        validateTeamMemberForProject(createProjectDto, jwt, project);
-        return mapProjectToViewModel(saveNewProject(project));
+        //TODO: discuss: typisierung und wann dto zu project - was ist mit optionals etc?
+        validateTeamMemberForProject(new EmployeeId(pendingProject.getProjectLead().getProjectLeadId().unbox()), pendingProject, jwt);
+
+        return mapProjectToViewModel(saveNewProject(pendingProject));
+
 
         // Datum valide? -> Domainservice validate -> Either
 
@@ -57,26 +59,26 @@ public class ProjectApplicationService {
         try {
             return projectRepository.createProject(project);
         } catch (RepositoryException e) {
-            throw new ApplicationServiceException();
+            throw new ApplicationServiceException(e.getErrorDetail());
         }
     }
 
-    private void validateTeamMemberForProject(CreateProjectDto createProjectDto, JWT jwt, Project project) {
+    private void validateTeamMemberForProject(EmployeeId employeeId, Project project, JWT jwt) {
         try {
-            Employee employee = employeeRepository.getEmployeeById(jwt, new EmployeeId(createProjectDto.customerId()));
+            Employee employee = employeeRepository.getEmployeeById(jwt, employeeId);
             projectService.checkIsValidTeamMember(project, employee);
         } catch (RepositoryException | ServiceException e) {
-            throw new ApplicationServiceException();
+            throw new ApplicationServiceException(e.getErrorDetail());
         }
     }
 
-    private void validateProjectStartAndEnd(CreateProjectDto createProjectDto) {
+    private void validateProjectStartAndEnd(Project project) {
         try {
             dateService.validateProjectStartAndEnd(
-                    new StartDate(createProjectDto.startDate()),
-                    new PlannedEndDate(createProjectDto.plannedEndDate()));
+                    project.getStartDate(),
+                    project.getPlannedEndDate());
         } catch (ServiceException e) {
-            throw new ApplicationServiceException();
+            throw new ApplicationServiceException(e.getErrorDetail());
         }
     }
 

@@ -3,7 +3,7 @@ package de.szut.lf8_project.repository;
 import de.szut.lf8_project.common.ErrorDetail;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.common.Statuscode;
+import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import de.szut.lf8_project.domain.employee.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,11 +42,11 @@ public class EmployeeRestRepository implements EmployeeRepository {
                     ));
         } catch (HttpClientErrorException e) {
             if (e.getRawStatusCode() == 404)
-                throw new RepositoryException(new ErrorDetail(Statuscode.NOT_FOUND, new FailureMessage("The Employee withe the ID " + employeeId.unbox() + "could not be found")));
+                throw new RepositoryException(new ErrorDetail(Errorcode.NOT_FOUND, new FailureMessage("The Employee withe the ID " + employeeId.unbox() + "could not be found")));
             else
-                throw new RepositoryException(new ErrorDetail(Statuscode.UNAUTHORIZED, new FailureMessage("You are not authorized to use this service")));
+                throw new RepositoryException(new ErrorDetail(Errorcode.UNAUTHORIZED, new FailureMessage("You are not authorized to use this service")));
         } catch (RestClientException e) {
-            throw new RepositoryException(new ErrorDetail(Statuscode.INTERNAL_SERVER_ERROR, new FailureMessage("An unknown error occurred")));
+            throw new RepositoryException(new ErrorDetail(Errorcode.INTERNAL_SERVER_ERROR, new FailureMessage("An unknown error occurred")));
         }
     }
 

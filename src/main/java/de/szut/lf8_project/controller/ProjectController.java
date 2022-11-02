@@ -1,11 +1,12 @@
 package de.szut.lf8_project.controller;
 
 
+import de.szut.lf8_project.application.ApplicationServiceException;
 import de.szut.lf8_project.application.ProjectApplicationService;
 import de.szut.lf8_project.common.JWT;
+import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.CreateProjectDto;
 import de.szut.lf8_project.controller.dtos.ProjectView;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,22 +30,15 @@ public class ProjectController {
             @RequestBody CreateProjectDto createProjectDto,
             @RequestHeader("Authorization") String authheader
     ) {
-        // TODO: ExceptionHandler + Json Controlleradvice
-        JWT jwt = getJwtFromHeader(authheader);
-        return new ResponseEntity<>(projectApplicationService.createProject(createProjectDto, jwt), HttpStatus.CREATED);
+        return new ResponseEntity<>(projectApplicationService.createProject(createProjectDto, new JWT(authheader)), HttpStatus.CREATED);
     }
 
-    private JWT getJwtFromHeader(String authheader) {
-        throw new NotYetImplementedException();
-    }
 
     @ExceptionHandler
-    public ResponseEntity<Object> serializeApplicationServiceException(Exception ex, WebRequest request) {
-        return new ResponseEntity<Object>(
-                // hier JSONStuff
-                // typisiere Exception
-                new Object()
-                , HttpStatus.NOT_FOUND);
+    public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
+        return new ResponseEntity<>(
+                ProblemDetails.fromErrorDetail(ex.getErrorDetail())
+                , ex.getErrorDetail().getErrorCode().getHttpRepresentation());
     }
 
 }

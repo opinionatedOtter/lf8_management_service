@@ -1,9 +1,7 @@
 package de.szut.lf8_project.domain.project;
 
 import de.szut.lf8_project.common.ServiceException;
-import de.szut.lf8_project.common.Statuscode;
 import de.szut.lf8_project.domain.employee.Employee;
-import de.szut.lf8_project.repository.RepositoryException;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 

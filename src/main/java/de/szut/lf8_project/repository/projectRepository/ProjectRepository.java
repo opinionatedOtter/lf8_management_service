@@ -7,6 +7,8 @@ import de.szut.lf8_project.repository.RepositoryException;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class ProjectRepository {
 
@@ -22,15 +24,17 @@ public class ProjectRepository {
 
     private Project mapProjectDataToProject(ProjectData projectData) {
         return Project.builder()
-                .projectId(new ProjectId(projectData.projectId))
+                .projectId(Optional.of(new ProjectId(projectData.projectId)))
                 .projectDescription(new ProjectDescription(projectData.projectDescription))
                 .projectName(new ProjectName(projectData.projectName))
                 .startDate(new StartDate(projectData.startDate))
                 .plannedEndDate(new PlannedEndDate(projectData.plannedEndDate))
-                .actualEndDate(new ActualEndDate(projectData.actualEndDate))
+                .actualEndDate(Optional.of(new ActualEndDate(projectData.actualEndDate)))
                 .customer(new Customer(new CustomerId(1L)))
                 .projectLead(new ProjectLead(new ProjectLeadId(projectData.responsibleEmployee)))
-                .build();
+                // TODO MS-2
                 //.teamMembers(projectData.teamMembers);
+                .build();
+
     }
 }

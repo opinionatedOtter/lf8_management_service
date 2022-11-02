@@ -2,12 +2,9 @@ package de.szut.lf8_project.common;
 
 import lombok.NonNull;
 
-public class ServiceException extends Exception {
-
-    @NonNull
-    ErrorDetail errorDetail;
+public class ServiceException extends DetailedException {
 
     public ServiceException(@NonNull ErrorDetail errorDetail) {
-        this.errorDetail = errorDetail;
+        super(errorDetail);
     }
 }

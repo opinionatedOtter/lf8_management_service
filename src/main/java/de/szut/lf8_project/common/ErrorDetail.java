@@ -6,7 +6,7 @@ import lombok.Value;
 @Value
 public class ErrorDetail {
     @NonNull
-    Statuscode statuscode;
+    Errorcode errorCode;
     @NonNull
     FailureMessage failureMessage;
 }

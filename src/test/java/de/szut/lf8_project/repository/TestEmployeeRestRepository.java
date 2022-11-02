@@ -1,7 +1,7 @@
 package de.szut.lf8_project.repository;
 
+import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.common.Statuscode;
 import de.szut.lf8_project.domain.employee.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,36 +55,36 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws a exception with an 401 statuscode if the jwt is invalid")
+    @DisplayName("throws a exception with errorcode 401 if the jwt is invalid")
     public void unauthorized() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
-        assertEquals(Statuscode.UNAUTHORIZED, exception.getStatuscode());
+        assertEquals(Errorcode.UNAUTHORIZED, exception.getErrorDetail().getErrorCode());
     }
 
     @Test
-    @DisplayName("throws a exception with an 404 statuscode if no employee is known by the id")
+    @DisplayName("throws a exception with errorcode 404 if no employee is known by the id")
     public void employee404() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
-        assertEquals(Statuscode.NOT_FOUND, exception.getStatuscode());
+        assertEquals(Errorcode.NOT_FOUND, exception.getErrorDetail().getErrorCode());
     }
 
     @Test
-    @DisplayName("throws a exception with an 500 statuscode if there is an unexpected error")
+    @DisplayName("throws a exception with errorcode 500 if there is an unexpected error")
     public void unexpectedError() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
-        assertEquals(Statuscode.INTERNAL_SERVER_ERROR, exception.getStatuscode());
+        assertEquals(Errorcode.INTERNAL_SERVER_ERROR, exception.getErrorDetail().getErrorCode());
     }
 
     private EmployeeRepoDto aDefaultEmployeeDto() {

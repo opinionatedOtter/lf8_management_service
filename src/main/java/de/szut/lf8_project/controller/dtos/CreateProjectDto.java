@@ -7,6 +7,7 @@ public record CreateProjectDto(
     String projectDescription,
     Long projectLead,
     Long customerId,
+    Long contactPersonId,
     Date startDate,
     Date plannedEndDate
     ) {}
