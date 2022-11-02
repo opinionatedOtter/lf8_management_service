@@ -1,5 +1,6 @@
 package de.szut.lf8_project.repository;
 
+import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.Qualification;
 import de.szut.lf8_project.domain.project.TeamMember;
 import de.szut.lf8_project.repository.projectRepository.TeamMemberData;
@@ -14,7 +15,7 @@ public class TeamMemberMapper {
 
         TeamMember teamMember = new TeamMember();
         teamMember.setQualification(new Qualification(teamMemberData.getRole()));
-        teamMember.setEmployeeId(teamMemberData.getEmployeeId());
+        teamMember.setEmployeeId(new EmployeeId(teamMemberData.getEmployeeId()));
 
         return teamMember;
 
@@ -23,7 +24,7 @@ public class TeamMemberMapper {
     public TeamMemberData mapTo(TeamMember teamMember){
         
         TeamMemberData teamMemberData = new TeamMemberData();
-        teamMemberData.setRole(new Role(teamMember.getQualification()));
+        teamMemberData.setRole(teamMember.getQualification().unbox());
         teamMemberData.setEmployeeId(teamMember.getEmployeeId().unbox());
 
         return teamMemberData;
