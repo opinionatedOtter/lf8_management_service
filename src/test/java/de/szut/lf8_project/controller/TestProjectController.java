@@ -2,7 +2,7 @@ package de.szut.lf8_project.controller;
 
 import de.szut.lf8_project.application.ProjectApplicationService;
 import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.controller.dtos.CreateProjectDto;
+import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
@@ -45,7 +45,7 @@ public class TestProjectController {
     @DisplayName("accept valid json and return the created entity")
     public void acceptValidJsonHappyPath() throws Exception {
 
-        CreateProjectDto validProject = new CreateProjectDto(
+        CreateProjectCommand validProject = new CreateProjectCommand(
                 "foobar",
                 "foobar at the beach",
                 456L,

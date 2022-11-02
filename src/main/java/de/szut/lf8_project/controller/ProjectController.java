@@ -5,7 +5,7 @@ import de.szut.lf8_project.application.ApplicationServiceException;
 import de.szut.lf8_project.application.ProjectApplicationService;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
-import de.szut.lf8_project.controller.dtos.CreateProjectDto;
+import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,10 +27,10 @@ public class ProjectController {
 
     @PostMapping("")
     public ResponseEntity<ProjectView> createProject(
-            @RequestBody CreateProjectDto createProjectDto,
+            @RequestBody CreateProjectCommand createProjectCommand,
             @RequestHeader("Authorization") String authheader
     ) {
-        return new ResponseEntity<>(projectApplicationService.createProject(createProjectDto, new JWT(authheader)), HttpStatus.CREATED);
+        return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authheader)), HttpStatus.CREATED);
     }
 
 
