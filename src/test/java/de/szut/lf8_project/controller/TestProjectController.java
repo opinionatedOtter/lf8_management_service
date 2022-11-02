@@ -4,9 +4,13 @@ import de.szut.lf8_project.application.ProjectApplicationService;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
-import de.szut.lf8_project.domain.project.*;
+import de.szut.lf8_project.domain.project.PlannedEndDate;
+import de.szut.lf8_project.domain.project.ProjectDescription;
+import de.szut.lf8_project.domain.project.ProjectId;
+import de.szut.lf8_project.domain.project.ProjectLeadId;
+import de.szut.lf8_project.domain.project.ProjectName;
+import de.szut.lf8_project.domain.project.StartDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +22,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
@@ -50,23 +53,24 @@ public class TestProjectController {
                 "foobar at the beach",
                 456L,
                 789L,
-                new Date(2022, Calendar.SEPTEMBER, 23),
-                new Date(2022, Calendar.NOVEMBER, 15)
-        );*//*
+                666L,
+                LocalDate.of(2022, 9, 23),
+                LocalDate.of(2022, 11, 15)
+        );
 
         ProjectView projectView = new ProjectView(
                 new ProjectId(123L),
                 new ProjectName("foobar"),
                 new ProjectDescription("foobar at the beach"),
-                new ProjectLead(new ProjectLeadId(456L)),
-                new Customer(new CustomerId(789L)),
-                new StartDate(new Date(2022, Calendar.SEPTEMBER, 23)),
-                new PlannedEndDate(new Date(2022, Calendar.NOVEMBER, 15)),
+                new ProjectLeadId(456L),
+                new CustomerId(789L),
+                new StartDate(LocalDate.of(2022, 9, 23)),
+                new PlannedEndDate(LocalDate.of(2022, 11, 15)),
                 null
         );
 
-        // TODO #MS-2 - richtigen Test implementieren
-        when(projectApplicationService.createProject(null, dummyJwt)).thenReturn(projectView);
+
+        when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON)

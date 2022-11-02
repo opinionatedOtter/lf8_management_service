@@ -10,7 +10,7 @@ import lombok.Value;
 @JsonSerialize(using = ValueTypeSerializer.class)
 public class ProjectLead {
 
-    ProjectLeadId projectLeadId;
+    private final ProjectLeadId projectLeadId;
 
     public ProjectLead(ProjectLeadId projectLeadId) {
         this.projectLeadId = projectLeadId;
