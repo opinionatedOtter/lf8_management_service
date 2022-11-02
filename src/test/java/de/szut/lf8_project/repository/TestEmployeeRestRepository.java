@@ -84,7 +84,7 @@ public class TestEmployeeRestRepository {
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
-        assertEquals(Errorcode.INTERNAL_SERVER_ERROR, exception.getErrorDetail().getErrorCode());
+        assertEquals(Errorcode.UNEXPECTED_ERROR, exception.getErrorDetail().getErrorCode());
     }
 
     private EmployeeRepoDto aDefaultEmployeeDto() {

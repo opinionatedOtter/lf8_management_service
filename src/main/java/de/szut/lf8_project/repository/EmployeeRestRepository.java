@@ -46,7 +46,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
             else
                 throw new RepositoryException(new ErrorDetail(Errorcode.UNAUTHORIZED, new FailureMessage("You are not authorized to use this service")));
         } catch (RestClientException e) {
-            throw new RepositoryException(new ErrorDetail(Errorcode.INTERNAL_SERVER_ERROR, new FailureMessage("An unknown error occurred")));
+            throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
         }
     }
 

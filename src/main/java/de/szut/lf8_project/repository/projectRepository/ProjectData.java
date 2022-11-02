@@ -1,10 +1,9 @@
 package de.szut.lf8_project.repository.projectRepository;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
@@ -13,6 +12,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProjectData {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,14 +23,10 @@ public class ProjectData {
     Long projectLeadId;
     Long customerId;
     Long customerContactId;
-    Date startDate;
-    Date plannedEndDate;
-    Date actualEndDate;
+    LocalDate startDate;
+    LocalDate plannedEndDate;
+    LocalDate actualEndDate;
 
     @OneToMany(mappedBy = "projectData", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<TeamMemberData> teamMembers;
-
-    public ProjectData() {
-
-    }
 }

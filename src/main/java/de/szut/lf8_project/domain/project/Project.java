@@ -13,7 +13,6 @@ import java.util.Set;
 
 @Builder
 @Value
-@Entity
 public class Project {
     @NonNull
     Optional<ProjectId> projectId;

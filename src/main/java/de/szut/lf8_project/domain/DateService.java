@@ -14,6 +14,6 @@ public class DateService {
 
     // TODO
     public void validateProjectStartAndEnd(StartDate startDate, PlannedEndDate plannedEndDate) throws ServiceException {
-        throw new ServiceException(new ErrorDetail(Errorcode.NOT_FOUND, new FailureMessage("")));
+       // throw new ServiceException(new ErrorDetail(Errorcode.NOT_FOUND, new FailureMessage("")));
     }
 }

@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
-public class ValueTypeSerializer extends JsonSerializer<ValueType<?>> {
+public class ValueTypeSerializer extends JsonSerializer<ValueType> {
 
     @Override
-    public void serialize(ValueType<?> valueType, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(ValueType valueType, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 
         JsonSerializer<Object> serializer = serializerProvider.findValueSerializer(valueType.unbox().getClass());
 
@@ -17,5 +17,4 @@ public class ValueTypeSerializer extends JsonSerializer<ValueType<?>> {
 
         serializer.serialize(unboxedValue, jsonGenerator, serializerProvider);
     }
-
 }

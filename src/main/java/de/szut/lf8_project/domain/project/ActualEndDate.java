@@ -2,11 +2,11 @@ package de.szut.lf8_project.domain.project;
 
 import de.szut.lf8_project.common.ValueType;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-public class ActualEndDate extends ValueType<Date> {
+public class ActualEndDate extends ValueType<LocalDate> {
 
-    public ActualEndDate(Date actualEndDate) {
+    public ActualEndDate(LocalDate actualEndDate) {
         super(actualEndDate);
     }
 }

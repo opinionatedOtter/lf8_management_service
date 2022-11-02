@@ -8,6 +8,7 @@ import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.TeamMemberMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class ProjectRepository {
                 .projectName(project.getProjectName().unbox())
                 .projectLeadId(project.getProjectLead().getProjectLeadId().unbox())
                 .customerContactId(project.getCustomerContact().getCustomerContactId().unbox())
+                .customerId(project.getCustomer().getCustomerId().unbox())
                 .projectDescription(project.getProjectDescription().map(ValueType::unbox).orElse(null))
                 .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
                 .plannedEndDate(project.getPlannedEndDate().map(ValueType::unbox).orElse(null))
@@ -50,7 +52,7 @@ public class ProjectRepository {
                 .customer(new Customer(new CustomerId(projectData.customerId)))
                 .projectLead(new ProjectLead(new ProjectLeadId(projectData.projectLeadId)))
                 .customerContact(new CustomerContact(new CustomerContactId(projectData.customerContactId)))
-                .teamMembers(projectData.teamMembers.stream().map(teamMemberMapper::mapTo).collect(Collectors.toSet()))
+                .teamMembers(Objects.isNull(projectData.teamMembers) ? Collections.emptySet() : projectData.teamMembers.stream().map(teamMemberMapper::mapTo).collect(Collectors.toSet()))
                 .build();
 
     }

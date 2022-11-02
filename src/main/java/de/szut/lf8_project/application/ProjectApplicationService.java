@@ -8,13 +8,13 @@ import de.szut.lf8_project.domain.CustomerService;
 import de.szut.lf8_project.domain.CustomerServiceException;
 import de.szut.lf8_project.domain.DateService;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
+import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -47,10 +47,12 @@ public class ProjectApplicationService {
                 .projectId(Optional.empty())
                 .projectLead(new ProjectLead(new ProjectLeadId(projectLead.getId().unbox())))
                 .projectName(cmd.projectName())
+                .customer(new Customer(cmd.customerId()))
                 .projectDescription(cmd.projectDescription())
                 .actualEndDate(Optional.empty())
                 .plannedEndDate(cmd.plannedEndDate())
                 .startDate(cmd.startDate())
+                .customerContact(new CustomerContact(cmd.contactPersonId()))
                 .build()
         ));
 
@@ -98,6 +100,17 @@ public class ProjectApplicationService {
     }
 
     private ProjectView mapProjectToViewModel(Project project) {
-        throw new NotYetImplementedException();
+        return ProjectView.builder()
+                // TODO - Optionals + Jackson?
+                .projectId(project.getProjectId().orElse(null))
+                .projectLead(project.getProjectLead())
+                .projectDescription(project.getProjectDescription().orElse(null))
+                .projectName(project.getProjectName())
+                .startDate(project.getStartDate().orElse(null))
+                .actualEndDate(project.getActualEndDate().orElse(null))
+                .plannedEndDate(project.getPlannedEndDate().orElse(null))
+                .customer(project.getCustomer())
+                .teamMember(project.getTeamMembers())
+                .build();
     }
 }
