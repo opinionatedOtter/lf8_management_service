@@ -45,7 +45,7 @@ public class TestProjectController {
     @MockBean
     private ProjectApplicationService projectApplicationService;
 
-    private JWT dummyJwt = new JWT("unused");
+    private JWT dummyJwt = new JWT("Bearer fake.fake.fake");
 
 
     // TODO: crashed wegen fehelender Authentication
@@ -59,7 +59,7 @@ public class TestProjectController {
                 new CustomerContact("Testkontakt"),
                 Optional.of(new ProjectDescription("foobar at the beach")),
                 Optional.of(new StartDate(LocalDate.of(2022, 9, 23))),
-                Optional.of(new PlannedEndDate(LocalDate.of(2022, 11, 15)))
+                Optional.empty()
         );
         ProjectView projectView = ProjectView.builder()
                 .projectId(new ProjectId(123L))
@@ -71,11 +71,10 @@ public class TestProjectController {
                 .plannedEndDate(new PlannedEndDate(LocalDate.of(2022, 11, 15)))
                 .startDate(new StartDate(LocalDate.of(2022, 9, 23)))
                 .build();
-
-
         when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
+
 
 
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -83,12 +82,11 @@ public class TestProjectController {
                 .content("""
                         {
                         "projectName": "foobar",
-                        "projectDescription": "foobar at the beach",
-                        "projectLead": 456,
+                        "projectLeadId": 456,
                         "customerId": 789,
-                        "contactPersonId": 666,
-                        "startDate": "2022-09-23",
-                        "plannedEndDate": "2022-11-15"
+                        "customerContact": "Testkontakt",
+                        "projectDescription": "foobar at the beach",
+                        "startDate": "2022-09-23"
                         }
                         """)
         );
@@ -99,12 +97,17 @@ public class TestProjectController {
                             "projectId": 123,
                             "projectName": "foobar",
                             "projectDescription": "foobar at the beach",
-                            "projectLeadId": 456,
-                            "customerId": 789,
                             "startDate": "2022-09-23",
-                            "plannedEndDate": "2022-11-15"
+                             "projectLead": {
+                                "projectLeadId": 456
+                            },
+                            "customer" : {
+                                "customerId": 789
+                                }
                             }
                         """)
         ).andExpect(status().isCreated());
+
+
     }
 }

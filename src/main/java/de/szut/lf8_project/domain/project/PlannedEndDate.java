@@ -9,4 +9,8 @@ public class PlannedEndDate extends ValueType<LocalDate> {
     public PlannedEndDate(LocalDate value) {
         super(value);
     }
+
+    public PlannedEndDate(String dateAsString) {
+        super(LocalDate.parse(dateAsString));
+    }
 }
