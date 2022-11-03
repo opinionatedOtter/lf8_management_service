@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("A Project controller should")
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class TestProjectController {
 
@@ -47,8 +47,6 @@ public class TestProjectController {
 
     private JWT dummyJwt = new JWT("Bearer fake.fake.fake");
 
-
-    // TODO: crashed wegen fehelender Authentication
     @Test
     @DisplayName("accept valid json and return the created entity")
     public void acceptValidJsonHappyPath() throws Exception {
@@ -74,9 +72,6 @@ public class TestProjectController {
         when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
-
-
-
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", dummyJwt.jwt())
                 .content("""
