@@ -3,26 +3,49 @@ package de.szut.lf8_project.integration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.repository.EmployeeRestRepository;
+import de.szut.lf8_project.domain.employee.EmployeeId;
+import de.szut.lf8_project.repository.EmployeeRepoDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
+@Testcontainers
+@AutoConfigureMockMvc
+@SpringBootTest
+@ContextConfiguration(initializers = {TestWithRealKeycloak.Initializer.class})
 public class TestWithRealKeycloak {
-    private static boolean setUpIsDone = false;
+
+    @Autowired
+    protected MockMvc mockMvc;
+
+    @Container
+    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:13.3");
 
     @Autowired
     private Environment env;
-    private JWT jwt;
+    protected JWT jwt;
+    private static boolean setUpIsDone = false;
 
     @BeforeEach
     public void setUpJwt() throws JsonProcessingException {
@@ -31,18 +54,29 @@ public class TestWithRealKeycloak {
         setUpIsDone = true;
     }
 
+    static class Initializer
+            implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
+                    "spring.datasource.username=" + postgreSQLContainer.getUsername(),
+                    "spring.datasource.password=" + postgreSQLContainer.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
+    }
+
     private JWT getFreshJwt() throws JsonProcessingException {
         String jsonString = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("authProvider.url")),
-                        getPostRequestBody(),
+                        getLoginBody(),
                         String.class)
                 .getBody();
         Map<String, String> map = new ObjectMapper().readValue(jsonString, Map.class);
         return new JWT("Bearer " + map.get("access_token"));
     }
 
-    private HttpEntity<MultiValueMap<String, String>> getPostRequestBody() {
+    private HttpEntity<MultiValueMap<String, String>> getLoginBody() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> bodyParamMap = new LinkedMultiValueMap<>();
@@ -51,6 +85,38 @@ public class TestWithRealKeycloak {
         bodyParamMap.add("username", env.getProperty("authProvider.user"));
         bodyParamMap.add("password", env.getProperty("authProvider.password"));
         return new HttpEntity<>(bodyParamMap, headers);
+    }
+
+    protected EmployeeId createEmployeeInRemoteRepository() {
+        String jsonBody = String.format("""
+                {
+                  "firstName": "Testnutzer für Integrationstest",
+                  "lastName": "%s",
+                  "street": "Teststr",
+                  "postcode": "28282",
+                  "city": "Bremen",
+                  "phone": "0111778899",
+                  "skillSet": []
+                }
+                """, UUID.randomUUID());
+        EmployeeRepoDto rawEmployee = new RestTemplate()
+                .postForEntity(
+                        Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
+                        buildPostRequest(jsonBody),
+                        EmployeeRepoDto.class)
+                .getBody();
+
+        return new EmployeeId(rawEmployee.getId());
+    }
+
+    private HttpEntity<String> buildPostRequest(String jsonBody) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        headers.set("Authorization", jwt.jwt());
+
+        return new HttpEntity<>(jsonBody, headers);
     }
 
 }
