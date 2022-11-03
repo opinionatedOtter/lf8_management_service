@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.repository.EmployeeRepoDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,7 +16,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
@@ -25,6 +28,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,8 +38,8 @@ import java.util.UUID;
 @Testcontainers
 @AutoConfigureMockMvc
 @SpringBootTest
-@ContextConfiguration(initializers = {TestWithRealKeycloak.Initializer.class})
-public class TestWithRealKeycloak {
+@ContextConfiguration(initializers = {IntegrationTestSetup.Initializer.class})
+public class IntegrationTestSetup {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -46,12 +51,34 @@ public class TestWithRealKeycloak {
     private Environment env;
     protected JWT jwt;
     private static boolean setUpIsDone = false;
+    private final List<Object> objectsToBeClearedAfterTest = new ArrayList<>();
 
     @BeforeEach
     public void setUpJwt() throws JsonProcessingException {
         if (setUpIsDone) return;
         this.jwt = getFreshJwt();
         setUpIsDone = true;
+    }
+
+    @AfterEach
+    public void clearObjects() {
+        objectsToBeClearedAfterTest.forEach(thing -> {
+            if(thing instanceof EmployeeId) {
+                deleteEmployeeInRemoteRepository((EmployeeId) thing);
+            }
+        });
+    }
+
+    private void deleteEmployeeInRemoteRepository(final EmployeeId employeeId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", jwt.jwt());
+        RequestEntity<String> requestEntity = new RequestEntity<>(
+                headers,
+                HttpMethod.DELETE,
+                URI.create(env.getProperty("employeeapi.baseUrl") + employeeId.toString())
+        );
+
+        new RestTemplate().exchange(requestEntity, String.class);
     }
 
     static class Initializer
@@ -106,11 +133,14 @@ public class TestWithRealKeycloak {
                         EmployeeRepoDto.class)
                 .getBody();
 
-        return new EmployeeId(rawEmployee.getId());
+        EmployeeId employeeId = new EmployeeId(rawEmployee.getId());
+        objectsToBeClearedAfterTest.add(employeeId);
+
+
+        return employeeId;
     }
 
     private HttpEntity<String> buildPostRequest(String jsonBody) {
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));

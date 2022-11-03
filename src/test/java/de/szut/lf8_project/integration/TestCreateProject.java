@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Der Create Project Rest Endpunkt")
-public class TestCreateProject extends TestWithRealKeycloak {
+public class TestCreateProject extends IntegrationTestSetup {
 
 
     @Test
