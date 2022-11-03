@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Der Create Project Rest Endpunkt")
+@DisplayName("Der Create Project Rest-Endpunkt")
 public class TestCreateProject extends IntegrationTestSetup {
 
 
@@ -52,6 +52,48 @@ public class TestCreateProject extends IntegrationTestSetup {
         result
                 .andExpect(content().json(expectedJsonContent))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("einen 404 Fehler werfen wenn der angegebene Mitarbeiter nicht gefunden werden kann")
+    void missingEmployee() throws Exception {
+        ResultActions result = mockMvc.perform(post("/api/v1/project")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+                .content("""
+                 {
+                        "projectName": "foobar",
+                        "projectLeadId": 9999999999,
+                        "customerId": 789,
+                        "customerContact": "Testkontakt",
+                        "projectDescription": "foobar at the beach",
+                        "startDate": "2022-09-23"
+                        }
+                """)
+        );
+
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("einen 401 Fehler werfen wenn die Authorisierung fehlschlägt")
+    void noAuth() throws Exception {
+        ResultActions result = mockMvc.perform(post("/api/v1/project")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", "invalidjwt")
+                .content("""
+                 {
+                        "projectName": "foobar",
+                        "projectLeadId": 2,
+                        "customerId": 789,
+                        "customerContact": "Testkontakt",
+                        "projectDescription": "foobar at the beach",
+                        "startDate": "2022-09-23"
+                        }
+                """)
+        );
+
+        result.andExpect(status().is(401));
     }
 
 

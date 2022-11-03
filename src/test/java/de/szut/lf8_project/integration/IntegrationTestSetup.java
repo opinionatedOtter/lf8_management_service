@@ -49,14 +49,14 @@ public class IntegrationTestSetup {
 
     @Autowired
     private Environment env;
-    protected JWT jwt;
+    protected static JWT jwt;
     private static boolean setUpIsDone = false;
     private final List<Object> objectsToBeClearedAfterTest = new ArrayList<>();
 
     @BeforeEach
     public void setUpJwt() throws JsonProcessingException {
         if (setUpIsDone) return;
-        this.jwt = getFreshJwt();
+        jwt = getFreshJwt();
         setUpIsDone = true;
     }
 
