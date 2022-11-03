@@ -12,10 +12,10 @@ Accept: application/json
 
 {
   "projectName": "Test description",
-  "customerId": 1,
+  "customerId": 2,
   "projectDescription": "Test comment",
   "customerContact": "Lars",
   "startDate": "2020-01-08",
-  "projectLeadId": 11
+  "projectLeadId": 251321
 }
 

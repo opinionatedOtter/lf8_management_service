@@ -1,7 +1,6 @@
 package de.szut.lf8_project.application;
 
-import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.common.ServiceException;
+import de.szut.lf8_project.common.*;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.CustomerService;
@@ -82,7 +81,7 @@ public class ProjectApplicationService {
     }
 
     private ProjectLead getProjectLead(ProjectLeadId projectLeadId, JWT jwt) {
-       return new ProjectLead(new ProjectLeadId(getEmployee(projectLeadId, jwt).getId().unbox()));
+        return new ProjectLead(new ProjectLeadId(getEmployee(projectLeadId, jwt).getId().unbox()));
     }
 
     private void validateProjectStartAndEnd(Optional<StartDate> start, Optional<PlannedEndDate> end) {
@@ -98,9 +97,8 @@ public class ProjectApplicationService {
     }
 
     private ProjectView mapProjectToViewModel(Project project) {
-        ProjectId projectId = project.getProjectId().get();
         return ProjectView.builder()
-                .projectId(project.getProjectId().orElseThrow(() -> new RuntimeException("")))
+                .projectId(project.getProjectId().orElseThrow(() -> new ApplicationServiceException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("Oops, something went wrong.")))))
                 .projectLead(project.getProjectLead())
                 .projectDescription(project.getProjectDescription())
                 .projectName(project.getProjectName())

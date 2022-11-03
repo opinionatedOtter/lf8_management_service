@@ -42,7 +42,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
                     ));
         } catch (HttpClientErrorException e) {
             if (e.getRawStatusCode() == 404)
-                throw new RepositoryException(new ErrorDetail(Errorcode.NOT_FOUND, new FailureMessage("The Employee withe the ID " + employeeId.unbox() + "could not be found")));
+                throw new RepositoryException(new ErrorDetail(Errorcode.ENTITY_NOT_FOUND, new FailureMessage("The Employee withe the ID " + employeeId.unbox() + " could not be found")));
             else
                 throw new RepositoryException(new ErrorDetail(Errorcode.UNAUTHORIZED, new FailureMessage("You are not authorized to use this service")));
         } catch (RestClientException e) {

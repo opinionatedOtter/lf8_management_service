@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProjectService {
 
-    // TODO
     public void checkIsValidTeamMember(Project project, Employee employee) throws ServiceException {
         throw new NotYetImplementedException();
     }

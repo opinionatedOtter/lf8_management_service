@@ -73,7 +73,7 @@ public class TestEmployeeRestRepository {
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
 
-        assertEquals(Errorcode.NOT_FOUND, exception.getErrorDetail().getErrorCode());
+        assertEquals(Errorcode.ENTITY_NOT_FOUND, exception.getErrorDetail().getErrorCode());
     }
 
     @Test
