@@ -56,6 +56,6 @@ docker compose up
 # Keycloak
 
 ### Keycloak Token
-1. Auf der Projektebene [GetBearerToken.http](./GetBearerToken.http) öffnen.
+1. Auf der Projektebene [GetBearerToken.http](./test-requests.http) öffnen.
 2. Neben der Request auf den grünen Pfeil drücken
 3. Aus dem Reponse das access_token kopieren
