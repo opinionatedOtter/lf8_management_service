@@ -14,6 +14,8 @@ public class DateService {
 
     // TODO
     public void validateProjectStartAndEnd(StartDate startDate, PlannedEndDate plannedEndDate) throws ServiceException {
-       // throw new ServiceException(new ErrorDetail(Errorcode.NOT_FOUND, new FailureMessage("")));
+        if(startDate.unbox().isAfter(plannedEndDate.unbox())) {
+            throw new ServiceException(new ErrorDetail(Errorcode.END_DATE_BEFORE_START, new FailureMessage("Start date is after the planned end Date.")));
+        }
     }
 }
