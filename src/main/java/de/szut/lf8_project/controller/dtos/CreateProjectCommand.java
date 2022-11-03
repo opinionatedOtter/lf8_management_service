@@ -1,18 +1,24 @@
 package de.szut.lf8_project.controller.dtos;
 
 import de.szut.lf8_project.domain.customer.CustomerId;
-import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.*;
+import lombok.NonNull;
+import lombok.Value;
 
 import java.util.Optional;
 
-public record CreateProjectCommand(
-        ProjectName projectName,
-        EmployeeId projectLead,
-        CustomerId customerId,
-        CustomerContactId contactPersonId,
-        Optional<ProjectDescription> projectDescription,
-        Optional<StartDate> startDate,
-        Optional<PlannedEndDate> plannedEndDate
-) {
+@Value
+public class CreateProjectCommand {
+    @NonNull
+    ProjectName projectName;
+    @NonNull
+    ProjectLeadId projectLeadId;
+    @NonNull
+    CustomerId customerId;
+    @NonNull
+    CustomerContact customerContact;
+    Optional<ProjectDescription> projectDescription;
+    Optional<StartDate> startDate;
+    Optional<PlannedEndDate> plannedEndDate;
+
 }

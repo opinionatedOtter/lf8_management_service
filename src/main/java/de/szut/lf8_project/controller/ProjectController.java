@@ -28,9 +28,9 @@ public class ProjectController {
     @PostMapping("")
     public ResponseEntity<ProjectView> createProject(
             @RequestBody CreateProjectCommand createProjectCommand,
-            @RequestHeader("Authorization") String authheader
+            @RequestHeader("Authorization") String authHeader
     ) {
-        return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authheader)), HttpStatus.CREATED);
+        return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
 

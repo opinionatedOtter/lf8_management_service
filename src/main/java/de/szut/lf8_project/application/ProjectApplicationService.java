@@ -38,29 +38,23 @@ public class ProjectApplicationService {
     }
 
     public ProjectView createProject(CreateProjectCommand cmd, JWT jwt) throws ApplicationServiceException {
-        validateProjectStartAndEnd(cmd.startDate(), cmd.plannedEndDate());
-        validateCustomer(cmd.customerId());
+        validateProjectStartAndEnd(cmd.getStartDate(), cmd.getPlannedEndDate());
+        validateCustomer(cmd.getCustomerId());
 
-        Employee projectLead = getEmployee(cmd.projectLead(), jwt);
+        ProjectLead projectLead = getProjectLead(cmd.getProjectLeadId(), jwt);
 
         return mapProjectToViewModel(saveNewProject(Project.builder()
                 .projectId(Optional.empty())
-                .projectLead(new ProjectLead(new ProjectLeadId(projectLead.getId().unbox())))
-                .projectName(cmd.projectName())
-                .customer(new Customer(cmd.customerId()))
-                .projectDescription(cmd.projectDescription())
+                .projectLead(new ProjectLead(new ProjectLeadId(projectLead.getProjectLeadId().unbox())))
+                .projectName(cmd.getProjectName())
+                .customer(new Customer(cmd.getCustomerId()))
+                .projectDescription(cmd.getProjectDescription())
                 .actualEndDate(Optional.empty())
-                .plannedEndDate(cmd.plannedEndDate())
-                .startDate(cmd.startDate())
-                .customerContact(new CustomerContact(cmd.contactPersonId()))
+                .plannedEndDate(cmd.getPlannedEndDate())
+                .startDate(cmd.getStartDate())
+                .customerContact(cmd.getCustomerContact())
                 .build()
         ));
-
-
-        // get (all) Mitarbeiter from Mitarbeiterservice
-
-        // LATER: Is everyone free in this timewindow? projectservice.validate -> either
-        //LATER: are qualifications fine?
     }
 
     private void validateCustomer(CustomerId customerId) {
@@ -85,6 +79,10 @@ public class ProjectApplicationService {
         } catch (RepositoryException e) {
             throw new ApplicationServiceException(e.getErrorDetail());
         }
+    }
+
+    private ProjectLead getProjectLead(ProjectLeadId projectLeadId, JWT jwt) {
+       return new ProjectLead(new ProjectLeadId(getEmployee(projectLeadId, jwt).getId().unbox()));
     }
 
     private void validateProjectStartAndEnd(Optional<StartDate> start, Optional<PlannedEndDate> end) {

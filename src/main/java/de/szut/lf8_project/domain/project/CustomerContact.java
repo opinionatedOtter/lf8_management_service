@@ -1,8 +1,10 @@
 package de.szut.lf8_project.domain.project;
 
-import lombok.Value;
+import de.szut.lf8_project.common.ValueType;
 
-@Value
-public class CustomerContact {
-    CustomerContactId customerContactId;
+public class CustomerContact extends ValueType<String> {
+
+    public CustomerContact(String generic) {
+        super(generic);
+    }
 }

@@ -22,7 +22,7 @@ public class ProjectData {
     String projectDescription;
     Long projectLeadId;
     Long customerId;
-    Long customerContactId;
+    String customerContact;
     LocalDate startDate;
     LocalDate plannedEndDate;
     LocalDate actualEndDate;

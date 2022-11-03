@@ -31,7 +31,7 @@ public class ProjectRepository {
                 .projectId(project.getProjectId().map(ValueType::unbox).orElse(null))
                 .projectName(project.getProjectName().unbox())
                 .projectLeadId(project.getProjectLead().getProjectLeadId().unbox())
-                .customerContactId(project.getCustomerContact().getCustomerContactId().unbox())
+                .customerContact(project.getCustomerContact().unbox())
                 .customerId(project.getCustomer().getCustomerId().unbox())
                 .projectDescription(project.getProjectDescription().map(ValueType::unbox).orElse(null))
                 .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
@@ -51,9 +51,8 @@ public class ProjectRepository {
                 .actualEndDate(Objects.isNull(projectData.actualEndDate) ? Optional.empty() : Optional.of(new ActualEndDate(projectData.actualEndDate)))
                 .customer(new Customer(new CustomerId(projectData.customerId)))
                 .projectLead(new ProjectLead(new ProjectLeadId(projectData.projectLeadId)))
-                .customerContact(new CustomerContact(new CustomerContactId(projectData.customerContactId)))
+                .customerContact(new CustomerContact(projectData.customerContact))
                 .teamMembers(Objects.isNull(projectData.teamMembers) ? Collections.emptySet() : projectData.teamMembers.stream().map(teamMemberMapper::mapTo).collect(Collectors.toSet()))
                 .build();
-
     }
 }
