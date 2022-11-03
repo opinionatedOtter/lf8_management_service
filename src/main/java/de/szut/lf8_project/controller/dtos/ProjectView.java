@@ -12,6 +12,7 @@ import de.szut.lf8_project.domain.project.TeamMember;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Builder
@@ -19,12 +20,12 @@ import java.util.Set;
 public class ProjectView {
     ProjectId projectId;
     ProjectName projectName;
-    ProjectDescription projectDescription;
+    Optional<ProjectDescription> projectDescription;
     ProjectLead projectLead;
     Customer customer;
-    StartDate startDate;
-    PlannedEndDate plannedEndDate;
-    ActualEndDate actualEndDate;
+    Optional<StartDate> startDate;
+    Optional<PlannedEndDate> plannedEndDate;
+    Optional<ActualEndDate> actualEndDate;
     Set<TeamMember> teamMember;
 }
 

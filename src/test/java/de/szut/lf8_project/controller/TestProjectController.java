@@ -63,13 +63,13 @@ public class TestProjectController {
         );
         ProjectView projectView = ProjectView.builder()
                 .projectId(new ProjectId(123L))
-                .projectDescription(new ProjectDescription("foobar at the beach"))
+                .projectDescription(Optional.of(new ProjectDescription("foobar at the beach")))
                 .projectLead(new ProjectLead(new ProjectLeadId(456L)))
                 .projectName(new ProjectName("foobar"))
                 .customer(new Customer(new CustomerId(789L)))
-                .actualEndDate(null)
-                .plannedEndDate(new PlannedEndDate(LocalDate.of(2022, 11, 15)))
-                .startDate(new StartDate(LocalDate.of(2022, 9, 23)))
+                .actualEndDate(Optional.empty())
+                .plannedEndDate(Optional.of(new PlannedEndDate(LocalDate.of(2022, 11, 15))))
+                .startDate(Optional.of(new StartDate(LocalDate.of(2022, 9, 23))))
                 .build();
         when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 

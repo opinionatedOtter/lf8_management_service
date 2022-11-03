@@ -98,15 +98,15 @@ public class ProjectApplicationService {
     }
 
     private ProjectView mapProjectToViewModel(Project project) {
+        ProjectId projectId = project.getProjectId().get();
         return ProjectView.builder()
-                // TODO - Optionals + Jackson?
-                .projectId(project.getProjectId().orElse(null))
+                .projectId(project.getProjectId().orElseThrow(() -> new RuntimeException("")))
                 .projectLead(project.getProjectLead())
-                .projectDescription(project.getProjectDescription().orElse(null))
+                .projectDescription(project.getProjectDescription())
                 .projectName(project.getProjectName())
-                .startDate(project.getStartDate().orElse(null))
-                .actualEndDate(project.getActualEndDate().orElse(null))
-                .plannedEndDate(project.getPlannedEndDate().orElse(null))
+                .startDate(project.getStartDate())
+                .actualEndDate(project.getActualEndDate())
+                .plannedEndDate(project.getPlannedEndDate())
                 .customer(project.getCustomer())
                 .teamMember(project.getTeamMembers())
                 .build();
