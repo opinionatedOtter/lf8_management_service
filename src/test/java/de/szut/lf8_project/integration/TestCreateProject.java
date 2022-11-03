@@ -28,12 +28,6 @@ public class TestCreateProject extends TestWithRealKeycloak {
                         "startDate": "2022-09-23"
                         }
                 """, newEmployee.unbox());
-        ResultActions result = mockMvc.perform(post("/api/v1/project")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header("Authorization", jwt.jwt())
-                .content(jsonBody)
-        );
-
         String expectedJsonContent = String.format("""
                     {
                     "projectId": 1,
@@ -47,10 +41,17 @@ public class TestCreateProject extends TestWithRealKeycloak {
                         "customerId": 789
                         }
                     }
-                """,newEmployee.unbox());
-        result.andExpect(content()
-                .json(expectedJsonContent)
-        ).andExpect(status().isCreated());
+                """, newEmployee.unbox());
+
+        ResultActions result = mockMvc.perform(post("/api/v1/project")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+                .content(jsonBody)
+        );
+
+        result
+                .andExpect(content().json(expectedJsonContent))
+                .andExpect(status().isCreated());
     }
 
 
