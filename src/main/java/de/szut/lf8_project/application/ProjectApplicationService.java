@@ -44,7 +44,7 @@ public class ProjectApplicationService {
 
         return mapProjectToViewModel(saveNewProject(Project.builder()
                 .projectId(Optional.empty())
-                .projectLead(new ProjectLead(new ProjectLeadId(projectLead.getProjectLeadId().unbox())))
+                .projectLead(new ProjectLead(projectLead.getProjectLeadId()))
                 .projectName(cmd.getProjectName())
                 .customer(new Customer(cmd.getCustomerId()))
                 .projectDescription(cmd.getProjectDescription())
@@ -106,6 +106,7 @@ public class ProjectApplicationService {
                 .actualEndDate(project.getActualEndDate())
                 .plannedEndDate(project.getPlannedEndDate())
                 .customer(project.getCustomer())
+                .customerContact(project.getCustomerContact())
                 .teamMember(project.getTeamMembers())
                 .build();
     }

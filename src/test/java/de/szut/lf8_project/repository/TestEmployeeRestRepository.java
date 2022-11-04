@@ -24,6 +24,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+@DisplayName("The EmployeeRestRepository should")
 public class TestEmployeeRestRepository {
 
     private final String baseUrl = "example.org";
@@ -42,7 +43,7 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("gets a employee by ID")
+    @DisplayName("get an employee by ID")
     public void getEmployee() throws RepositoryException {
         EmployeeRepoDto employeeDto = aDefaultEmployeeDto();
         Employee expectedEmployee = aDefaultEmployee();
@@ -55,7 +56,7 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws a exception with errorcode 401 if the jwt is invalid")
+    @DisplayName("throw an exception with errorcode 401 if the jwt is invalid")
     public void unauthorized() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
@@ -66,7 +67,7 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws a exception with errorcode 404 if no employee is known by the id")
+    @DisplayName("throw an exception with errorcode 404 if no employee is known by the id")
     public void employee404() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -77,7 +78,7 @@ public class TestEmployeeRestRepository {
     }
 
     @Test
-    @DisplayName("throws a exception with errorcode 500 if there is an unexpected error")
+    @DisplayName("throw an exception with errorcode 500 if there is an unexpected error")
     public void unexpectedError() {
         when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
