@@ -8,7 +8,7 @@ import lombok.NonNull;
 public class ApplicationServiceException extends RuntimeException{
 
     @NonNull
-    ErrorDetail errorDetail;
+    private ErrorDetail errorDetail;
 
     public ApplicationServiceException(@NonNull ErrorDetail errorDetail) {
         this.errorDetail = errorDetail;

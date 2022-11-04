@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -68,6 +69,8 @@ public class TestProjectController {
                 .actualEndDate(Optional.empty())
                 .plannedEndDate(Optional.of(new PlannedEndDate(LocalDate.of(2022, 11, 15))))
                 .startDate(Optional.of(new StartDate(LocalDate.of(2022, 9, 23))))
+                .customerContact(new CustomerContact("Testkontakt"))
+                .teamMember(Collections.emptySet())
                 .build();
         when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 

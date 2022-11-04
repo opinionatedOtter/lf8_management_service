@@ -4,7 +4,6 @@ import de.szut.lf8_project.common.*;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.CustomerService;
-import de.szut.lf8_project.domain.CustomerServiceException;
 import de.szut.lf8_project.domain.DateService;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import de.szut.lf8_project.domain.customer.Customer;
@@ -59,7 +58,7 @@ public class ProjectApplicationService {
     private void validateCustomer(CustomerId customerId) {
         try {
             customerService.validateCustomer(customerId);
-        } catch (CustomerServiceException e) {
+        } catch (ServiceException e) {
             throw new ApplicationServiceException(e.getErrorDetail());
         }
     }
