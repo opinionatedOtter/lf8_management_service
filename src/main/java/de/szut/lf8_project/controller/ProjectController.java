@@ -10,6 +10,7 @@ import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
+import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/project", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = MediaType.APPLICATION_JSON_VALUE)
-public class ProjectController {
+public class ProjectController implements OpenApiProjectController {
 
     private final ProjectApplicationService projectApplicationService;
 
@@ -31,7 +32,7 @@ public class ProjectController {
         this.projectApplicationService = projectApplicationService;
     }
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<ProjectView> createProject(
             @Valid @RequestBody CreateProjectCommand createProjectCommand,
             @RequestHeader("Authorization") String authHeader
