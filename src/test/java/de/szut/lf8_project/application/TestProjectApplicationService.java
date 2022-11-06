@@ -3,7 +3,7 @@ package de.szut.lf8_project.application;
 import de.szut.lf8_project.common.*;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.domain.CustomerService;
+import de.szut.lf8_project.domain.customer.CustomerService;
 import de.szut.lf8_project.domain.DateService;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import de.szut.lf8_project.domain.customer.Customer;

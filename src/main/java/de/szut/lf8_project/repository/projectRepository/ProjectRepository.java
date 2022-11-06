@@ -1,5 +1,8 @@
 package de.szut.lf8_project.repository.projectRepository;
 
+import de.szut.lf8_project.common.ErrorDetail;
+import de.szut.lf8_project.common.Errorcode;
+import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.ValueType;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
@@ -27,18 +30,22 @@ public class ProjectRepository {
     }
 
     public Project saveProject(Project project) throws RepositoryException {
-        return mapProjectDataToProject(projectDataRepository.save(ProjectData.builder()
-                .projectId(project.getProjectId().map(ValueType::unbox).orElse(null))
-                .projectName(project.getProjectName().unbox())
-                .projectLeadId(project.getProjectLead().getProjectLeadId().unbox())
-                .customerContact(project.getCustomerContact().unbox())
-                .customerId(project.getCustomer().getCustomerId().unbox())
-                .projectDescription(project.getProjectDescription().map(ValueType::unbox).orElse(null))
-                .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
-                .plannedEndDate(project.getPlannedEndDate().map(ValueType::unbox).orElse(null))
-                .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
-                .startDate(project.getStartDate().map(ValueType::unbox).orElse(null))
-                .build()));
+        try {
+            return mapProjectDataToProject(projectDataRepository.save(ProjectData.builder()
+                    .projectId(project.getProjectId().map(ValueType::unbox).orElse(null))
+                    .projectName(project.getProjectName().unbox())
+                    .projectLeadId(project.getProjectLead().getProjectLeadId().unbox())
+                    .customerContact(project.getCustomerContact().unbox())
+                    .customerId(project.getCustomer().getCustomerId().unbox())
+                    .projectDescription(project.getProjectDescription().map(ValueType::unbox).orElse(null))
+                    .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
+                    .plannedEndDate(project.getPlannedEndDate().map(ValueType::unbox).orElse(null))
+                    .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
+                    .startDate(project.getStartDate().map(ValueType::unbox).orElse(null))
+                    .build()));
+        } catch (Exception e) {
+            throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
+        }
     }
 
     private Project mapProjectDataToProject(ProjectData projectData) {

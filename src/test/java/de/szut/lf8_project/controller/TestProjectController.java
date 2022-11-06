@@ -11,7 +11,7 @@ import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.project.*;
-import de.szut.lf8_project.withAppContextContainerTest;
+import de.szut.lf8_project.WithAppContextContainerTest;
 import lombok.NonNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-public class TestProjectController extends withAppContextContainerTest {
+public class TestProjectController extends WithAppContextContainerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -59,7 +59,7 @@ public class TestProjectController extends withAppContextContainerTest {
     @DisplayName("accept valid json and return the created entity")
     public void acceptValidJsonHappyPath() throws Exception {
         CreateProjectCommand validProject = aDefaultCreateCommand().build();
-        ProjectView projectView = aDefaultProject().build();
+        ProjectView projectView = aDefaultProjectView().build();
         when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
@@ -131,7 +131,7 @@ public class TestProjectController extends withAppContextContainerTest {
         ).andExpect(status().is(errorDetail.getErrorCode().getHttpRepresentation().value()));
     }
 
-    private ProjectView.ProjectViewBuilder aDefaultProject() {
+    private ProjectView.ProjectViewBuilder aDefaultProjectView() {
         return ProjectView.builder()
                 .projectId(new ProjectId(projectId))
                 .projectDescription(Optional.of(new ProjectDescription(projectDescription)))

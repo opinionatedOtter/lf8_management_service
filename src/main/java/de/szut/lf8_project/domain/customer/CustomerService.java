@@ -1,4 +1,4 @@
-package de.szut.lf8_project.domain;
+package de.szut.lf8_project.domain.customer;
 
 import de.szut.lf8_project.common.ServiceException;
 import de.szut.lf8_project.domain.customer.CustomerId;
