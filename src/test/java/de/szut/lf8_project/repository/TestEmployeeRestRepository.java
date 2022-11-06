@@ -45,9 +45,9 @@ public class TestEmployeeRestRepository {
     @Test
     @DisplayName("get an employee by ID")
     public void getEmployee() throws RepositoryException {
-        EmployeeRepoDto employeeDto = aDefaultEmployeeDto();
+        EmployeeData employeeDto = aDefaultEmployeeDto();
         Employee expectedEmployee = aDefaultEmployee();
-        when(mockTemplate.exchange(baseUrl + employeeDto.getId(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + employeeDto.getId(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenReturn(new ResponseEntity<>(employeeDto, HttpStatus.OK));
 
         Employee employee = employeeRestRepository.getEmployeeById(jwt, new EmployeeId(employeeDto.getId()));
@@ -58,7 +58,7 @@ public class TestEmployeeRestRepository {
     @Test
     @DisplayName("throw an exception with errorcode 401 if the jwt is invalid")
     public void unauthorized() {
-        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
@@ -69,7 +69,7 @@ public class TestEmployeeRestRepository {
     @Test
     @DisplayName("throw an exception with errorcode 404 if no employee is known by the id")
     public void employee404() {
-        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
@@ -80,7 +80,7 @@ public class TestEmployeeRestRepository {
     @Test
     @DisplayName("throw an exception with errorcode 500 if there is an unexpected error")
     public void unexpectedError() {
-        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class))
+        when(mockTemplate.exchange(baseUrl + defaultId, HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         RepositoryException exception = assertThrows(RepositoryException.class, () -> employeeRestRepository.getEmployeeById(jwt, new EmployeeId(defaultId)));
@@ -88,8 +88,8 @@ public class TestEmployeeRestRepository {
         assertEquals(Errorcode.UNEXPECTED_ERROR, exception.getErrorDetail().getErrorCode());
     }
 
-    private EmployeeRepoDto aDefaultEmployeeDto() {
-        return EmployeeRepoDto.builder()
+    private EmployeeData aDefaultEmployeeDto() {
+        return EmployeeData.builder()
                 .id(defaultId)
                 .firstName("Tester")
                 .lastName("Mester")

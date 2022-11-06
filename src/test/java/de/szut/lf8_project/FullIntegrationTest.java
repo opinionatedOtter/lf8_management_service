@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.domain.employee.EmployeeId;
-import de.szut.lf8_project.repository.EmployeeRepoDto;
+import de.szut.lf8_project.repository.EmployeeData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,11 +94,11 @@ public class FullIntegrationTest extends WithAppContextContainerTest {
                   "skillSet": []
                 }
                 """, UUID.randomUUID());
-        EmployeeRepoDto rawEmployee = new RestTemplate()
+        EmployeeData rawEmployee = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
                         buildPostRequest(jsonBody),
-                        EmployeeRepoDto.class)
+                        EmployeeData.class)
                 .getBody();
 
         EmployeeId employeeId = new EmployeeId(rawEmployee.getId());

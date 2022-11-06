@@ -38,7 +38,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
         try {
             return dtoToEntity(
                     Objects.requireNonNull(
-                            restTemplate.exchange(baseUrl + employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeRepoDto.class).getBody()
+                            restTemplate.exchange(baseUrl + employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class).getBody()
                     ));
         } catch (HttpClientErrorException e) {
             if (e.getRawStatusCode() == 404)
@@ -52,7 +52,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
         }
     }
 
-    private Employee dtoToEntity(EmployeeRepoDto employeeDto) {
+    private Employee dtoToEntity(EmployeeData employeeDto) {
         return Employee.builder()
                 .id(new EmployeeId(employeeDto.getId()))
                 .lastName(new LastName(employeeDto.getLastName()))
