@@ -7,20 +7,22 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @Value
 @Builder
 @AllArgsConstructor
 public class CreateProjectCommand {
-    @NonNull
+    @NotNull
     ProjectName projectName;
-    @NonNull
+    @NotNull
     ProjectLeadId projectLeadId;
-    @NonNull
+    @NotNull
     CustomerId customerId;
-    @NonNull
+    @NotNull
     CustomerContact customerContact;
+
     @NonNull
     Optional<ProjectDescription> projectDescription;
     @NonNull

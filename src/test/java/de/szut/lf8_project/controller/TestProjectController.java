@@ -1,5 +1,6 @@
 package de.szut.lf8_project.controller;
 
+import de.szut.lf8_project.WithAppContextContainerTest;
 import de.szut.lf8_project.application.ApplicationServiceException;
 import de.szut.lf8_project.application.ProjectApplicationService;
 import de.szut.lf8_project.common.ErrorDetail;
@@ -11,7 +12,6 @@ import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.project.*;
-import de.szut.lf8_project.WithAppContextContainerTest;
 import lombok.NonNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,20 +40,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class TestProjectController extends WithAppContextContainerTest {
 
+    private final JWT dummyJwt = new JWT("Bearer fake.fake.fake");
+    private final String projectName = "foobar";
+    private final String customerContact = "Testkontakt";
+    private final String projectDescription = "foobar at the beach";
+    private final LocalDate startDate = LocalDate.of(2022, 9, 23);
+    private final LocalDate plannedEndDate = LocalDate.of(2022, 11, 15);
+    private final Long projectleadId = 456L;
+    private final Long customerId = 789L;
+    private final Long projectId = 123L;
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     private ProjectApplicationService projectApplicationService;
-
-    private JWT dummyJwt = new JWT("Bearer fake.fake.fake");
-    private String projectName = "foobar";
-    private String customerContact = "Testkontakt";
-    private String projectDescription = "foobar at the beach";
-    private LocalDate startDate = LocalDate.of(2022, 9, 23);
-    private LocalDate plannedEndDate = LocalDate.of(2022, 11, 15);
-    private Long projectleadId = 456L;
-    private Long customerId = 789L;
-    private Long projectId = 123L;
 
     @Test
     @DisplayName("accept valid json and return the created entity")
