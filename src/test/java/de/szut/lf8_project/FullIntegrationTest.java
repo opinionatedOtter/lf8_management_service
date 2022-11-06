@@ -1,4 +1,4 @@
-package de.szut.lf8_project.integration;
+package de.szut.lf8_project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,48 +10,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
-@Testcontainers
 @AutoConfigureMockMvc
 @SpringBootTest
-@ContextConfiguration(initializers = {IntegrationTestSetup.Initializer.class})
-public class IntegrationTestSetup {
+public class FullIntegrationTest extends withAppContextContainerTest {
 
-    @Autowired
-    protected MockMvc mockMvc;
-
-    @Container
-    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:13.3");
-
-    @Autowired
-    private Environment env;
     protected static JWT jwt;
     private static boolean setUpIsDone = false;
     private final List<Object> objectsToBeClearedAfterTest = new ArrayList<>();
+    @Autowired
+    protected MockMvc mockMvc;
+    @Autowired
+    private Environment env;
 
     @BeforeEach
     public void setUpJwt() throws JsonProcessingException {
@@ -63,7 +42,7 @@ public class IntegrationTestSetup {
     @AfterEach
     public void clearObjects() {
         objectsToBeClearedAfterTest.forEach(thing -> {
-            if(thing instanceof EmployeeId) {
+            if (thing instanceof EmployeeId) {
                 deleteEmployeeInRemoteRepository((EmployeeId) thing);
             }
         });
@@ -79,17 +58,6 @@ public class IntegrationTestSetup {
         );
 
         new RestTemplate().exchange(requestEntity, String.class);
-    }
-
-    static class Initializer
-            implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues.of(
-                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
-                    "spring.datasource.username=" + postgreSQLContainer.getUsername(),
-                    "spring.datasource.password=" + postgreSQLContainer.getPassword()
-            ).applyTo(configurableApplicationContext.getEnvironment());
-        }
     }
 
     private JWT getFreshJwt() throws JsonProcessingException {
@@ -148,5 +116,4 @@ public class IntegrationTestSetup {
 
         return new HttpEntity<>(jsonBody, headers);
     }
-
 }

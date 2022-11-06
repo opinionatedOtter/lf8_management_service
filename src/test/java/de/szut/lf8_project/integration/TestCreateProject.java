@@ -1,5 +1,6 @@
 package de.szut.lf8_project.integration;
 
+import de.szut.lf8_project.FullIntegrationTest;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Der Create Project Rest-Endpunkt")
-public class TestCreateProject extends IntegrationTestSetup {
+public class TestCreateProject extends FullIntegrationTest {
 
 
     @Test
@@ -61,15 +62,15 @@ public class TestCreateProject extends IntegrationTestSetup {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
                 .content("""
-                 {
-                        "projectName": "foobar",
-                        "projectLeadId": 9999999999,
-                        "customerId": 789,
-                        "customerContact": "Testkontakt",
-                        "projectDescription": "foobar at the beach",
-                        "startDate": "2022-09-23"
-                        }
-                """)
+                         {
+                                "projectName": "foobar",
+                                "projectLeadId": 9999999999,
+                                "customerId": 789,
+                                "customerContact": "Testkontakt",
+                                "projectDescription": "foobar at the beach",
+                                "startDate": "2022-09-23"
+                                }
+                        """)
         );
 
         result.andExpect(status().isNotFound());
@@ -82,18 +83,57 @@ public class TestCreateProject extends IntegrationTestSetup {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", "invalidjwt")
                 .content("""
-                 {
-                        "projectName": "foobar",
-                        "projectLeadId": 2,
-                        "customerId": 789,
-                        "customerContact": "Testkontakt",
-                        "projectDescription": "foobar at the beach",
-                        "startDate": "2022-09-23"
-                        }
-                """)
+                         {
+                                "projectName": "foobar",
+                                "projectLeadId": 2,
+                                "customerId": 789,
+                                "customerContact": "Testkontakt",
+                                "projectDescription": "foobar at the beach",
+                                "startDate": "2022-09-23"
+                                }
+                        """)
         );
 
         result.andExpect(status().is(401));
+    }
+
+    @Test
+    @DisplayName("einen 400 Fehler werfen wenn die Request invalide Parameter enhält")
+    void invalidParameBadRequest() throws Exception {
+        ResultActions result = mockMvc.perform(post("/api/v1/project")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+                .content("""
+                         {
+                                "projectName": "foobar",
+                                "projectLeadId": notAnId,
+                                "customerId": 789,
+                                "customerContact": "Testkontakt",
+                                "projectDescription": "foobar at the beach",
+                                "startDate": "2022-09-23"
+                                }
+                        """)
+        );
+
+        result.andExpect(status().is(400));
+    }
+
+    @Test
+    @DisplayName("einen 400 Fehler werfen wenn die Request nicht vollständig ist")
+    void missingParamBadRequest() throws Exception {
+        ResultActions result = mockMvc.perform(post("/api/v1/project")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+                .content("""
+                         {
+                                "projectName": "foobar",
+                                "projectLeadId": notAnId,
+                                "customerId": 789
+                                }
+                        """)
+        );
+
+        result.andExpect(status().is(400));
     }
 
 

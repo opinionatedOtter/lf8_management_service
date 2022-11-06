@@ -1,19 +1,18 @@
 package de.szut.lf8_project.controller;
 
+import de.szut.lf8_project.application.ApplicationServiceException;
 import de.szut.lf8_project.application.ProjectApplicationService;
+import de.szut.lf8_project.common.ErrorDetail;
+import de.szut.lf8_project.common.Errorcode;
+import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
-import de.szut.lf8_project.domain.project.CustomerContact;
-import de.szut.lf8_project.domain.project.PlannedEndDate;
-import de.szut.lf8_project.domain.project.ProjectDescription;
-import de.szut.lf8_project.domain.project.ProjectId;
-import de.szut.lf8_project.domain.project.ProjectLead;
-import de.szut.lf8_project.domain.project.ProjectLeadId;
-import de.szut.lf8_project.domain.project.ProjectName;
-import de.szut.lf8_project.domain.project.StartDate;
+import de.szut.lf8_project.domain.project.*;
+import de.szut.lf8_project.withAppContextContainerTest;
+import lombok.NonNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-public class TestProjectController {
+public class TestProjectController extends withAppContextContainerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,65 +46,114 @@ public class TestProjectController {
     private ProjectApplicationService projectApplicationService;
 
     private JWT dummyJwt = new JWT("Bearer fake.fake.fake");
+    private String projectName = "foobar";
+    private String customerContact = "Testkontakt";
+    private String projectDescription = "foobar at the beach";
+    private LocalDate startDate = LocalDate.of(2022, 9, 23);
+    private LocalDate plannedEndDate = LocalDate.of(2022, 11, 15);
+    private Long projectleadId = 456L;
+    private Long customerId = 789L;
+    private Long projectId = 123L;
 
     @Test
     @DisplayName("accept valid json and return the created entity")
     public void acceptValidJsonHappyPath() throws Exception {
-        CreateProjectCommand validProject = new CreateProjectCommand(
-                new ProjectName("foobar"),
-                new ProjectLeadId(456L),
-                new CustomerId(789L),
-                new CustomerContact("Testkontakt"),
-                Optional.of(new ProjectDescription("foobar at the beach")),
-                Optional.of(new StartDate(LocalDate.of(2022, 9, 23))),
-                Optional.empty()
-        );
-        ProjectView projectView = ProjectView.builder()
-                .projectId(new ProjectId(123L))
-                .projectDescription(Optional.of(new ProjectDescription("foobar at the beach")))
-                .projectLead(new ProjectLead(new ProjectLeadId(456L)))
-                .projectName(new ProjectName("foobar"))
-                .customer(new Customer(new CustomerId(789L)))
-                .actualEndDate(Optional.empty())
-                .plannedEndDate(Optional.of(new PlannedEndDate(LocalDate.of(2022, 11, 15))))
-                .startDate(Optional.of(new StartDate(LocalDate.of(2022, 9, 23))))
-                .customerContact(new CustomerContact("Testkontakt"))
-                .teamMember(Collections.emptySet())
-                .build();
+        CreateProjectCommand validProject = aDefaultCreateCommand().build();
+        ProjectView projectView = aDefaultProject().build();
         when(projectApplicationService.createProject(validProject, dummyJwt)).thenReturn(projectView);
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", dummyJwt.jwt())
-                .content("""
+                .content(String.format("""
                         {
-                        "projectName": "foobar",
-                        "projectLeadId": 456,
-                        "customerId": 789,
-                        "customerContact": "Testkontakt",
-                        "projectDescription": "foobar at the beach",
-                        "startDate": "2022-09-23"
+                        "projectName": "%s",
+                        "projectLeadId": %d,
+                        "customerId": %d,
+                        "customerContact": "%s",
+                        "projectDescription": "%s",
+                        "startDate": "%s",
+                        "plannedEndDate": "%s"
                         }
-                        """)
+                        """, projectName, projectleadId, customerId, customerContact, projectDescription, startDate, plannedEndDate))
         );
 
         result.andExpect(content()
-                .json("""
+                .json(String.format("""
                             {
-                            "projectId": 123,
-                            "projectName": "foobar",
-                            "projectDescription": "foobar at the beach",
-                            "startDate": "2022-09-23",
+                            "projectId": %d,
+                            "projectName": "%s",
+                            "projectDescription": "%s",
+                            "startDate": "%s",
+                            "plannedEndDate": "%s",
                              "projectLead": {
-                                "projectLeadId": 456
+                                "projectLeadId": %d
                             },
                             "customer" : {
-                                "customerId": 789
+                                "customerId": %d
                                 }
                             }
-                        """)
+                        """, projectId, projectName, projectDescription, startDate, plannedEndDate, projectleadId, customerId))
         ).andExpect(status().isCreated());
+    }
 
+    @Test
+    @DisplayName("respond with Problem Detail when an error occurs")
+    public void errorResponse() throws Exception {
+        CreateProjectCommand validProject = aDefaultCreateCommand().build();
+        ErrorDetail errorDetail = new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("sucks for you lol"));
+        when(projectApplicationService.createProject(validProject, dummyJwt)).thenThrow(new ApplicationServiceException(errorDetail));
 
+        ResultActions result = mockMvc.perform(post("/api/v1/project")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", dummyJwt.jwt())
+                .content(String.format("""
+                        {
+                        "projectName": "%s",
+                        "projectLeadId": %d,
+                        "customerId": %d,
+                        "customerContact": "%s",
+                        "projectDescription": "%s",
+                        "startDate": "%s",
+                        "plannedEndDate": "%s"
+                        }
+                        """, projectName, projectleadId, customerId, customerContact, projectDescription, startDate, plannedEndDate))
+        );
+
+        result.andExpect(content()
+                .json(String.format("""
+                        {
+                        "title": "%s",
+                        "detail": "%s",
+                        "status": "%d"
+                        }
+                        """, errorDetail.getErrorCode(), errorDetail.getFailureMessage(), errorDetail.getErrorCode().getHttpRepresentation().value()))
+        ).andExpect(status().is(errorDetail.getErrorCode().getHttpRepresentation().value()));
+    }
+
+    private ProjectView.ProjectViewBuilder aDefaultProject() {
+        return ProjectView.builder()
+                .projectId(new ProjectId(projectId))
+                .projectDescription(Optional.of(new ProjectDescription(projectDescription)))
+                .projectLead(new ProjectLead(new ProjectLeadId(projectleadId)))
+                .projectName(new ProjectName(projectName))
+                .customer(new Customer(new CustomerId(customerId)))
+                .actualEndDate(Optional.empty())
+                .plannedEndDate(Optional.of(new PlannedEndDate(plannedEndDate)))
+                .startDate(Optional.of(new StartDate(startDate)))
+                .customerContact(new CustomerContact(customerContact))
+                .teamMember(Collections.emptySet());
+    }
+
+    @NonNull
+    private CreateProjectCommand.CreateProjectCommandBuilder aDefaultCreateCommand() {
+        return CreateProjectCommand.builder()
+                .projectName(new ProjectName(projectName))
+                .projectLeadId(new ProjectLeadId(projectleadId))
+                .customerId(new CustomerId(customerId))
+                .customerContact(new CustomerContact(customerContact))
+                .projectDescription(Optional.of(new ProjectDescription(projectDescription)))
+                .startDate(Optional.of(new StartDate(startDate)))
+                .plannedEndDate(Optional.of(new PlannedEndDate(plannedEndDate)));
     }
 }
