@@ -29,7 +29,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 @DisplayName("The EmployeeRestRepository should")
 public class TestProjectRepository extends WithAppContextContainerTest {
 
-    private final ProjectId projectId = new ProjectId(1l);
+    private final ProjectId projectId = new ProjectId(1L);
     private final ProjectName projectName = new ProjectName("Projekty");
     private final ProjectLead projectLead = new ProjectLead(new ProjectLeadId(2L));
     private final Customer customer = new Customer(new CustomerId(1L));
@@ -57,7 +57,7 @@ public class TestProjectRepository extends WithAppContextContainerTest {
 
     @Test
     @DisplayName("throw an exception if the project could not be saved")
-    public void saveProjectException() throws RepositoryException {
+    public void saveProjectException() {
         Project project = aDefaultProject().build();
         ErrorDetail expected = new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred"));
         ProjectDataRepository mockRepo = Mockito.mock(ProjectDataRepository.class);
