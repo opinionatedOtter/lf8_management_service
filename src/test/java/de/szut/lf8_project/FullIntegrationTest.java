@@ -22,7 +22,7 @@ import java.util.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest
-public class FullIntegrationTest extends WithAppContextContainerTest {
+public abstract class FullIntegrationTest extends WithAppContextContainerTest {
 
     protected static JWT jwt;
     private static boolean setUpIsDone = false;

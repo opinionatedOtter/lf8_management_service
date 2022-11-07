@@ -14,7 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @SpringBootTest
 @ContextConfiguration(initializers = {WithAppContextContainerTest.Initializer.class})
-public class WithAppContextContainerTest {
+public abstract class WithAppContextContainerTest {
 
     @Container
     public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:13.3");
