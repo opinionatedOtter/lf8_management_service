@@ -13,7 +13,7 @@ public class ProjectService {
     }
 
     private void checkTeamMemberAvailability(Project project, Employee employee) {
-
+throw new NotYetImplementedException();
     }
 
     private void checkTeamMemberQualification(Project project, Employee employee) {
