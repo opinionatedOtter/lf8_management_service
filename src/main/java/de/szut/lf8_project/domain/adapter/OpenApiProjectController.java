@@ -40,6 +40,10 @@ public interface OpenApiProjectController {
                     description = "Please provide a valid bearer token",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
             @ApiResponse(responseCode = "503",
                     description = "The service is currently unavailable",
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
