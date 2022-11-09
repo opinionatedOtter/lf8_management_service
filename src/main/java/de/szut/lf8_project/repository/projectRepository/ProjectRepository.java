@@ -10,7 +10,6 @@ import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.TeamMemberMapper;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
