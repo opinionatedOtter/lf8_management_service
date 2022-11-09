@@ -6,10 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @Disabled
 @SpringBootTest
-class Lf8ProjectApplicationTests {
+class Lf8ProjectApplicationTests extends WithAppContextContainerTest {
 
     @Test
-    // Dieser Test funktioniert (natürlich) nicht in der Pipeline, weil er eine lokale DB vorraussetzt
     void contextLoads() {
     }
 
