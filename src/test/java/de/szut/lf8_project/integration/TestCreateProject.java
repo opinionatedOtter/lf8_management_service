@@ -94,7 +94,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
     @Test
     @DisplayName("einen 400 Fehler werfen wenn die Request invalide Parameter enhält")
-    void invalidParameBadRequest() throws Exception {
+    void invalidParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
@@ -115,7 +115,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
     @Test
     @DisplayName("einen 400 Fehler werfen wenn die Request nicht vollständig ist")
-    void missingParamBadRequest() throws Exception {
+    void missingParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
