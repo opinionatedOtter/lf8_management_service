@@ -3,11 +3,12 @@ package de.szut.lf8_project.application;
 import de.szut.lf8_project.common.*;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.domain.customer.CustomerService;
+import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
 import de.szut.lf8_project.domain.DateService;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
+import de.szut.lf8_project.domain.customer.CustomerService;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.*;
@@ -55,6 +56,51 @@ public class ProjectApplicationService {
         ));
     }
 
+    public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt) {
+        // gibt es das projekt
+        Project projectToUpdate = getProject(projectId);
+        // date valid - refactor mit optionals?
+        validateDateCombinations(cmd, projectToUpdate);
+
+        // customer valid
+        cmd.getCustomerId().ifPresent(this::validateCustomer);
+        // lead valid
+        ProjectLead projectLead = cmd.getProjectLeadId().map(id -> getProjectLead(id, jwt)).orElse(projectToUpdate.getProjectLead());
+        // remove with time conflicts optional force flag?
+
+        // smarter machbar? nicht doppelt if present checken
+        return mapProjectToViewModel(saveNewProject(Project.builder()
+                .projectId(projectToUpdate.getProjectId())
+                .projectLead(projectLead)
+                .projectName(cmd.getProjectName().orElse(projectToUpdate.getProjectName()))
+                .customerContact(cmd.getCustomerContact().orElse(projectToUpdate.getCustomerContact()))
+                .customer(cmd.getCustomerId().map(Customer::new).orElse(projectToUpdate.getCustomer()))
+                .projectDescription(cmd.getProjectDescription().isPresent() ? cmd.getProjectDescription() : projectToUpdate.getProjectDescription())
+                .actualEndDate(cmd.getActualEndDate().isPresent() ? cmd.getActualEndDate() : projectToUpdate.getActualEndDate())
+                .plannedEndDate(cmd.getPlannedEndDate().isPresent() ? cmd.getPlannedEndDate() : projectToUpdate.getPlannedEndDate())
+                .startDate(cmd.getStartDate().isPresent() ? cmd.getStartDate() : projectToUpdate.getStartDate())
+                .build()
+        ));
+    }
+
+    private void validateDateCombinations(UpdateProjectCommand cmd, Project projectToUpdate) {
+        validateProjectStartAndEnd(cmd.getStartDate(), cmd.getPlannedEndDate());
+        validateProjectStartAndEnd(cmd.getStartDate(), projectToUpdate.getPlannedEndDate());
+        validateProjectStartAndEnd(projectToUpdate.getStartDate(), cmd.getPlannedEndDate());
+
+        validateProjectStartAndActualEnd(cmd.getStartDate(), cmd.getActualEndDate());
+        validateProjectStartAndActualEnd(projectToUpdate.getStartDate(), cmd.getActualEndDate());
+        validateProjectStartAndActualEnd(cmd.getStartDate(), projectToUpdate.getActualEndDate());
+    }
+
+    private Project getProject(ProjectId projectId) {
+        try {
+            return projectRepository.getProjectById(projectId);
+        } catch (RepositoryException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
+    }
+
     private void validateCustomer(CustomerId customerId) {
         try {
             customerService.validateCustomer(customerId);
@@ -81,6 +127,18 @@ public class ProjectApplicationService {
 
     private ProjectLead getProjectLead(ProjectLeadId projectLeadId, JWT jwt) {
         return new ProjectLead(new ProjectLeadId(getEmployee(projectLeadId, jwt).getId().unbox()));
+    }
+
+    private void validateProjectStartAndActualEnd(Optional<StartDate> start, Optional<ActualEndDate> end) {
+        if (start.isPresent() && end.isPresent()) {
+            try {
+                dateService.validateProjectStartAndActualEnd(
+                        start.get(),
+                        end.get());
+            } catch (ServiceException e) {
+                throw new ApplicationServiceException(e.getErrorDetail());
+            }
+        }
     }
 
     private void validateProjectStartAndEnd(Optional<StartDate> start, Optional<PlannedEndDate> end) {

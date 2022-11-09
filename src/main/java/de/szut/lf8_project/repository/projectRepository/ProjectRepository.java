@@ -48,6 +48,11 @@ public class ProjectRepository {
         }
     }
 
+    public Project getProjectById(ProjectId projectId) throws RepositoryException {
+        return mapProjectDataToProject(projectDataRepository.findById(projectId.unbox())
+                .orElseThrow(() -> new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("A project with this id does not exist")))));
+    }
+
     private Project mapProjectDataToProject(ProjectData projectData) {
         return Project.builder()
                 .projectId(Optional.of(new ProjectId(projectData.projectId)))

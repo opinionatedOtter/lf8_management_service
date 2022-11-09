@@ -10,7 +10,9 @@ import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
+import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
+import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,15 @@ public class ProjectController implements OpenApiProjectController {
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{projectId}")
+    public ResponseEntity<ProjectView> updateProject(
+            @PathVariable Long projectId,
+            @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        return new ResponseEntity<>(projectApplicationService.updateProject(updateProjectCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
     }
 
 
