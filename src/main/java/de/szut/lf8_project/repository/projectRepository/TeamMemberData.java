@@ -13,13 +13,11 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "teamMember")
+@Table(name = "team_member")
 public class TeamMemberData {
 
     @Id
     private Long employeeId;
     private String role;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private ProjectData projectData;
 
 }
