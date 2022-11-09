@@ -112,6 +112,10 @@ public class ProjectApplicationService {
     }
 
     public ProjectView getProjectByID(ProjectId id) {
-        throw new NotImplementedException();
+        try {
+            return mapProjectToViewModel(projectRepository.getProjectById(id));
+        } catch (RepositoryException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 }

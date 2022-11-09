@@ -30,8 +30,12 @@ public class ProjectRepository {
         this.teamMemberMapper = teamMemberMapper;
     }
 
-    public Project getProjectById(ProjectId id) {
-        throw new NotImplementedException();
+    public Project getProjectById(ProjectId id) throws RepositoryException {
+        Optional<ProjectData> projectData = projectDataRepository.findById(id.unbox());
+        return mapProjectDataToProject(projectData
+                .orElseThrow(() -> new RepositoryException(
+                        new ErrorDetail(Errorcode.ENTITY_NOT_FOUND, new FailureMessage(String.format("Project Id %d not found", id.unbox())))
+                )));
     }
 
     public Project saveProject(Project project) throws RepositoryException {
