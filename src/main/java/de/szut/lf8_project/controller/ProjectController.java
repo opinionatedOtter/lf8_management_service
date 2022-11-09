@@ -12,14 +12,20 @@ import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
 import de.szut.lf8_project.domain.project.ProjectId;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
@@ -46,9 +52,9 @@ public class ProjectController implements OpenApiProjectController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProjectView> getProjectById(
-            @Valid @PathVariable ProjectId id
+            @Valid @PathVariable Long id
     ) {
-        return new ResponseEntity<>(projectApplicationService.getProjectByID(id), HttpStatus.OK);
+        return new ResponseEntity<>(projectApplicationService.getProjectByID(new ProjectId(id)), HttpStatus.OK);
     }
 
     @ExceptionHandler

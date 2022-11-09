@@ -88,6 +88,6 @@ public interface OpenApiProjectController {
             )
     })
     ResponseEntity<ProjectView> getProjectById(
-            @Valid @PathVariable ProjectId id
+            @Valid @PathVariable Long id
     );
 }
