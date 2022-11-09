@@ -30,14 +30,6 @@ public abstract class WithAppContextContainerTest {
                     "spring.datasource.username=" + postgreSQLContainer.getUsername(),
                     "spring.datasource.password=" + postgreSQLContainer.getPassword()
             ).applyTo(configurableApplicationContext.getEnvironment());
-
-            PGSimpleDataSource pgSimpleDataSource = new PGSimpleDataSource();
-            pgSimpleDataSource.setUrl(postgreSQLContainer.getJdbcUrl());
-            pgSimpleDataSource.setPassword(postgreSQLContainer.getPassword());
-            pgSimpleDataSource.setUser(postgreSQLContainer.getUsername());
-            pgSimpleDataSource.setCurrentSchema("public");
-
-            jdbcTemplate = new JdbcTemplate(pgSimpleDataSource);
         }
     }
 }
