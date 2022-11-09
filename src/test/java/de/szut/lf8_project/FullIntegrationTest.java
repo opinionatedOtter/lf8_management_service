@@ -3,8 +3,14 @@ package de.szut.lf8_project;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.szut.lf8_project.common.JWT;
+import de.szut.lf8_project.domain.customer.Customer;
+import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.employee.EmployeeId;
+import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.EmployeeData;
+import de.szut.lf8_project.repository.RepositoryException;
+import de.szut.lf8_project.repository.projectRepository.ProjectDataRepository;
+import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +24,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.*;
 
 @AutoConfigureMockMvc
@@ -31,6 +38,8 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     protected MockMvc mockMvc;
     @Autowired
     private Environment env;
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @BeforeEach
     public void setUpJwt() throws JsonProcessingException {
@@ -106,6 +115,24 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
 
 
         return employeeId;
+    }
+
+    protected Project createProjectInDatabase() throws RepositoryException {
+        ProjectLead projectLead = new ProjectLead( new ProjectLeadId(createEmployeeInRemoteRepository().unbox()));
+        Project project = Project.builder()
+                .projectId( Optional.empty())
+                .projectName( new ProjectName("Name"))
+                .projectDescription( Optional.of(new ProjectDescription("Beschreibung")))
+                .projectLead( projectLead)
+                .customer(new Customer(new CustomerId(16L)))
+                .customerContact( new CustomerContact("Franz-Ferdinand Falke"))
+                .startDate( Optional.of(new StartDate( LocalDate.of(2022, 1, 20))))
+                .plannedEndDate( Optional.of(new PlannedEndDate( LocalDate.of(2022, 4, 24))))
+                .actualEndDate( Optional.of(new ActualEndDate( LocalDate.of(2022, 6, 26))))
+                .teamMembers(Collections.emptySet())
+                .build();
+
+        return projectRepository.saveProject(project);
     }
 
     private HttpEntity<String> buildPostRequest(String jsonBody) {

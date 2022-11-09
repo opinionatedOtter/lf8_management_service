@@ -11,6 +11,8 @@ import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
+import de.szut.lf8_project.domain.project.ProjectId;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +44,12 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProjectView> getProjectById(
+            @Valid @PathVariable ProjectId id
+    ) {
+        return new ResponseEntity<>(projectApplicationService.getProjectByID(id), HttpStatus.OK);
+    }
 
     @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {

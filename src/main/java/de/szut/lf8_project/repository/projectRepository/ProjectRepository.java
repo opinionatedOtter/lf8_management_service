@@ -9,6 +9,7 @@ import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.TeamMemberMapper;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
@@ -27,6 +28,10 @@ public class ProjectRepository {
     ) {
         this.projectDataRepository = projectDataRepository;
         this.teamMemberMapper = teamMemberMapper;
+    }
+
+    public Project getProjectById(ProjectId id) {
+        throw new NotImplementedException();
     }
 
     public Project saveProject(Project project) throws RepositoryException {
