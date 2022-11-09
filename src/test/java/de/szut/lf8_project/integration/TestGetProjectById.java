@@ -43,7 +43,7 @@ public class TestGetProjectById extends FullIntegrationTest {
     @Test
     @DisplayName("sollte kein Projekt finden")
     void notFound() throws Exception {
-        ResultActions result = mockMvc.perform(get("/api/v1/project/1")
+        ResultActions result = mockMvc.perform(get("/api/v1/project/99999999")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
         );
