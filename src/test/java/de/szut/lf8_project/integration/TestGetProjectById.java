@@ -50,4 +50,25 @@ public class TestGetProjectById extends FullIntegrationTest {
 
         result.andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("sollte unparsbare Anfragen abblocken")
+    void badRequest() throws Exception {
+        ResultActions result = mockMvc.perform(get("/api/v1/project/xyz")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+        );
+
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("sollte unauthentifizierte Anfragen abblocken")
+    void notAuthorized() throws Exception {
+        ResultActions result = mockMvc.perform(get("/api/v1/project/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        result.andExpect(status().is(401));
+    }
 }
