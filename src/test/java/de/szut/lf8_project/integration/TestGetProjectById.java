@@ -38,4 +38,16 @@ public class TestGetProjectById extends FullIntegrationTest {
                 .andExpect(jsonPath("$.actualEndDate").value(project.getActualEndDate().get().unbox().toString()))
                 .andExpect(jsonPath("$.teamMember").isEmpty());
     }
+
+
+    @Test
+    @DisplayName("sollte kein Projekt finden")
+    void notFound() throws Exception {
+        ResultActions result = mockMvc.perform(get("/api/v1/project/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+        );
+
+        result.andExpect(status().isNotFound());
+    }
 }
