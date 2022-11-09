@@ -1,19 +1,12 @@
 package de.szut.lf8_project.repository;
 
-import de.szut.lf8_project.common.Statuscode;
-import lombok.Getter;
+import de.szut.lf8_project.common.DetailedException;
+import de.szut.lf8_project.common.ErrorDetail;
+import lombok.NonNull;
 
+public class RepositoryException extends DetailedException {
 
-public class RepositoryException extends Exception {
-
-    @Getter
-    private Statuscode statuscode;
-
-    public RepositoryException(String msg) {
-        super(msg);
-    }
-
-    public RepositoryException(Statuscode code) {
-        this.statuscode = code;
+    public RepositoryException(@NonNull ErrorDetail errorDetail) {
+        super(errorDetail);
     }
 }

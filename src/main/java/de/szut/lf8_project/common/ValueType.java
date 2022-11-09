@@ -1,12 +1,15 @@
 package de.szut.lf8_project.common;
 
+import lombok.NonNull;
+
 import java.util.Objects;
 
 public abstract class ValueType<T> {
 
+    @NonNull
     private final T innerValue;
 
-    public ValueType(T generic) {
+    public ValueType(@NonNull T generic) {
         this.innerValue = generic;
     }
 
