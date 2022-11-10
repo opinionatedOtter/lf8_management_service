@@ -8,10 +8,11 @@ import de.szut.lf8_project.domain.project.TeamMember;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,29 +24,28 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
     @Test
     @DisplayName("sollte einen vorhandenen Mitarbeiter erfolgreich hinzufügen")
     void shouldAdd() throws Exception {
-        Project project = stuff(); // TODO: MS-16
-        EmployeeId employeeId = createEmployeeInRemoteRepository();
+        Project project = createProjectInDatabase();
+        ProjectRole role = createQualificationInRemoteRepository();
+        EmployeeId employeeId = createEmployeeWithSkillInRemoteRepository(role);
         String jsonRequestBody = String.format("""
                 {
                 "employeeId" : %d,
-                "projectRoles" : "Developer"
+                "projectRoles" : "%s"
                 }
-                """, employeeId.unbox());
+                """, employeeId.unbox(), role.unbox());
 
         ResultActions result = mockMvc.perform(
-                post("/api/v1/project/"+ project.getProjectId().get().unbox() + "/addEmployee/")
+                post("/api/v1/project/"+ project.getProjectId().get().unbox())
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequestBody)
                         .header("Authorization", jwt.jwt())
         );
 
         result
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.teamMember", contains(
-                        new TeamMember(
-                                employeeId,
-                                new ProjectRole("Developer")
-                        )
-                )));
+
+                .andExpect(jsonPath("$.teamMember[0].employeeId", is(employeeId.unbox().intValue())))
+                .andExpect(jsonPath("$.teamMember[0].projectRole", is(role.unbox())))
+                .andExpect(status().isCreated());
     }
 
     @Nested
@@ -66,8 +66,26 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
 
         @Test
         @DisplayName("die Rolle im Projekt nicht gefragt ist")
-        void wrongRole() {
-            fail();
+        void wrongRole() throws Exception {
+            Project project = createProjectInDatabase();
+            EmployeeId employeeIdOhneSkill = createEmployeeInRemoteRepository();
+            ProjectRole role = createQualificationInRemoteRepository();
+            String jsonRequestBody = String.format("""
+                {
+                "employeeId" : %d,
+                "projectRoles" : "%s"
+                }
+                """, employeeIdOhneSkill.unbox(), role.unbox());
+
+            ResultActions result = mockMvc.perform(
+                    post("/api/v1/project/"+ project.getProjectId().get().unbox())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonRequestBody)
+                            .header("Authorization", jwt.jwt())
+            );
+
+            result
+                    .andExpect(status().isBadRequest());
         }
 
         @Test

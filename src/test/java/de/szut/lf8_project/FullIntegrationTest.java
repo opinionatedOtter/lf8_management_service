@@ -10,7 +10,6 @@ import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.EmployeeData;
 import de.szut.lf8_project.repository.RepositoryException;
-import de.szut.lf8_project.repository.projectRepository.ProjectDataRepository;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,7 +30,13 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -56,6 +66,26 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 deleteEmployeeInRemoteRepository((EmployeeId) thing);
             }
         });
+
+        objectsToBeClearedAfterTest.forEach(thing -> {
+            if(thing instanceof TransferProjectRole) {
+                deleteQualificationInRemoteRepository((TransferProjectRole) thing);
+            }
+        });
+    }
+
+    private void deleteQualificationInRemoteRepository(final TransferProjectRole role) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", jwt.jwt());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        RequestEntity<String> requestEntity = new RequestEntity<>(
+                "{\"skill\":\"" + role.skill + "\"}",
+                headers,
+                HttpMethod.DELETE,
+                URI.create(env.getProperty("qualificationsapi.baseUrl"))
+        );
+
+        new RestTemplate().exchange(requestEntity, String.class);
     }
 
     private void deleteEmployeeInRemoteRepository(final EmployeeId employeeId) {
@@ -116,6 +146,50 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
 
 
         return employeeId;
+    }
+
+    protected EmployeeId createEmployeeWithSkillInRemoteRepository(ProjectRole role) {
+        String jsonBody = String.format("""
+                {
+                  "firstName": "Testnutzer mit Qualifikation für Integrationstest",
+                  "lastName": "%s",
+                  "street": "Teststr",
+                  "postcode": "28282",
+                  "city": "Bremen",
+                  "phone": "0111778899",
+                  "skillSet": ["%s"]
+                }
+                """, UUID.randomUUID(), role.unbox());
+        EmployeeData rawEmployee = new RestTemplate()
+                .postForEntity(
+                        Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
+                        buildPostRequest(jsonBody),
+                        EmployeeData.class)
+                .getBody();
+
+        EmployeeId employeeId = new EmployeeId(rawEmployee.getId());
+        objectsToBeClearedAfterTest.add(employeeId);
+
+
+        return employeeId;
+    }
+
+    protected ProjectRole createQualificationInRemoteRepository() {
+        ProjectRole projectRole = new ProjectRole(
+                "Skill " + UUID.randomUUID()
+        );
+
+        ResponseEntity<TransferProjectRole> transferProjectRoleResponseEntity = new RestTemplate()
+                .postForEntity(
+                        Objects.requireNonNull(env.getProperty("qualificationsapi.baseUrl")),
+                        buildPostRequest("{\"skill\": \"" + projectRole.unbox() + "\"}"),
+                        TransferProjectRole.class);
+
+        TransferProjectRole transfer = transferProjectRoleResponseEntity.getBody();
+        objectsToBeClearedAfterTest.add(transfer);
+
+        return new ProjectRole(transfer.skill);
+
     }
 
     protected Project createProjectInDatabase() throws RepositoryException {
