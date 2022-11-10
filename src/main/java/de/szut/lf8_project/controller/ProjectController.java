@@ -8,9 +8,11 @@ import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
+import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
+import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,15 @@ public class ProjectController implements OpenApiProjectController {
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{projectId}")
+    public ResponseEntity<ProjectView> addEmployee(
+            @Valid @PathVariable Long projectId,
+            @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
     }
 
 
