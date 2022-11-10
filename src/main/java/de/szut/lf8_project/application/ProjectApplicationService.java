@@ -75,28 +75,14 @@ public class ProjectApplicationService {
         }
     }
 
-    private Project getProject(ProjectId projectId) {
-        try {
-            return projectRepository.getProjectById(projectId);
-        } catch (RepositoryException e) {
-            throw new ApplicationServiceException(e.getErrorDetail());
-        }
-    }
-
     public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt) {
-        // gibt es das projekt
         Project projectToUpdate = getProject(projectId);
-        // date valid - refactor mit optionals?
-        validateDateCombinations(cmd, projectToUpdate);
-
-        // customer valid
+        validateDates(cmd, projectToUpdate);
         cmd.getCustomerId().ifPresent(this::validateCustomer);
-        // lead valid
         ProjectLead projectLead = cmd.getProjectLeadId().map(id -> getProjectLead(id, jwt)).orElse(projectToUpdate.getProjectLead());
         // remove with time conflicts optional force flag?
 
-        // smarter machbar? nicht doppelt if present checken
-        return mapProjectToViewModel(saveNewProject(Project.builder()
+        return mapProjectToViewModel(saveProject(Project.builder()
                 .projectId(projectToUpdate.getProjectId())
                 .projectLead(projectLead)
                 .projectName(cmd.getProjectName().orElse(projectToUpdate.getProjectName()))
@@ -110,14 +96,15 @@ public class ProjectApplicationService {
         ));
     }
 
-    private void validateDateCombinations(UpdateProjectCommand cmd, Project projectToUpdate) {
-        validateProjectStartAndEnd(cmd.getStartDate(), cmd.getPlannedEndDate());
-        validateProjectStartAndEnd(cmd.getStartDate(), projectToUpdate.getPlannedEndDate());
-        validateProjectStartAndEnd(projectToUpdate.getStartDate(), cmd.getPlannedEndDate());
-
-        validateProjectStartAndActualEnd(cmd.getStartDate(), cmd.getActualEndDate());
-        validateProjectStartAndActualEnd(projectToUpdate.getStartDate(), cmd.getActualEndDate());
-        validateProjectStartAndActualEnd(cmd.getStartDate(), projectToUpdate.getActualEndDate());
+    private void validateDates(UpdateProjectCommand cmd, Project projectToUpdate) {
+        try {
+            dateService.validateProjectDateChange(projectToUpdate,
+                    cmd.getStartDate(),
+                    cmd.getPlannedEndDate(),
+                    cmd.getActualEndDate());
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 
     private Project getProject(ProjectId projectId) {
@@ -157,14 +144,12 @@ public class ProjectApplicationService {
     }
 
     private void validateProjectStartAndEnd(Optional<StartDate> start, Optional<PlannedEndDate> end) {
-        if (start.isPresent() && end.isPresent()) {
-            try {
-                dateService.validateProjectStartAndEnd(
-                        start.get(),
-                        end.get());
-            } catch (ServiceException e) {
-                throw new ApplicationServiceException(e.getErrorDetail());
-            }
+        try {
+            dateService.validateProjectStartAndPlannedEnd(
+                    start,
+                    end);
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
         }
     }
 
