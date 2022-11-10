@@ -1,6 +1,7 @@
 package de.szut.lf8_project.application;
 
 import de.szut.lf8_project.common.*;
+import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
@@ -42,7 +43,7 @@ public class ProjectApplicationService {
 
         ProjectLead projectLead = getProjectLead(cmd.getProjectLeadId(), jwt);
 
-        return mapProjectToViewModel(saveNewProject(Project.builder()
+        return mapProjectToViewModel(saveProject(Project.builder()
                 .projectId(Optional.empty())
                 .projectLead(new ProjectLead(projectLead.getProjectLeadId()))
                 .projectName(cmd.getProjectName())
@@ -54,6 +55,32 @@ public class ProjectApplicationService {
                 .customerContact(cmd.getCustomerContact())
                 .build()
         ));
+    }
+
+    public ProjectView addEmployee(AddEmployeeCommand cmd, ProjectId projectId, JWT jwt) {
+        Project protectToUpdate = getProject(projectId);
+
+        Employee employee = getEmployee(cmd.getEmployeeId(), jwt);
+
+        Project newProject = addProjectMember(cmd, protectToUpdate, employee);
+
+        return mapProjectToViewModel(saveProject(newProject));
+    }
+
+    private Project addProjectMember(AddEmployeeCommand cmd, Project project, Employee employee) {
+        try {
+            return projectService.addEmployeeToProject(cmd.getProjectRoles(), project, employee);
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
+    }
+
+    private Project getProject(ProjectId projectId) {
+        try {
+            return projectRepository.getProjectById(projectId);
+        } catch (RepositoryException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 
     public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt) {
@@ -109,7 +136,7 @@ public class ProjectApplicationService {
         }
     }
 
-    private Project saveNewProject(Project project) {
+    private Project saveProject(Project project) {
         try {
             return projectRepository.saveProject(project);
         } catch (RepositoryException e) {
@@ -127,18 +154,6 @@ public class ProjectApplicationService {
 
     private ProjectLead getProjectLead(ProjectLeadId projectLeadId, JWT jwt) {
         return new ProjectLead(new ProjectLeadId(getEmployee(projectLeadId, jwt).getId().unbox()));
-    }
-
-    private void validateProjectStartAndActualEnd(Optional<StartDate> start, Optional<ActualEndDate> end) {
-        if (start.isPresent() && end.isPresent()) {
-            try {
-                dateService.validateProjectStartAndActualEnd(
-                        start.get(),
-                        end.get());
-            } catch (ServiceException e) {
-                throw new ApplicationServiceException(e.getErrorDetail());
-            }
-        }
     }
 
     private void validateProjectStartAndEnd(Optional<StartDate> start, Optional<PlannedEndDate> end) {

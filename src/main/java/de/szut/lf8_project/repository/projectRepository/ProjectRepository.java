@@ -6,12 +6,15 @@ import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.ValueType;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
+import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.TeamMemberMapper;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +45,7 @@ public class ProjectRepository {
                     .plannedEndDate(project.getPlannedEndDate().map(ValueType::unbox).orElse(null))
                     .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
                     .startDate(project.getStartDate().map(ValueType::unbox).orElse(null))
+                    .teamMembers(project.getTeamMembers().stream().map((teamMember) -> teamMemberMapper.mapTo(teamMember)).collect(Collectors.toSet()))
                     .build()));
         } catch (Exception e) {
             throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
@@ -50,7 +54,12 @@ public class ProjectRepository {
 
     public Project getProjectById(ProjectId projectId) throws RepositoryException {
         return mapProjectDataToProject(projectDataRepository.findById(projectId.unbox())
-                .orElseThrow(() -> new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("A project with this id does not exist")))));
+                .orElseThrow(() -> new RepositoryException(new ErrorDetail(Errorcode.ENTITY_NOT_FOUND, new FailureMessage("A project with this id does not exist")))));
+    }
+
+    public List<Project> getAllProjectsOfEmployee(EmployeeId employeeId) {
+        List<ProjectData> projects = projectDataRepository.findAllByTeamMemberId(employeeId.unbox());
+        return projects.stream().map(this::mapProjectDataToProject).toList();
     }
 
     private Project mapProjectDataToProject(ProjectData projectData) {

@@ -27,6 +27,7 @@ public class ProjectData {
     LocalDate plannedEndDate;
     LocalDate actualEndDate;
 
-    @OneToMany(mappedBy = "projectData", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "project_id", nullable = false)
     Set<TeamMemberData> teamMembers;
 }

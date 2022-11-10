@@ -16,5 +16,5 @@ public class Employee {
     @NonNull FirstName firstName;
     @NonNull Street street;
     @NonNull Postcode postcode;
-    @NonNull List<Qualification> skillset;
+    @NonNull List<ProjectRole> skillset;
 }

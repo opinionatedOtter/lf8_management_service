@@ -59,7 +59,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
                 .firstName(new FirstName(employeeDto.getFirstName()))
                 .street(new Street(employeeDto.getStreet()))
                 .postcode(new Postcode(employeeDto.getPostcode()))
-                .skillset(employeeDto.getSkillset().stream().map(Qualification::new).toList())
+                .skillset(employeeDto.getSkillSet().stream().map(ProjectRole::new).toList())
                 .build();
     }
 }

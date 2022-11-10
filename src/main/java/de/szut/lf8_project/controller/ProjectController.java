@@ -8,6 +8,7 @@ import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
+import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
@@ -16,6 +17,8 @@ import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -42,6 +45,15 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
+    @PostMapping("/{projectId}")
+    public ResponseEntity<ProjectView> addEmployee(
+            @Valid @PathVariable Long projectId,
+            @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
+    }
+
     @PutMapping("/{projectId}")
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
@@ -60,7 +72,7 @@ public class ProjectController implements OpenApiProjectController {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ProblemDetails> serializeInvalidParamsException(MethodArgumentNotValidException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetails> serializeInvalidParamsException(BindException ex, WebRequest request) {
         Map<String, String> errorMap = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errorMap.put(error.getField(), error.getDefaultMessage());
@@ -73,6 +85,16 @@ public class ProjectController implements OpenApiProjectController {
                                 msg.isBlank() ?
                                         "Your request contains invalid parameter. Please check if your field types are correct" :
                                         msg)
+                )),
+                Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ProblemDetails> serializeNotReadableException(HttpMessageNotReadableException ex) {
+        return new ResponseEntity<>(
+                ProblemDetails.fromErrorDetail(new ErrorDetail(
+                        Errorcode.INVALID_REQUEST_PARAMETER,
+                        new FailureMessage("Your request could not be read or parsed" )
                 )),
                 Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
     }
