@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
@@ -26,8 +25,8 @@ public class TestDateService {
     @Test
     @DisplayName("validate start and end and not throw an exception if both are valid")
     public void validateProjectStartAndEnd() {
-        Optional<StartDate> startDate = Optional.of(new StartDate(LocalDate.of(2022, 1, 1)));
-        Optional<PlannedEndDate> plannedEndDate = Optional.of(new PlannedEndDate(LocalDate.of(2022, 2, 2)));
+        StartDate startDate = new StartDate(LocalDate.of(2022, 1, 1));
+        PlannedEndDate plannedEndDate = new PlannedEndDate(LocalDate.of(2022, 2, 2));
 
         Assertions.assertDoesNotThrow(() -> dateService.validateProjectStartAndPlannedEnd(startDate, plannedEndDate));
     }
@@ -35,8 +34,8 @@ public class TestDateService {
     @Test
     @DisplayName("validate start and end and throw an exception if planned end is before start")
     public void validateEndBeforeStart() {
-        Optional<StartDate> startDate = Optional.of(new StartDate(LocalDate.of(2022, 2, 1)));
-        Optional<PlannedEndDate>plannedEndDate = Optional.of(new PlannedEndDate(LocalDate.of(2022, 1, 1)));
+        StartDate startDate = new StartDate(LocalDate.of(2022, 2, 1));
+        PlannedEndDate plannedEndDate = new PlannedEndDate(LocalDate.of(2022, 1, 1));
 
         ServiceException result = Assertions.assertThrows(ServiceException.class, () -> dateService.validateProjectStartAndPlannedEnd(startDate, plannedEndDate));
 

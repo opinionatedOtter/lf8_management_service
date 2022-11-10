@@ -50,8 +50,8 @@ public class TestProjectApplicationService {
     private final Customer customer = new Customer(new CustomerId(1L));
     private final CustomerContact customerContact = new CustomerContact("Kontakty");
     private final ProjectDescription projectDescription = new ProjectDescription("Beschreiby");
-    private final Optional<StartDate> startDate = Optional.of(new StartDate("2002-01-11"));
-    private final Optional<PlannedEndDate> plannedEndDate = Optional.of(new PlannedEndDate("2002-03-12"));
+    private final StartDate startDate = new StartDate("2002-01-11");
+    private final PlannedEndDate plannedEndDate = new PlannedEndDate("2002-03-12");
     private final JWT jwt = new JWT("Toky");
     private final ErrorDetail errorDetail = new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("Faily"));
 
@@ -67,7 +67,7 @@ public class TestProjectApplicationService {
         ProjectView result = projectApplicationService.createProject(cmd, jwt);
 
         assertThat(result).isEqualTo(expectedView);
-        verify(dateService, times(1)).validateProjectStartAndPlannedEnd(cmd.getStartDate(), cmd.getPlannedEndDate());
+        verify(dateService, times(1)).validateProjectStartAndPlannedEnd(cmd.getStartDate().get(), cmd.getPlannedEndDate().get());
         verify(customerService, times(1)).validateCustomer(cmd.getCustomerId());
     }
 
@@ -140,8 +140,8 @@ public class TestProjectApplicationService {
                 .projectLeadId(projectLead.getProjectLeadId())
                 .customerContact(customerContact)
                 .customerId(customer.getCustomerId())
-                .startDate(startDate)
-                .plannedEndDate(plannedEndDate)
+                .startDate(Optional.of(startDate))
+                .plannedEndDate(Optional.of(plannedEndDate))
                 .projectDescription(Optional.of(projectDescription));
     }
 
@@ -151,8 +151,8 @@ public class TestProjectApplicationService {
                 .projectLead(projectLead)
                 .customerContact(customerContact)
                 .customer(customer)
-                .startDate(startDate)
-                .plannedEndDate(plannedEndDate)
+                .startDate(Optional.of(startDate))
+                .plannedEndDate(Optional.of(plannedEndDate))
                 .projectId(projectId)
                 .actualEndDate(Optional.empty())
                 .teamMember(Collections.emptySet())
@@ -166,8 +166,8 @@ public class TestProjectApplicationService {
                 .projectLead(projectLead)
                 .customerContact(customerContact)
                 .customer(customer)
-                .startDate(startDate)
-                .plannedEndDate(plannedEndDate)
+                .startDate(Optional.of(startDate))
+                .plannedEndDate(Optional.of(plannedEndDate))
                 .actualEndDate(Optional.empty())
                 .projectDescription(Optional.of(projectDescription))
                 .teamMembers(Collections.emptySet());

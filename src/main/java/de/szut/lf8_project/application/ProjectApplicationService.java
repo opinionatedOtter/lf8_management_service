@@ -144,12 +144,14 @@ public class ProjectApplicationService {
     }
 
     private void validateProjectStartAndEnd(Optional<StartDate> start, Optional<PlannedEndDate> end) {
-        try {
-            dateService.validateProjectStartAndPlannedEnd(
-                    start,
-                    end);
-        } catch (ServiceException e) {
-            throw new ApplicationServiceException(e.getErrorDetail());
+        if (start.isPresent() && end.isPresent()) {
+            try {
+                dateService.validateProjectStartAndPlannedEnd(
+                        start.get(),
+                        end.get());
+            } catch (ServiceException e) {
+                throw new ApplicationServiceException(e.getErrorDetail());
+            }
         }
     }
 
