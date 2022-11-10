@@ -76,10 +76,14 @@ public class ProjectApplicationService {
 
     private Project getProject(ProjectId projectId) {
         try {
-            return projectRepository.getProjectById(projectId);
+            return projectRepository.getProject(projectId);
         } catch (RepositoryException e) {
             throw new ApplicationServiceException(e.getErrorDetail());
         }
+    }
+
+    public ProjectView getProjectView(ProjectId id) {
+        return mapProjectToViewModel(getProject(id));
     }
 
     private void validateCustomer(CustomerId customerId) {

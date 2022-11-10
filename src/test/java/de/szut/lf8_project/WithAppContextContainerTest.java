@@ -26,18 +26,10 @@ public abstract class WithAppContextContainerTest {
             implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues.of(
-                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
+                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl().replace("jdbc:", "jdbc:tc:"),
                     "spring.datasource.username=" + postgreSQLContainer.getUsername(),
                     "spring.datasource.password=" + postgreSQLContainer.getPassword()
             ).applyTo(configurableApplicationContext.getEnvironment());
-
-            PGSimpleDataSource pgSimpleDataSource = new PGSimpleDataSource();
-            pgSimpleDataSource.setUrl(postgreSQLContainer.getJdbcUrl());
-            pgSimpleDataSource.setPassword(postgreSQLContainer.getPassword());
-            pgSimpleDataSource.setUser(postgreSQLContainer.getUsername());
-            pgSimpleDataSource.setCurrentSchema("public");
-
-            jdbcTemplate = new JdbcTemplate(pgSimpleDataSource);
         }
     }
 }
