@@ -3,12 +3,7 @@ package de.szut.lf8_project.repository.projectRepository;
 
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 @Data
@@ -17,6 +12,8 @@ import javax.persistence.Table;
 public class TeamMemberData {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long randomId;
     private Long employeeId;
     private String role;
 
