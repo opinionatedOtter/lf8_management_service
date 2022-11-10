@@ -36,7 +36,7 @@ public class TestGetProjectById extends FullIntegrationTest {
                 .andExpect(jsonPath("$.startDate").value(project.getStartDate().get().unbox().toString()))
                 .andExpect(jsonPath("$.plannedEndDate").value(project.getPlannedEndDate().get().unbox().toString()))
                 .andExpect(jsonPath("$.actualEndDate").value(project.getActualEndDate().get().unbox().toString()))
-                .andExpect(jsonPath("$.teamMember").isEmpty());
+                .andExpect(jsonPath("$.teamMember[0].employeeId").value(project.getTeamMembers().stream().toList().get(0).getEmployeeId().unbox()));
     }
 
 
