@@ -19,15 +19,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
@@ -74,6 +75,14 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity deleteProjects(
+            @Valid @PathVariable Long projectId
+    ) {
+        projectApplicationService.deleteProject(new ProjectId(projectId));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PutMapping(value = {"/{projectId}", "/{projectId}/{isForced}"})
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
@@ -117,7 +126,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(
                 ProblemDetails.fromErrorDetail(new ErrorDetail(
                         Errorcode.INVALID_REQUEST_PARAMETER,
-                        new FailureMessage("Your request could not be read or parsed")
+                        new FailureMessage("Your request could not be read or parsed" )
                 )),
                 Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
     }

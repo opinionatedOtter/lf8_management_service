@@ -148,6 +148,16 @@ public class ProjectApplicationService {
         }
     }
 
+    public void deleteProject(ProjectId projectId) throws ApplicationServiceException{
+        try {
+            Project project = projectRepository.getProject(projectId);
+            projectRepository.deleteProject(projectId);
+            return;
+        } catch (RepositoryException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
+    }
+
     private void validateCustomer(CustomerId customerId) {
         try {
             customerService.validateCustomer(customerId);
