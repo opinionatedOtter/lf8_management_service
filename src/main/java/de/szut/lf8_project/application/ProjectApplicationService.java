@@ -14,6 +14,7 @@ import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -135,5 +136,13 @@ public class ProjectApplicationService {
                 .customerContact(project.getCustomerContact())
                 .teamMember(project.getTeamMembers())
                 .build();
+    }
+
+    public ProjectView getProjectByID(ProjectId id) {
+        try {
+            return mapProjectToViewModel(projectRepository.getProjectById(id));
+        } catch (RepositoryException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 }

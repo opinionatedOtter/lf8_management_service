@@ -10,7 +10,6 @@ import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.TeamMemberMapper;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
@@ -32,6 +31,14 @@ public class ProjectRepository {
         this.teamMemberMapper = teamMemberMapper;
     }
 
+    public Project getProjectById(ProjectId id) throws RepositoryException {
+        Optional<ProjectData> projectData = projectDataRepository.findById(id.unbox());
+        return mapProjectDataToProject(projectData
+                .orElseThrow(() -> new RepositoryException(
+                        new ErrorDetail(Errorcode.ENTITY_NOT_FOUND, new FailureMessage(String.format("Project Id %d not found", id.unbox())))
+                )));
+    }
+
     public Project saveProject(Project project) throws RepositoryException {
         try {
             return mapProjectDataToProject(projectDataRepository.save(ProjectData.builder()
@@ -50,11 +57,6 @@ public class ProjectRepository {
         } catch (Exception e) {
             throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
         }
-    }
-
-    public Project getProjectById(ProjectId projectId) throws RepositoryException {
-        return mapProjectDataToProject(projectDataRepository.findById(projectId.unbox())
-                .orElseThrow(() -> new RepositoryException(new ErrorDetail(Errorcode.ENTITY_NOT_FOUND, new FailureMessage("A project with this id does not exist")))));
     }
 
     public List<Project> getAllProjectsOfEmployee(EmployeeId employeeId) {
