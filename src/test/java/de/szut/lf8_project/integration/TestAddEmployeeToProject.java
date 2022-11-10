@@ -2,7 +2,6 @@ package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
 import de.szut.lf8_project.common.Errorcode;
-import de.szut.lf8_project.common.Statuscode;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
@@ -55,12 +54,29 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
 
         @Test
         @DisplayName("wenn dieser nicht existiert")
-        void employee404() {
-            fail();
+        void employee404() throws Exception {
+            Project project = createProjectInDatabase();
+
+            String jsonRequestBody = """
+                {
+                "employeeId" : 999999999,
+                "projectRoles" : "Macher"
+                }
+                """;
+
+            ResultActions result = mockMvc.perform(
+                    post("/api/v1/project/"+ project.getProjectId().get().unbox())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonRequestBody)
+                            .header("Authorization", jwt.jwt())
+            );
+
+            result.andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
         }
 
         @Test
-        @DisplayName("er zu diesem Zeitpunkt bereits in einem anderen Projekt ist")
+        @DisplayName("wenn er zu diesem Zeitpunkt bereits in einem anderen Projekt ist")
         void alreadyPlanned() throws Exception {
             ProjectRole role = createQualificationInRemoteRepository();
             EmployeeId employeeId = createEmployeeWithSkillInRemoteRepository(role);
@@ -107,25 +123,68 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             );
 
             result
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is(Errorcode.EMPLOYEE_UNSUITABLE.toString())));
         }
 
         @Test
-        @DisplayName("das Projekt nicht vorhanden ist")
-        void missingProject() {
-            fail();
+        @DisplayName("wenn das Projekt nicht vorhanden ist")
+        void missingProject() throws Exception {
+            String jsonRequestBody = """
+                {
+                "employeeId" : 95959595,
+                "projectRoles" : "Egal"
+                }
+                """;
+
+            ResultActions result = mockMvc.perform(
+                    post("/api/v1/project/3847593")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonRequestBody)
+                            .header("Authorization", jwt.jwt())
+            );
+
+            result.andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
         }
 
         @Test
-        @DisplayName("die Anfrage invalide ist")
-        void malformedRequest() {
-            fail();
+        @DisplayName("wenn die Anfrage syntaktisch invalide ist")
+        void malformedRequest() throws Exception {
+            String invalidJsonRequestBody = """
+                {
+                "employeeId" : 95959595
+                }
+                """;
+
+            ResultActions result = mockMvc.perform(
+                    post("/api/v1/project/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(invalidJsonRequestBody)
+                            .header("Authorization", jwt.jwt())
+            );
+
+            result.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is(Errorcode.INVALID_REQUEST_PARAMETER.toString())));
         }
 
         @Test
-        @DisplayName("die Anfrage nicht authentifiziert ist")
-        void unauthenticated() {
-            fail();
+        @DisplayName("wenn die Anfrage nicht authentifiziert ist")
+        void unauthenticated() throws Exception {
+            String jsonRequestBody = """
+                {
+                "employeeId" : 1,
+                "projectRoles" : "Egal"
+                }
+                """;
+
+            ResultActions result = mockMvc.perform(
+                    post("/api/v1/project/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonRequestBody)
+            );
+
+            result.andExpect(status().is(401));
         }
     }
 
