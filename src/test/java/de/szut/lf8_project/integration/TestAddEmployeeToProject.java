@@ -1,17 +1,18 @@
 package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.common.Errorcode;
+import de.szut.lf8_project.common.Statuscode;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
-import de.szut.lf8_project.domain.project.TeamMember;
+import de.szut.lf8_project.repository.RepositoryException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -60,12 +61,33 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
 
         @Test
         @DisplayName("er zu diesem Zeitpunkt bereits in einem anderen Projekt ist")
-        void alreadyPlanned() {
-            fail();
+        void alreadyPlanned() throws Exception {
+            ProjectRole role = createQualificationInRemoteRepository();
+            EmployeeId employeeId = createEmployeeWithSkillInRemoteRepository(role);
+            createProjectInDatabaseWithTeamMember(employeeId);
+            Project collidingProject = createProjectInDatabase();
+
+            String jsonRequestBody = String.format("""
+                {
+                "employeeId" : %d,
+                "projectRoles" : "%s"
+                }
+                """, employeeId.unbox(), role.unbox());
+
+            ResultActions result = mockMvc.perform(
+                    post("/api/v1/project/"+ collidingProject.getProjectId().get().unbox())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonRequestBody)
+                            .header("Authorization", jwt.jwt())
+            );
+
+            result.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is(Errorcode.EMPLOYEE_UNAVAILABLE.toString())));
+
         }
 
         @Test
-        @DisplayName("die Rolle im Projekt nicht gefragt ist")
+        @DisplayName("wenn er die gefragte Rolle nicht hat")
         void wrongRole() throws Exception {
             Project project = createProjectInDatabase();
             EmployeeId employeeIdOhneSkill = createEmployeeInRemoteRepository();

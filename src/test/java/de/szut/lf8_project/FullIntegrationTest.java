@@ -193,6 +193,11 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     }
 
     protected Project createProjectInDatabase() throws RepositoryException {
+
+        return createProjectInDatabaseWithTeamMember(new EmployeeId(456L));
+    }
+
+    protected Project createProjectInDatabaseWithTeamMember(EmployeeId employeeId) throws RepositoryException {
         ProjectLead projectLead = new ProjectLead( new ProjectLeadId(createEmployeeInRemoteRepository().unbox()));
         Project project = Project.builder()
                 .projectId( Optional.empty())
@@ -204,7 +209,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 .startDate( Optional.of(new StartDate( LocalDate.of(2022, 1, 20))))
                 .plannedEndDate( Optional.of(new PlannedEndDate( LocalDate.of(2022, 4, 24))))
                 .actualEndDate( Optional.of(new ActualEndDate( LocalDate.of(2022, 6, 26))))
-                .teamMembers(Set.of(new TeamMember(new EmployeeId(456L), new ProjectRole("Developer"))))
+                .teamMembers(Set.of(new TeamMember(employeeId, new ProjectRole("Developer"))))
                 .build();
 
         return projectRepository.saveProject(project);
