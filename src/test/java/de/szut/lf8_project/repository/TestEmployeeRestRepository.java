@@ -95,7 +95,7 @@ public class TestEmployeeRestRepository {
                 .lastName("Mester")
                 .postcode("28311")
                 .street("Am Graben 26")
-                .skillset(List.of("Schubsen", "Tanzen", "Smalltalk"))
+                .skillSet(List.of("Schubsen", "Tanzen", "Smalltalk"))
                 .build();
     }
 
@@ -106,7 +106,7 @@ public class TestEmployeeRestRepository {
                 .lastName(new LastName("Mester"))
                 .postcode(new Postcode("28311"))
                 .street(new Street("Am Graben 26"))
-                .skillset(List.of(new Qualification("Schubsen"), new Qualification("Tanzen"), new Qualification("Smalltalk")))
+                .skillset(List.of(new ProjectRole("Schubsen"), new ProjectRole("Tanzen"), new ProjectRole("Smalltalk")))
                 .build();
     }
 

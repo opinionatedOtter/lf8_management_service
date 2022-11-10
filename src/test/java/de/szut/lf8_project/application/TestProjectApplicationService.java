@@ -130,7 +130,7 @@ public class TestProjectApplicationService {
                 .firstName(new FirstName("Namy"))
                 .lastName(new LastName("Lasty"))
                 .postcode(new Postcode("28983"))
-                .skillset(List.of(new Qualification("Skillz")))
+                .skillset(List.of(new ProjectRole("Skillz")))
                 .street(new Street("Streety"));
     }
 

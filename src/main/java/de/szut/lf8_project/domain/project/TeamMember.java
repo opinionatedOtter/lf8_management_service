@@ -1,15 +1,13 @@
 package de.szut.lf8_project.domain.project;
 
 import de.szut.lf8_project.domain.employee.EmployeeId;
-import de.szut.lf8_project.domain.employee.Qualification;
-import lombok.Getter;
-import lombok.Setter;
+import de.szut.lf8_project.domain.employee.ProjectRole;
+import lombok.Value;
 
 import javax.validation.constraints.NotNull;
 
-@Setter
-@Getter
+@Value
 public class TeamMember {
     @NotNull EmployeeId employeeId;
-    @NotNull Qualification qualification;
+    @NotNull ProjectRole projectRole;
 }

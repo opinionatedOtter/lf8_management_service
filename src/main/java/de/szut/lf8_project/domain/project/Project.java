@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import javax.persistence.Entity;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
-@Builder
+@Builder(toBuilder = true)
 @Value
 public class Project {
     @NonNull
@@ -35,4 +35,15 @@ public class Project {
     @NonNull
     @Builder.Default
     Set<TeamMember> teamMembers = Collections.emptySet();
+
+    public Optional<RelevantEndDate> getRelevantEndDate(){
+        if(actualEndDate.isEmpty() && plannedEndDate.isEmpty()){
+            return Optional.empty();
+        }
+        return actualEndDate.map((date) -> new RelevantEndDate(date.unbox())).or(() -> Optional.of(new RelevantEndDate(plannedEndDate.get().unbox())));
+    }
+
+    public Optional<ProjectTimespan> getProjectTimespan(){
+     return ProjectTimespan.of(this.getStartDate(), this.getRelevantEndDate());
+    }
 }
