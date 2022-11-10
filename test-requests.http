@@ -3,7 +3,6 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&client_id=employee-management-service&username=user&password=test
 
-
 ###
 POST http://localhost:8089/api/v1/project
 Content-Type: application/json
@@ -39,7 +38,7 @@ Accept: application/json
 }
 
 ###
-POST http://localhost:8089/api/v1/project/2
+POST http://localhost:8089/api/v1/project/1
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
@@ -48,3 +47,19 @@ Accept: application/json
   "employeeId": 9,
   "projectRoles": "weise"
 }
+
+###
+GET http://localhost:8089/api/v1/project
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+###
+GET http://localhost:8089/api/v1/project/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+###
+DELETE http://localhost:8089/api/v1/project/2
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
