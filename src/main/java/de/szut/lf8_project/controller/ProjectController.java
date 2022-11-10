@@ -54,7 +54,7 @@ public class ProjectController implements OpenApiProjectController {
     public ResponseEntity<ProjectView> getProjectById(
             @Valid @PathVariable Long id
     ) {
-        return new ResponseEntity<>(projectApplicationService.getProjectByID(new ProjectId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(projectApplicationService.getProjectView(new ProjectId(id)), HttpStatus.OK);
     }
 
     @PostMapping("/{projectId}")

@@ -31,7 +31,7 @@ public class ProjectRepository {
         this.teamMemberMapper = teamMemberMapper;
     }
 
-    public Project getProjectById(ProjectId id) throws RepositoryException {
+    public Project getProject(ProjectId id) throws RepositoryException {
         Optional<ProjectData> projectData = projectDataRepository.findById(id.unbox());
         return mapProjectDataToProject(projectData
                 .orElseThrow(() -> new RepositoryException(

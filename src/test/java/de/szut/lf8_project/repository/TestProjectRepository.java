@@ -86,6 +86,6 @@ public class TestProjectRepository extends WithAppContextContainerTest {
 
     private Project getProjectFromDb(ProjectId projectId) throws RepositoryException {
 
-        return projectRepository.getProjectById(projectId);
+        return projectRepository.getProject(projectId);
     }
 }
