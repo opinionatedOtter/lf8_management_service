@@ -44,7 +44,7 @@ public class ProjectController implements OpenApiProjectController {
 
     @PostMapping("/{projectId}")
     public ResponseEntity<ProjectView> addEmployee(
-            @PathVariable Long projectId,
+            @Valid @PathVariable Long projectId,
             @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
             @RequestHeader("Authorization") String authHeader
     ) {
