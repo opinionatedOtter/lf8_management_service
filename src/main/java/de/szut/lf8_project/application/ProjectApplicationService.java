@@ -97,11 +97,18 @@ public class ProjectApplicationService {
     }
 
     private void validateDates(UpdateProjectCommand cmd, Project projectToUpdate) {
+        Optional<StartDate> start = cmd.getStartDate().isPresent() ? cmd.getStartDate() : projectToUpdate.getStartDate();
+        Optional<PlannedEndDate> plannedEnd = cmd.getPlannedEndDate().isPresent() ? cmd.getPlannedEndDate() : projectToUpdate.getPlannedEndDate();
+        Optional<ActualEndDate> actualEnd = cmd.getActualEndDate().isPresent() ? cmd.getActualEndDate() : projectToUpdate.getActualEndDate();
         try {
-            dateService.validateProjectDateChange(projectToUpdate,
-                    cmd.getStartDate(),
-                    cmd.getPlannedEndDate(),
-                    cmd.getActualEndDate());
+            if (start.isPresent()) {
+                if (plannedEnd.isPresent()) {
+                    dateService.validateProjectStartAndPlannedEnd(start.get(), plannedEnd.get());
+                }
+                if (actualEnd.isPresent()) {
+                    dateService.validateProjectStartAndActualEnd(start.get(), actualEnd.get());
+                }
+            }
         } catch (ServiceException e) {
             throw new ApplicationServiceException(e.getErrorDetail());
         }
