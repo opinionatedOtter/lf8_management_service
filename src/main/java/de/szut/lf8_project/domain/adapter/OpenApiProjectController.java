@@ -28,7 +28,7 @@ import javax.validation.Valid;
 )
 public interface OpenApiProjectController {
 
-    @Operation(summary = "Create a new Project")
+    @Operation(summary = "Create a new project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
                     description = "Your project was successfully created",
@@ -46,6 +46,10 @@ public interface OpenApiProjectController {
                     description = "You do not have the required user permissions for this action.",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
+            @ApiResponse(responseCode = "415",
+                    description = "Invalid Content Type",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
             @ApiResponse(responseCode = "503",
                     description = "The service is currently unavailable",
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
@@ -60,7 +64,7 @@ public interface OpenApiProjectController {
             @RequestHeader("Authorization") String authHeader
     );
 
-    @Operation(summary = "Create a new Project")
+    @Operation(summary = "Get a specfic project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The Project was successfully returned",
@@ -76,6 +80,10 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "403",
                     description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "415",
+                    description = "Invalid Content Type",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "503",
