@@ -69,11 +69,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         clearObjects();
     }
 
-    @AfterAll
-    public void afterAll() {
-        clearObjects();
-    }
-
     private void clearObjects() {
         objectsToBeClearedAfterTest.forEach(thing -> {
             if (thing instanceof EmployeeId) {
