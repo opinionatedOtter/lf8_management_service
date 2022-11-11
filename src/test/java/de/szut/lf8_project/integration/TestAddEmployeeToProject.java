@@ -6,7 +6,6 @@ import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
-import de.szut.lf8_project.domain.project.TeamMember;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,9 +15,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,8 +46,8 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         );
 
         result
-                .andExpect(jsonPath("$.teamMember", hasItem(hasValue(employeeId.unbox().intValue()))))
-                .andExpect(jsonPath("$.teamMember", hasItem(hasValue(role.unbox()))))
+                .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("employeeId" , employeeId.unbox().intValue()))))
+                .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("projectRole" , role.unbox()))))
                 .andExpect(status().isCreated());
     }
 
