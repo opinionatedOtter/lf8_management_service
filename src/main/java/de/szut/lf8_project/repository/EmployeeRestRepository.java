@@ -22,12 +22,16 @@ public class EmployeeRestRepository implements EmployeeRepository {
 
     private final String baseUrl;
     private final RestTemplate restTemplate;
+    private final EmployeeMapper employeeMapper;
 
     public EmployeeRestRepository(
-            @Value("${employeeapi.baseUrl}") String baseUrl, RestTemplate restTemplate
+            @Value("${employeeapi.baseUrl}") String baseUrl,
+            RestTemplate restTemplate,
+            final EmployeeMapper employeeMapper
     ) {
         this.baseUrl = baseUrl;
         this.restTemplate = restTemplate;
+        this.employeeMapper = employeeMapper;
     }
 
 
@@ -36,7 +40,7 @@ public class EmployeeRestRepository implements EmployeeRepository {
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", jwt.jwt());
         try {
-            return dtoToEntity(
+            return employeeMapper.dtoToEntity(
                     Objects.requireNonNull(
                             restTemplate.exchange(baseUrl + employeeId.unbox().toString(), HttpMethod.GET, new HttpEntity<String>(header), EmployeeData.class).getBody()
                     ));
@@ -50,16 +54,5 @@ public class EmployeeRestRepository implements EmployeeRepository {
         } catch (RestClientException e) {
             throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
         }
-    }
-
-    private Employee dtoToEntity(EmployeeData employeeDto) {
-        return Employee.builder()
-                .id(new EmployeeId(employeeDto.getId()))
-                .lastName(new LastName(employeeDto.getLastName()))
-                .firstName(new FirstName(employeeDto.getFirstName()))
-                .street(new Street(employeeDto.getStreet()))
-                .postcode(new Postcode(employeeDto.getPostcode()))
-                .skillset(employeeDto.getSkillSet().stream().map(ProjectRole::new).toList())
-                .build();
     }
 }

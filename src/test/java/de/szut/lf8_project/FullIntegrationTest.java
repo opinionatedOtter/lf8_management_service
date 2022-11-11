@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
+import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.EmployeeData;
+import de.szut.lf8_project.repository.EmployeeMapper;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -51,6 +53,8 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     private Environment env;
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     @BeforeEach
     public void setUpJwt() throws JsonProcessingException {
@@ -122,7 +126,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return new HttpEntity<>(bodyParamMap, headers);
     }
 
-    protected EmployeeId createEmployeeInRemoteRepository() {
+    protected Employee createEmployeeInRemoteRepository() {
         String jsonBody = String.format("""
                 {
                   "firstName": "Testnutzer für Integrationstest",
@@ -137,7 +141,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         EmployeeData rawEmployee = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
-                        buildPostRequest(jsonBody),
+                        buildRequestEntity(jsonBody),
                         EmployeeData.class)
                 .getBody();
 
@@ -145,10 +149,10 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         objectsToBeClearedAfterTest.add(employeeId);
 
 
-        return employeeId;
+        return employeeMapper.dtoToEntity(rawEmployee);
     }
 
-    protected EmployeeId createEmployeeWithSkillInRemoteRepository(ProjectRole role) {
+    protected Employee createEmployeeWithSkillInRemoteRepository(ProjectRole role) {
         String jsonBody = String.format("""
                 {
                   "firstName": "Testnutzer mit Qualifikation für Integrationstest",
@@ -163,7 +167,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         EmployeeData rawEmployee = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
-                        buildPostRequest(jsonBody),
+                        buildRequestEntity(jsonBody),
                         EmployeeData.class)
                 .getBody();
 
@@ -171,7 +175,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         objectsToBeClearedAfterTest.add(employeeId);
 
 
-        return employeeId;
+        return employeeMapper.dtoToEntity(rawEmployee);
     }
 
     protected ProjectRole createQualificationInRemoteRepository() {
@@ -182,7 +186,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         ResponseEntity<TransferProjectRole> transferProjectRoleResponseEntity = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("qualificationsapi.baseUrl")),
-                        buildPostRequest("{\"skill\": \"" + projectRole.unbox() + "\"}"),
+                        buildRequestEntity("{\"skill\": \"" + projectRole.unbox() + "\"}"),
                         TransferProjectRole.class);
 
         TransferProjectRole transfer = transferProjectRoleResponseEntity.getBody();
@@ -198,7 +202,12 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     }
 
     protected Project createProjectInDatabaseWithTeamMember(EmployeeId employeeId) throws RepositoryException {
-        ProjectLead projectLead = new ProjectLead( new ProjectLeadId(createEmployeeInRemoteRepository().unbox()));
+
+        return createProjectInDatabaseWithTeamMember(employeeId, new ProjectRole("Developer"));
+    }
+
+    protected Project createProjectInDatabaseWithTeamMember(EmployeeId employeeId, ProjectRole role) throws RepositoryException {
+        ProjectLead projectLead = new ProjectLead( new ProjectLeadId(createEmployeeInRemoteRepository().getId().unbox()));
         Project project = Project.builder()
                 .projectId( Optional.empty())
                 .projectName( new ProjectName("Name"))
@@ -209,13 +218,48 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 .startDate( Optional.of(new StartDate( LocalDate.of(2022, 1, 20))))
                 .plannedEndDate( Optional.of(new PlannedEndDate( LocalDate.of(2022, 4, 24))))
                 .actualEndDate( Optional.of(new ActualEndDate( LocalDate.of(2022, 6, 26))))
-                .teamMembers(Set.of(new TeamMember(employeeId, new ProjectRole("Developer"))))
+                .teamMembers(Set.of(new TeamMember(employeeId, role)))
                 .build();
 
         return projectRepository.saveProject(project);
     }
 
-    private HttpEntity<String> buildPostRequest(String jsonBody) {
+    protected Employee updateEmployeeInRemoteRepository(Employee employee) {
+        String jsonBody = String.format("""
+                {
+                  "firstName": "%s",
+                  "lastName": "%s",
+                  "street": "%s",
+                  "postcode": "%s",
+                  "city": "%s",
+                  "phone": "%s",
+                  "skillSet": ["%s"]
+                }
+                """,
+                employee.getFirstName().unbox(),
+                employee.getLastName().unbox(),
+                employee.getStreet().unbox(),
+                employee.getPostcode().unbox(),
+                employee.getCity().unbox(),
+                employee.getPhonenumber().unbox(),
+                employee.getSkillset().get(0)
+        );
+
+        EmployeeData rawUpdatedEmployee = new RestTemplate()
+                .exchange(
+                        Objects.requireNonNull(env.getProperty("employeeapi.baseUrl") + employee.getId().unbox()),
+                        HttpMethod.PUT,
+                        buildRequestEntity(jsonBody),
+                        EmployeeData.class)
+                .getBody();
+
+        EmployeeId employeeId = new EmployeeId(rawUpdatedEmployee.getId());
+        objectsToBeClearedAfterTest.add(employeeId);
+
+        return employeeMapper.dtoToEntity(rawUpdatedEmployee);
+    }
+
+    private HttpEntity<String> buildRequestEntity(String jsonBody) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));

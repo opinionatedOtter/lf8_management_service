@@ -24,6 +24,10 @@ public class EmployeeData {
     String street;
     @JsonProperty("postcode")
     String postcode;
+    @JsonProperty("city")
+    String city;
+    @JsonProperty("phone")
+    String phone;
     @JsonProperty("skillSet")
     @Builder.Default
     List<String> skillSet = Collections.emptyList();

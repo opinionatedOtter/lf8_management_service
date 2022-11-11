@@ -37,7 +37,7 @@ public class TestEmployeeRestRepository {
 
     @BeforeEach
     public void setUp() {
-        employeeRestRepository = new EmployeeRestRepository(baseUrl, mockTemplate);
+        employeeRestRepository = new EmployeeRestRepository(baseUrl, mockTemplate, new EmployeeMapper());
         header = new HttpHeaders();
         header.set("Authorization", jwt.jwt());
     }
