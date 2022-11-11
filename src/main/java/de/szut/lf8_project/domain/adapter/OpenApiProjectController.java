@@ -50,7 +50,7 @@ public interface OpenApiProjectController {
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "415",
-                    description = "Invalid Content Type",
+                    description = "Invalid content type",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "500",
@@ -70,7 +70,7 @@ public interface OpenApiProjectController {
     @Operation(summary = "Get a specfic project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "The Project was successfully returned",
+                    description = "The project was successfully returned",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
             ),
             @ApiResponse(responseCode = "400",
@@ -86,7 +86,7 @@ public interface OpenApiProjectController {
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "415",
-                    description = "Invalid Content Type",
+                    description = "Invalid content type",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "500",
@@ -122,10 +122,10 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "404",
                     description = "No project found for given ID or no employee found for given ID",
-                    content = {@Content(schema = @Schema(hidden = true))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
             ),
             @ApiResponse(responseCode = "415",
-                    description = "Invalid Content Type",
+                    description = "Invalid content type",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "500",
