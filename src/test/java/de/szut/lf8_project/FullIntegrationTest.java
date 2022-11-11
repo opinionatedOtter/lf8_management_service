@@ -13,6 +13,7 @@ import de.szut.lf8_project.repository.EmployeeData;
 import de.szut.lf8_project.repository.EmployeeMapper;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,16 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     }
 
     @AfterEach
-    public void clearObjects() {
+    public void afterEach() {
+        clearObjects();
+    }
+
+    @AfterAll
+    public void afterAll() {
+        clearObjects();
+    }
+
+    private void clearObjects() {
         objectsToBeClearedAfterTest.forEach(thing -> {
             if (thing instanceof EmployeeId) {
                 deleteEmployeeInRemoteRepository((EmployeeId) thing);
