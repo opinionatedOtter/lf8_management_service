@@ -24,7 +24,7 @@ public class TestUpdateProject extends FullIntegrationTest {
     @Test
     @DisplayName("ein Projekt erfolgreich komplett updaten")
     void fullUpdate() throws Exception {
-        Project project = ???;
+        Project project = ;
         String jsonUpdateBody = "";
 
         ResultActions result = mockMvc.perform(
