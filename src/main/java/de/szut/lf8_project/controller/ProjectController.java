@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
@@ -54,13 +53,16 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
     }
 
-    @PutMapping("/{projectId}")
+    @PutMapping("/{projectId}/force/{forceFlag}")
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
+            @PathVariable(required = false) boolean forceFlag,
             @RequestHeader("Authorization") String authHeader
     ) {
-        return new ResponseEntity<>(projectApplicationService.updateProject(updateProjectCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
+        return new ResponseEntity<>(
+                projectApplicationService.updateProject(updateProjectCommand, new ProjectId(projectId), new JWT(authHeader), Boolean.TRUE.equals(forceFlag)),
+                HttpStatus.OK);
     }
 
 
@@ -94,7 +96,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(
                 ProblemDetails.fromErrorDetail(new ErrorDetail(
                         Errorcode.INVALID_REQUEST_PARAMETER,
-                        new FailureMessage("Your request could not be read or parsed" )
+                        new FailureMessage("Your request could not be read or parsed")
                 )),
                 Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
     }

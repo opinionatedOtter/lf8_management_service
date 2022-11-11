@@ -5,13 +5,13 @@ import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.ServiceException;
 import de.szut.lf8_project.domain.employee.Employee;
+import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
+import jdk.jfr.Timespan;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +36,13 @@ public class ProjectService {
         } else {
             throw getExceptionWithProblematicProjectIds(collidingProjectsOfEmployee);
         }
+    }
+
+    public List<TeamMember> confirmEmployeeAvailability(Project project, ProjectTimespan timespan){
+        return project.getTeamMembers().stream().filter(teamMember -> projectRepository.getAllProjectsOfEmployee(teamMember.getEmployeeId())
+                        .stream()
+                        .anyMatch(otherProject -> projectTimespansCollide(otherProject, project) && !project.getProjectId().equals(otherProject.getProjectId()))
+                ).toList();
     }
 
     private Project addOrUpdateTeamMember(TeamMember teamMember, Project project) {
