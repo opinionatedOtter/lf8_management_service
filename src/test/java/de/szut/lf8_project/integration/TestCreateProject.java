@@ -87,7 +87,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
         result
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.projectId").isEmpty());
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
         result
                 .andExpect(status().is(401))
-                .andExpect(jsonPath("$.projectId").isEmpty());
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
         result
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.projectId").isEmpty());
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
         result
                 .andExpect(status().is(400))
-                .andExpect(jsonPath("$.projectId").isEmpty());
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
 
