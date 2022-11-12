@@ -1,12 +1,18 @@
 package de.szut.lf8_project.integration;
 
+import com.jayway.jsonpath.JsonPath;
 import de.szut.lf8_project.FullIntegrationTest;
 import de.szut.lf8_project.domain.employee.EmployeeId;
+import de.szut.lf8_project.domain.project.Project;
+import de.szut.lf8_project.domain.project.ProjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,6 +42,7 @@ public class TestCreateProject extends FullIntegrationTest {
                 .header("Authorization", jwt.jwt())
                 .content(jsonBody)
         );
+        ProjectId projectId = getProjectIdFromMvcJsonResponse(result.andReturn());
 
         result
                 .andExpect(status().isCreated())
@@ -48,6 +55,16 @@ public class TestCreateProject extends FullIntegrationTest {
                 .andExpect(jsonPath("$.plannedEndDate").isEmpty())
                 .andExpect(jsonPath("$.actualEndDate").isEmpty())
                 .andExpect(jsonPath("$.teamMember").isEmpty());
+        Project savedProject = getProjectByIdFromDatabase(projectId);
+        assertThat(savedProject.getProjectLead().getProjectLeadId().unbox()).isEqualTo(newEmployee.unbox());
+        assertThat(savedProject.getProjectName().unbox()).isEqualTo("foobar");
+        assertThat(savedProject.getProjectDescription().get().unbox()).isEqualTo("foobar at the beach");
+        assertThat(savedProject.getStartDate().get().unbox()).isEqualTo(LocalDate.of(2022,9,23));
+        assertThat(savedProject.getActualEndDate()).isEmpty();
+        assertThat(savedProject.getPlannedEndDate()).isEmpty();
+        assertThat(savedProject.getCustomer().getCustomerId().unbox()).isEqualTo(789);
+
+
     }
 
     @Test

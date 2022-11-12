@@ -2,6 +2,7 @@ package de.szut.lf8_project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
@@ -13,7 +14,6 @@ import de.szut.lf8_project.repository.EmployeeData;
 import de.szut.lf8_project.repository.EmployeeMapper;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -264,6 +266,10 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return employeeMapper.dtoToEntity(rawUpdatedEmployee);
     }
 
+    protected Project getProjectByIdFromDatabase(ProjectId projectId) throws RepositoryException {
+        return projectRepository.getProjectById(projectId);
+    }
+
     private HttpEntity<String> buildRequestEntity(String jsonBody) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -271,5 +277,11 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         headers.set("Authorization", jwt.jwt());
 
         return new HttpEntity<>(jsonBody, headers);
+    }
+
+    protected ProjectId getProjectIdFromMvcJsonResponse(MvcResult result) throws UnsupportedEncodingException {
+        Integer idAsString = JsonPath.read(result.getResponse().getContentAsString(), "$.projectId");
+        return new ProjectId(Long.valueOf(idAsString));
+
     }
 }
