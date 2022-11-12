@@ -84,7 +84,7 @@ public class ProjectApplicationService {
         Optional<PlannedEndDate> newPlannedEnd = cmd.getPlannedEndDate().isPresent() ? cmd.getPlannedEndDate() : projectToUpdate.getPlannedEndDate();
         Optional<ActualEndDate> newActualEnd = cmd.getActualEndDate().isPresent() ? cmd.getActualEndDate() : projectToUpdate.getActualEndDate();
 
-        validateDates(projectToUpdate, newStart, newPlannedEnd, newActualEnd);
+        validateDates(newStart, newPlannedEnd, newActualEnd);
 
         cmd.getCustomerId().ifPresent(this::validateCustomer);
         ProjectLead projectLead = cmd.getProjectLeadId().map(id -> getProjectLead(id, jwt)).orElse(projectToUpdate.getProjectLead());
@@ -116,7 +116,7 @@ public class ProjectApplicationService {
         }
     }
 
-    private void validateDates(Project projectToUpdate, Optional<StartDate> newStart, Optional<PlannedEndDate> newPlannedEnd, Optional<ActualEndDate> newActualEnd) {
+    private void validateDates(Optional<StartDate> newStart, Optional<PlannedEndDate> newPlannedEnd, Optional<ActualEndDate> newActualEnd) {
         try {
             if (newStart.isPresent()) {
                 if (newPlannedEnd.isPresent()) {

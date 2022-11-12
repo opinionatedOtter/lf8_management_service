@@ -8,4 +8,8 @@ public class ActualEndDate extends ValueType<LocalDate> {
     public ActualEndDate(LocalDate actualEndDate) {
         super(actualEndDate);
     }
+
+    public ActualEndDate(String dateAsString) {
+        super(LocalDate.parse(dateAsString));
+    }
 }
