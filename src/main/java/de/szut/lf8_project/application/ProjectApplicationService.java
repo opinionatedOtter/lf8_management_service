@@ -89,9 +89,7 @@ public class ProjectApplicationService {
         cmd.getCustomerId().ifPresent(this::validateCustomer);
         ProjectLead projectLead = cmd.getProjectLeadId().map(id -> getProjectLead(id, jwt)).orElse(projectToUpdate.getProjectLead());
 
-        List<TeamMember> unavailableTeamMember= ProjectTimespan.of(newStart, RelevantEndDate.of(newPlannedEnd, newActualEnd))
-                .map(projectTimespan -> projectService.confirmEmployeeAvailability(projectToUpdate, projectTimespan))
-                .orElse(Collections.emptyList());
+        List<TeamMember> unavailableTeamMember= projectService.getUnavailableTeamMember(projectToUpdate, ProjectTimespan.of(newStart, RelevantEndDate.of(newPlannedEnd, newActualEnd)));
 
         if(unavailableTeamMember.isEmpty() || forceFlag){
             projectToUpdate.getTeamMembers()
@@ -114,8 +112,7 @@ public class ProjectApplicationService {
             throw new ApplicationServiceException(new ErrorDetail(Errorcode.EMPLOYEE_UNAVAILABLE,
                     new FailureMessage(String.format("""
                             Project could not be updated. The following team member are unavailable in the given project duration : %s.
-                            "Either remove them or set the force flag when updating the project.
-                            """, String.join(", ", unavailableTeamMember.toString())))));
+                            Either remove them or set the force flag when updating the project.""", String.join(", ", unavailableTeamMember.stream().map(m -> m.getEmployeeId().toString()).toList())))));
         }
     }
 

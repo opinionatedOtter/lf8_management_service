@@ -39,11 +39,6 @@ public class ProjectTimespan {
     }
 
     public boolean contains(ProjectTimespan timespan) {
-        return containsAny(timespan.getStartDate(), timespan.getEndDate());
-    }
-
-    @SafeVarargs
-    public final boolean containsAny(ValueType<LocalDate>... dates) {
-        return Arrays.stream(dates).anyMatch(date -> contains(date.unbox()));
+        return !timespan.getStartDate().unbox().isAfter(endDate.unbox()) && !startDate.unbox().isAfter(timespan.getEndDate().unbox());
     }
 }

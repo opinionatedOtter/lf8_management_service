@@ -53,7 +53,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
     }
 
-    @PutMapping("/{projectId}/force/{forceFlag}")
+    @PutMapping(value = {"/{projectId}", "/{projectId}/{forceFlag}"})
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,

@@ -33,20 +33,22 @@ public class ProjectRepository {
     }
 
     public Project saveProject(Project project) throws RepositoryException {
+        ProjectData projectData = ProjectData.builder()
+                .projectId(project.getProjectId().map(ValueType::unbox).orElse(null))
+                .projectName(project.getProjectName().unbox())
+                .projectLeadId(project.getProjectLead().getProjectLeadId().unbox())
+                .customerContact(project.getCustomerContact().unbox())
+                .customerId(project.getCustomer().getCustomerId().unbox())
+                .projectDescription(project.getProjectDescription().map(ValueType::unbox).orElse(null))
+                .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
+                .plannedEndDate(project.getPlannedEndDate().map(ValueType::unbox).orElse(null))
+                .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
+                .startDate(project.getStartDate().map(ValueType::unbox).orElse(null))
+                .teamMembers(project.getTeamMembers().stream().map(teamMemberMapper::mapTo).collect(Collectors.toSet()))
+                .build();
+        projectData.getTeamMembers().stream().forEach(teamMemberData -> teamMemberData.setProjectData(projectData));
         try {
-            return mapProjectDataToProject(projectDataRepository.save(ProjectData.builder()
-                    .projectId(project.getProjectId().map(ValueType::unbox).orElse(null))
-                    .projectName(project.getProjectName().unbox())
-                    .projectLeadId(project.getProjectLead().getProjectLeadId().unbox())
-                    .customerContact(project.getCustomerContact().unbox())
-                    .customerId(project.getCustomer().getCustomerId().unbox())
-                    .projectDescription(project.getProjectDescription().map(ValueType::unbox).orElse(null))
-                    .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
-                    .plannedEndDate(project.getPlannedEndDate().map(ValueType::unbox).orElse(null))
-                    .actualEndDate(project.getActualEndDate().map(ValueType::unbox).orElse(null))
-                    .startDate(project.getStartDate().map(ValueType::unbox).orElse(null))
-                    .teamMembers(project.getTeamMembers().stream().map((teamMember) -> teamMemberMapper.mapTo(teamMember)).collect(Collectors.toSet()))
-                    .build()));
+            return mapProjectDataToProject(projectDataRepository.save(projectData));
         } catch (Exception e) {
             throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
         }
