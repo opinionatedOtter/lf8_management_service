@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Configuration
 @SecurityScheme(
@@ -114,7 +115,5 @@ public interface OpenApiProjectController {
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
             )
     })
-    ResponseEntity<ProjectView> getAllProjects(
-            @Valid @PathVariable Long id
-    );
+    ResponseEntity<List<ProjectView>> getAllProjects();
 }
