@@ -230,41 +230,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return saveProjectInDatabase(createDefaultProject(new ProjectLeadId(projectLead.getId().unbox())));
     }
 
-    protected Employee updateEmployeeInRemoteRepository(Employee employee) {
-        String jsonBody = String.format("""
-                        {
-                          "firstName": "%s",
-                          "lastName": "%s",
-                          "street": "%s",
-                          "postcode": "%s",
-                          "city": "%s",
-                          "phone": "%s",
-                          "skillSet": [%s]
-                        }
-                        """,
-                employee.getFirstName().unbox(),
-                employee.getLastName().unbox(),
-                employee.getStreet().unbox(),
-                employee.getPostcode().unbox(),
-                employee.getCity().unbox(),
-                employee.getPhonenumber().unbox(),
-                employee.getSkillset().stream().map(projectRole -> "\"" + projectRole.unbox() + "\"").collect(Collectors.joining(","))
-        );
-
-        EmployeeData rawUpdatedEmployee = new RestTemplate()
-                .exchange(
-                        Objects.requireNonNull(env.getProperty("employeeapi.baseUrl") + employee.getId().unbox()),
-                        HttpMethod.PUT,
-                        buildRequestEntity(jsonBody),
-                        EmployeeData.class)
-                .getBody();
-
-        EmployeeId employeeId = new EmployeeId(rawUpdatedEmployee.getId());
-        objectsToBeClearedAfterTest.add(employeeId);
-
-        return employeeMapper.dtoToEntity(rawUpdatedEmployee);
-    }
-
     protected Project getProjectByIdFromDatabase(ProjectId projectId) throws RepositoryException {
         return projectRepository.getProjectById(projectId);
     }
