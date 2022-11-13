@@ -17,7 +17,6 @@ import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,9 +88,9 @@ public class ProjectApplicationService {
         cmd.getCustomerId().ifPresent(this::validateCustomer);
         ProjectLead projectLead = cmd.getProjectLeadId().map(id -> getProjectLead(id, jwt)).orElse(projectToUpdate.getProjectLead());
 
-        List<TeamMember> unavailableTeamMember= projectService.getUnavailableTeamMember(projectToUpdate, ProjectTimespan.of(newStart, RelevantEndDate.of(newPlannedEnd, newActualEnd)));
+        List<TeamMember> unavailableTeamMember = projectService.getUnavailableTeamMember(projectToUpdate, ProjectTimespan.of(newStart, RelevantEndDate.of(newPlannedEnd, newActualEnd)));
 
-        if(unavailableTeamMember.isEmpty() || forceFlag){
+        if (unavailableTeamMember.isEmpty() || forceFlag) {
             unavailableTeamMember.forEach(projectToUpdate.getTeamMembers()::remove);
 
             return mapProjectToViewModel(saveProject(Project.builder()

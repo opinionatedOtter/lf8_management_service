@@ -240,7 +240,7 @@ public class TestProjectApplicationService {
             UpdateProjectCommand cmd = aDefaultUpdateCommand().build();
             Project projectToSave = aDefaultUpdatedProject().build();
             Project projectToUpdate = aDefaultProject().build();
-            when(projectRepository.getProjectById(projectId)).thenReturn(projectToUpdate);
+            when(projectRepository.getProject(projectId)).thenReturn(projectToUpdate);
             when(projectRepository.saveProject(projectToSave)).thenReturn(projectToSave);
             when(employeeRepository.getEmployeeById(jwt, cmd.getProjectLeadId().get())).thenReturn(aDefaultEmployee().id(cmd.getProjectLeadId().get()).build());
 
