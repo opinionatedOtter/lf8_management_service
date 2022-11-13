@@ -138,47 +138,6 @@ public interface OpenApiProjectController {
             @Valid @PathVariable Long id
     );
 
-    @Operation(summary = "Add an employee to a project")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Employee was added, Project is returned",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
-            ),
-            @ApiResponse(responseCode = "400",
-                    description = "Malformed request, invalid parameter, employee has wrong role, employee already planned in other project",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
-            ),
-            @ApiResponse(responseCode = "401",
-                    description = "Please provide a valid bearer token",
-                    content = {@Content(schema = @Schema(hidden = true))}
-            ),
-            @ApiResponse(responseCode = "403",
-                    description = "You do not have the required user permissions for this action.",
-                    content = {@Content(schema = @Schema(hidden = true))}
-            ),
-            @ApiResponse(responseCode = "404",
-                    description = "No project found for given ID or no employee found for given ID",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
-            ),
-            @ApiResponse(responseCode = "415",
-                    description = "Invalid content type",
-                    content = {@Content(schema = @Schema(hidden = true))}
-            ),
-            @ApiResponse(responseCode = "500",
-                    description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
-            ),
-            @ApiResponse(responseCode = "503",
-                    description = "The service is currently unavailable",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
-            )
-    })
-    ResponseEntity<ProjectView> addEmployee(
-            @Valid @PathVariable Long projectId,
-            @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
-            @RequestHeader("Authorization") String authHeader
-    );
-
     @Operation(summary = "Get a list of all Projects")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -203,11 +162,11 @@ public interface OpenApiProjectController {
     @Operation(summary = "Add an Employee to an existing Project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "The Employee was added successfully to the project",
+                    description = "Employee was added, Project is returned",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
             ),
             @ApiResponse(responseCode = "400",
-                    description = "Malformed request or invalid parameter",
+                    description = "Malformed request, invalid parameter, employee has wrong role, employee already planned in other project",
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
             ),
             @ApiResponse(responseCode = "401",
@@ -216,6 +175,14 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "403",
                     description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "404",
+                    description = "No project found for given ID or no employee found for given ID",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "415",
+                    description = "Invalid content type",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "500",
