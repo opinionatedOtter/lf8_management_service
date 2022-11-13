@@ -2,10 +2,8 @@ package de.szut.lf8_project.domain.adapter;
 
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
-import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
-import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
-import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
+import de.szut.lf8_project.controller.dtos.*;
+import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.ProjectId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -17,10 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -165,9 +160,38 @@ public interface OpenApiProjectController {
             )
     })
     @PostMapping("/{projectId}")
-    public ResponseEntity<ProjectView> addEmployee(
+    ResponseEntity<ProjectView> addEmployee(
             @Valid @PathVariable Long projectId,
             @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
+            @RequestHeader("Authorization") String authHeader
+    );
+
+    @Operation(summary = "Get all projects from an employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Projects of the Employee were successfully returned",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeProjectView.class))}
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "Malformed request or invalid parameter",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Please provide a valid bearer token",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "500",
+                    description = "An unknown error occurred, please try again later",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            )
+    })
+    @GetMapping("/byEmployee/{employeeId}")
+    ResponseEntity<List<EmployeeProjectView>> getAllProjectsFromEmployee(
+            @Valid @PathVariable Long employeeId,
             @RequestHeader("Authorization") String authHeader
     );
 }
