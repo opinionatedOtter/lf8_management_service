@@ -231,7 +231,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     }
 
     protected Project getProjectByIdFromDatabase(ProjectId projectId) throws RepositoryException {
-        return projectRepository.getProjectById(projectId);
+        return projectRepository.getProject(projectId);
     }
 
     private HttpEntity<String> buildRequestEntity(String jsonBody) {
