@@ -76,39 +76,6 @@ public class ProjectApplicationService {
         }
     }
 
-    public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt) {
-        // gibt es das projekt
-        Project projectToUpdate = getProject(projectId);
-        // date valid - refactor mit optionals?
-        validateDateCombinations(cmd, projectToUpdate);
-
-        // customer valid
-        cmd.getCustomerId().ifPresent(this::validateCustomer);
-        // lead valid
-        ProjectLead projectLead = cmd.getProjectLeadId().map(id -> getProjectLead(id, jwt)).orElse(projectToUpdate.getProjectLead());
-        // remove with time conflicts optional force flag?
-
-        // smarter machbar? nicht doppelt if present checken
-        return mapProjectToViewModel(saveProject(Project.builder()
-                .projectId(projectToUpdate.getProjectId())
-                .projectLead(projectLead)
-                .projectName(cmd.getProjectName().orElse(projectToUpdate.getProjectName()))
-                .customerContact(cmd.getCustomerContact().orElse(projectToUpdate.getCustomerContact()))
-                .customer(cmd.getCustomerId().map(Customer::new).orElse(projectToUpdate.getCustomer()))
-                .projectDescription(cmd.getProjectDescription().isPresent() ? cmd.getProjectDescription() : projectToUpdate.getProjectDescription())
-                .actualEndDate(cmd.getActualEndDate().isPresent() ? cmd.getActualEndDate() : projectToUpdate.getActualEndDate())
-                .plannedEndDate(cmd.getPlannedEndDate().isPresent() ? cmd.getPlannedEndDate() : projectToUpdate.getPlannedEndDate())
-                .startDate(cmd.getStartDate().isPresent() ? cmd.getStartDate() : projectToUpdate.getStartDate())
-                .build()
-        ));
-    }
-
-    private void validateDateCombinations(UpdateProjectCommand cmd, Project projectToUpdate) {
-        validateProjectStartAndEnd(cmd.getStartDate(), cmd.getPlannedEndDate());
-        validateProjectStartAndEnd(cmd.getStartDate(), projectToUpdate.getPlannedEndDate());
-        validateProjectStartAndEnd(projectToUpdate.getStartDate(), cmd.getPlannedEndDate());
-    }
-
     public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt, boolean forceFlag) {
         Project projectToUpdate = getProject(projectId);
 
