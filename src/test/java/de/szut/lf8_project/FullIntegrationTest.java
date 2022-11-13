@@ -78,13 +78,13 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         });
 
         objectsToBeClearedAfterTest.forEach(thing -> {
-            if (thing instanceof TransferProjectRole) {
-                deleteQualificationInRemoteRepository((TransferProjectRole) thing);
+            if (thing instanceof ProjectRoleFromJson) {
+                deleteQualificationInRemoteRepository((ProjectRoleFromJson) thing);
             }
         });
     }
 
-    private void deleteQualificationInRemoteRepository(final TransferProjectRole role) {
+    private void deleteQualificationInRemoteRepository(final ProjectRoleFromJson role) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", jwt.jwt());
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -207,13 +207,13 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 "Skill " + UUID.randomUUID()
         );
 
-        ResponseEntity<TransferProjectRole> transferProjectRoleResponseEntity = new RestTemplate()
+        ResponseEntity<ProjectRoleFromJson> transferProjectRoleResponseEntity = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("qualificationsapi.baseUrl")),
                         buildRequestEntity("{\"skill\": \"" + projectRole.unbox() + "\"}"),
-                        TransferProjectRole.class);
+                        ProjectRoleFromJson.class);
 
-        TransferProjectRole transfer = transferProjectRoleResponseEntity.getBody();
+        ProjectRoleFromJson transfer = transferProjectRoleResponseEntity.getBody();
         objectsToBeClearedAfterTest.add(transfer);
 
         return new ProjectRole(transfer.skill);

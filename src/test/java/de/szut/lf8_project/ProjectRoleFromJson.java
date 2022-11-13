@@ -10,7 +10,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Setter
 @NoArgsConstructor
-class TransferProjectRole {
+class ProjectRoleFromJson {
 
     @JsonProperty("skill")
     String skill;
