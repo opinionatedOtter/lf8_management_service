@@ -9,9 +9,7 @@ import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +26,7 @@ public class ProjectService {
 
         List<Project> collidingProjectsOfEmployee = projectRepository.getAllProjectsOfEmployee(employee.getId())
                 .stream()
-                .filter(otherProject -> projectTimespansCollide(otherProject, project) && !project.getProjectId().equals(otherProject.getProjectId()))
+                .filter(otherProject -> areProjectTimespansColliding(otherProject.getProjectTimespan(), project.getProjectTimespan()) && !project.getProjectId().equals(otherProject.getProjectId()))
                 .toList();
 
         if (collidingProjectsOfEmployee.isEmpty()) {
@@ -36,6 +34,14 @@ public class ProjectService {
         } else {
             throw getExceptionWithProblematicProjectIds(collidingProjectsOfEmployee);
         }
+    }
+
+    public List<TeamMember> getUnavailableTeamMember(Project project, Optional<ProjectTimespan> timespan){
+        return project.getTeamMembers().stream()
+                .filter(teamMember -> projectRepository.getAllProjectsOfEmployee(teamMember.getEmployeeId())
+                        .stream()
+                        .anyMatch(otherProject -> areProjectTimespansColliding(otherProject.getProjectTimespan(), timespan) && !project.getProjectId().equals(otherProject.getProjectId()))
+                ).toList();
     }
 
     private Project addOrUpdateTeamMember(TeamMember teamMember, Project project) {
@@ -57,9 +63,7 @@ public class ProjectService {
                         new FailureMessage("Employee could not be assigned to Project. The following other Projects of this Employee fall into the same timespan: " + collidingProjectIds)));
     }
 
-    private boolean projectTimespansCollide(Project projectA, Project projectB) {
-        Optional<ProjectTimespan> timespanA = projectA.getProjectTimespan();
-        Optional<ProjectTimespan> timespanB = projectB.getProjectTimespan();
+    private boolean areProjectTimespansColliding(Optional<ProjectTimespan> timespanA, Optional<ProjectTimespan> timespanB) {
         return timespanA.isPresent() && timespanB.isPresent() && timespanA.get().contains(timespanB.get());
     }
 

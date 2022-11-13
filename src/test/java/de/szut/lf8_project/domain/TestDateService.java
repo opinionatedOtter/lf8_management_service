@@ -28,7 +28,7 @@ public class TestDateService {
         StartDate startDate = new StartDate(LocalDate.of(2022, 1, 1));
         PlannedEndDate plannedEndDate = new PlannedEndDate(LocalDate.of(2022, 2, 2));
 
-        Assertions.assertDoesNotThrow(() -> dateService.validateProjectStartAndEnd(startDate, plannedEndDate));
+        Assertions.assertDoesNotThrow(() -> dateService.validateProjectStartAndPlannedEnd(startDate, plannedEndDate));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class TestDateService {
         StartDate startDate = new StartDate(LocalDate.of(2022, 2, 1));
         PlannedEndDate plannedEndDate = new PlannedEndDate(LocalDate.of(2022, 1, 1));
 
-        ServiceException result = Assertions.assertThrows(ServiceException.class, () -> dateService.validateProjectStartAndEnd(startDate, plannedEndDate));
+        ServiceException result = Assertions.assertThrows(ServiceException.class, () -> dateService.validateProjectStartAndPlannedEnd(startDate, plannedEndDate));
 
         assertThat(result.getErrorDetail().getErrorCode()).isEqualTo(Errorcode.END_DATE_BEFORE_START);
         assertThat(result.getErrorDetail().getFailureMessage()).isEqualTo(new FailureMessage("Start date is after the planned end Date."));

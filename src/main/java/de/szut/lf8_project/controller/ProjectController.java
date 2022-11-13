@@ -11,6 +11,7 @@ import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
+import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
 import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
@@ -72,6 +74,19 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
+    @PutMapping(value = {"/{projectId}", "/{projectId}/{isForced}"})
+    public ResponseEntity<ProjectView> updateProject(
+            @PathVariable Long projectId,
+            @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
+            @PathVariable(required = false) boolean isForced,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        return new ResponseEntity<>(
+                projectApplicationService.updateProject(updateProjectCommand, new ProjectId(projectId), new JWT(authHeader), Boolean.TRUE.equals(isForced)),
+                HttpStatus.OK);
+    }
+
+
     @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
         return new ResponseEntity<>(
@@ -102,7 +117,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(
                 ProblemDetails.fromErrorDetail(new ErrorDetail(
                         Errorcode.INVALID_REQUEST_PARAMETER,
-                        new FailureMessage("Your request could not be read or parsed" )
+                        new FailureMessage("Your request could not be read or parsed")
                 )),
                 Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
     }

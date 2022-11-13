@@ -17,6 +17,7 @@ import java.util.Set;
 public class ProjectData {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "project_id", insertable = false, updatable = false)
     Long projectId;
     String projectName;
     String projectDescription;
@@ -27,7 +28,6 @@ public class ProjectData {
     LocalDate plannedEndDate;
     LocalDate actualEndDate;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "project_id", nullable = false)
+    @OneToMany(mappedBy = "projectData" ,cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<TeamMemberData> teamMembers;
 }
