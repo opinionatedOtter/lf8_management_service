@@ -15,7 +15,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("The GET all projects from employee route should")
 public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
@@ -41,6 +42,7 @@ public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
         result
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.employeeId").value(employee.getId().unbox()))
+                .andExpect(jsonPath("$.projects").isArray())
 
                 .andExpect(jsonPath("$.projects.[0].projectId").value(project.getProjectId().get().unbox()))
                 .andExpect(jsonPath("$.projects[0].projectName").value(project.getProjectName().unbox()))
@@ -69,7 +71,9 @@ public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
 
         result
                 .andExpect(status().isOk())
-                .andExpect(content().string("[]"));
+                .andExpect(jsonPath("$.employeeId").value(employee.getId().unbox()))
+                .andExpect(jsonPath("$.projects").isArray())
+                .andExpect(jsonPath("$.projects").isEmpty());
     }
 
     @Test
