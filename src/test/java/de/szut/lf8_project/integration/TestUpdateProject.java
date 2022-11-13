@@ -66,10 +66,10 @@ public class TestUpdateProject extends FullIntegrationTest {
     @ParameterizedTest(name = "für das Feld {0}")
     @MethodSource
     @DisplayName("ein Projekt erfolgreich teilweise updaten")
-    void partialUpdate(String fieldToUpdate, String newValue, String jsonResultPath) throws Exception {
+    void partialUpdate(String fieldToUpdate, Object newValue, String jsonResultPath) throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
         saveProjectInDatabase(project);
-        String jsonUpdateBody = "{\"" + fieldToUpdate + "\": " + newValue + "}";
+        String jsonUpdateBody = "{\""  + fieldToUpdate + "\": " + (newValue instanceof String ? "\"" + newValue + "\"" : newValue ) + "}";
 
         ResultActions result = mockMvc.perform(
                 put("/api/v1/project/" + project.getProjectId().get().unbox())
@@ -82,6 +82,29 @@ public class TestUpdateProject extends FullIntegrationTest {
         result
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(jsonResultPath, is(newValue)));
+
+    }
+
+    @Test
+    @DisplayName("ein Projekt erfolgreich teilweise updaten (ProjektLead)")
+    void partialUpdateProjektLead() throws Exception {
+        Project project = createAndSaveDefaultProjectWithProjectLead();
+        Employee employee = createDefaultEmployeeWithout0Id();
+        employee = saveEmployeeInRemoteRepository(employee);
+        saveProjectInDatabase(project);
+        String jsonUpdateBody = "{\"projectLeadId\": " + employee.getId() + "}";
+
+        ResultActions result = mockMvc.perform(
+                put("/api/v1/project/" + project.getProjectId().get().unbox())
+                        .header("Authorization", jwt.jwt())
+                        .content(jsonUpdateBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectLead.projectLeadId", is(employee.getId().unbox().intValue())));
 
     }
 
@@ -130,42 +153,37 @@ public class TestUpdateProject extends FullIntegrationTest {
         return Stream.of(
                 Arguments.of(
                         "projectName",
-                        "\"ich bin der neue Name\"",
+                        "ich bin der neue Name",
                         "$.projectName"
                 ),
                 Arguments.of(
                         "projectDescription",
-                        "\"ich bin die neue Beschreibung\"",
+                        "ich bin die neue Beschreibung",
                         "$.projectDescription"
                 ),
                 Arguments.of(
                         "customerId",
-                        "1337",
+                        1337,
                         "$.customer.customerId"
                 ),
                 Arguments.of(
                         "customerContact",
-                        "\"Der Neue\"",
+                        "Der Neue",
                         "$.customerContact"
                 ),
                 Arguments.of(
-                        "projectLeadId",
-                        "hier eine echte Nummer?!",
-                        "$.projectLead.projectLeadId"
-                ),
-                Arguments.of(
                         "startDate",
-                        "\"2020-01-01\"",
+                        "2020-01-01",
                         "$.startDate"
                 ),
                 Arguments.of(
                         "plannedEndDate",
-                        "\"2023-02-02\"",
+                        "2023-02-02",
                         "$.plannedEndDate"
                 ),
                 Arguments.of(
                         "actualEndDate",
-                        "\"2024-03-03\"",
+                        "2024-03-03",
                         "$.actualEndDate"
                 )
         );
