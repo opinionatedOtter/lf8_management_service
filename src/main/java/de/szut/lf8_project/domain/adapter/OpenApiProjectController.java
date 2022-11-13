@@ -1,10 +1,7 @@
 package de.szut.lf8_project.domain.adapter;
 
-import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.*;
-import de.szut.lf8_project.domain.employee.EmployeeId;
-import de.szut.lf8_project.domain.project.ProjectId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -216,7 +212,7 @@ public interface OpenApiProjectController {
             )
     })
     @GetMapping("/byEmployee/{employeeId}")
-    ResponseEntity<List<EmployeeProjectView>> getAllProjectsFromEmployee(
+    ResponseEntity<List<EmployeeProjectView>> getAllProjectsOfEmployee(
             @Valid @PathVariable Long employeeId,
             @RequestHeader("Authorization") String authHeader
     );

@@ -134,11 +134,11 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
 
 
 
-    protected Employee createDefaultEmployeeWithout0Id() {
-        return createDefaultEmployeeWithRolesWithout0Id(Collections.emptyList());
+    protected Employee createDefaultEmployeeWith0Id() {
+        return createDefaultEmployeeWithRolesWith0Id(Collections.emptyList());
     }
 
-    protected Employee createDefaultEmployeeWithRolesWithout0Id(List<ProjectRole> projectRoles) {
+    protected Employee createDefaultEmployeeWithRolesWith0Id(List<ProjectRole> projectRoles) {
         return new Employee(
                 new EmployeeId(0L),
                 new LastName(UUID.randomUUID().toString()),
@@ -163,6 +163,22 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 .startDate(Optional.of(new StartDate(LocalDate.of(2022, 1, 20))))
                 .plannedEndDate(Optional.of(new PlannedEndDate(LocalDate.of(2022, 4, 24))))
                 .actualEndDate(Optional.of(new ActualEndDate(LocalDate.of(2022, 6, 26))))
+                .teamMembers(Collections.emptySet())
+                .build();
+        return project;
+    }
+
+    protected Project createDifferentProject(final ProjectLeadId projectLeadId) {
+        Project project = Project.builder()
+                .projectId(Optional.empty())
+                .projectName(new ProjectName("Different"))
+                .projectDescription(Optional.of(new ProjectDescription("Unique")))
+                .projectLead(new ProjectLead(projectLeadId))
+                .customer(new Customer(new CustomerId(69L)))
+                .customerContact(new CustomerContact("Freundschaft mit Franz-Ferdinand Falke endet"))
+                .startDate(Optional.of(new StartDate(LocalDate.of(2023, 1, 20))))
+                .plannedEndDate(Optional.of(new PlannedEndDate(LocalDate.of(2023, 4, 24))))
+                .actualEndDate(Optional.of(new ActualEndDate(LocalDate.of(2023, 6, 26))))
                 .teamMembers(Collections.emptySet())
                 .build();
         return project;
@@ -226,8 +242,13 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     }
 
     protected Project createAndSaveDefaultProjectWithProjectLead() throws RepositoryException {
-        Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWithout0Id());
+        Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
         return saveProjectInDatabase(createDefaultProject(new ProjectLeadId(projectLead.getId().unbox())));
+    }
+
+    protected Project createAndSaveDifferentProjectWithProjectLead() throws RepositoryException {
+        Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
+        return saveProjectInDatabase(createDifferentProject(new ProjectLeadId(projectLead.getId().unbox())));
     }
 
     protected Project getProjectByIdFromDatabase(ProjectId projectId) throws RepositoryException {
