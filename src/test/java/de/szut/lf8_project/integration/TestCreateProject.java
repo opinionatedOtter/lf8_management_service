@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Der Create Project Rest-Endpunkt")
@@ -29,20 +30,6 @@ public class TestCreateProject extends FullIntegrationTest {
                         "startDate": "2022-09-23"
                         }
                 """, newEmployee.unbox());
-        String expectedJsonContent = String.format("""
-                    {
-                    "projectId": 1,
-                    "projectName": "foobar",
-                    "projectDescription": "foobar at the beach",
-                    "startDate": "2022-09-23",
-                     "projectLead": {
-                        "projectLeadId": %d
-                    },
-                    "customer" : {
-                        "customerId": 789
-                        }
-                    }
-                """, newEmployee.unbox());
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -51,8 +38,16 @@ public class TestCreateProject extends FullIntegrationTest {
         );
 
         result
-                .andExpect(content().json(expectedJsonContent))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.projectId").isNotEmpty())
+                .andExpect(jsonPath("$.projectName").value("foobar"))
+                .andExpect(jsonPath("$.projectLead.projectLeadId").value(newEmployee.unbox()))
+                .andExpect(jsonPath("$.customer.customerId").value(789))
+                .andExpect(jsonPath("$.customerContact").value("Testkontakt"))
+                .andExpect(jsonPath("$.startDate").value("2022-09-23"))
+                .andExpect(jsonPath("$.plannedEndDate").isEmpty())
+                .andExpect(jsonPath("$.actualEndDate").isEmpty())
+                .andExpect(jsonPath("$.teamMember").isEmpty());
     }
 
     @Test
@@ -99,7 +94,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
     @Test
     @DisplayName("einen 400 Fehler werfen wenn die Request invalide Parameter enhält")
-    void invalidParameBadRequest() throws Exception {
+    void invalidParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
@@ -120,7 +115,7 @@ public class TestCreateProject extends FullIntegrationTest {
 
     @Test
     @DisplayName("einen 400 Fehler werfen wenn die Request nicht vollständig ist")
-    void missingParamBadRequest() throws Exception {
+    void missingParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
