@@ -7,7 +7,6 @@ import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
 import de.szut.lf8_project.domain.project.TeamMember;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -49,8 +48,8 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         );
 
         result
-                .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("employeeId" , employeeId.unbox().intValue()))))
-                .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("projectRole" , role.unbox()))))
+                .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("employeeId", employeeId.unbox().intValue()))))
+                .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("projectRole", role.unbox()))))
                 .andExpect(status().isCreated());
 
         Project updatedProjectInDb = getProjectByIdFromDatabase(project.getProjectId().get());

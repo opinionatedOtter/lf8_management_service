@@ -1,6 +1,5 @@
 package de.szut.lf8_project.integration;
 
-import com.jayway.jsonpath.JsonPath;
 import de.szut.lf8_project.FullIntegrationTest;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
@@ -15,7 +14,6 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,7 +59,7 @@ public class TestCreateProject extends FullIntegrationTest {
         assertThat(savedProject.getProjectLead().getProjectLeadId().unbox()).isEqualTo(newEmployee.unbox());
         assertThat(savedProject.getProjectName().unbox()).isEqualTo("foobar");
         assertThat(savedProject.getProjectDescription().get().unbox()).isEqualTo("foobar at the beach");
-        assertThat(savedProject.getStartDate().get().unbox()).isEqualTo(LocalDate.of(2022,9,23));
+        assertThat(savedProject.getStartDate().get().unbox()).isEqualTo(LocalDate.of(2022, 9, 23));
         assertThat(savedProject.getActualEndDate()).isEmpty();
         assertThat(savedProject.getPlannedEndDate()).isEmpty();
         assertThat(savedProject.getCustomer().getCustomerId().unbox()).isEqualTo(789);
