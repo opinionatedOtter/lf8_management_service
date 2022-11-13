@@ -1,6 +1,10 @@
 package de.szut.lf8_project.application;
 
-import de.szut.lf8_project.common.*;
+import de.szut.lf8_project.common.ErrorDetail;
+import de.szut.lf8_project.common.Errorcode;
+import de.szut.lf8_project.common.FailureMessage;
+import de.szut.lf8_project.common.JWT;
+import de.szut.lf8_project.common.ServiceException;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
@@ -27,7 +31,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("The ProjectApplicationService should")
@@ -63,6 +73,8 @@ public class TestProjectApplicationService {
                 .firstName(new FirstName("Namy"))
                 .lastName(new LastName("Lasty"))
                 .postcode(new Postcode("28983"))
+                .phonenumber(new Phonenumber("0421 22 33 44"))
+                .city(new City("Bremen"))
                 .skillset(List.of(new ProjectRole("Skillz")))
                 .street(new Street("Streety"));
     }
