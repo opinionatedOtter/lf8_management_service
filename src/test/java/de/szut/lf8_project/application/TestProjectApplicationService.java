@@ -111,7 +111,7 @@ public class TestProjectApplicationService {
         }
 
         @Test
-        @DisplayName("create a project")
+        @DisplayName("create a project successfully")
         public void createProject() throws ServiceException, RepositoryException {
             ProjectView expectedView = aDefaultView().actualEndDate(Optional.empty()).build();
             CreateProjectCommand cmd = aDefaultCreateCommand().build();

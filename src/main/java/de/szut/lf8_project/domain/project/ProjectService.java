@@ -26,7 +26,7 @@ public class ProjectService {
 
         List<Project> collidingProjectsOfEmployee = projectRepository.getAllProjectsOfEmployee(employee.getId())
                 .stream()
-                .filter(otherProject -> projectTimespansCollide(otherProject.getProjectTimespan(), project.getProjectTimespan()) && !project.getProjectId().equals(otherProject.getProjectId()))
+                .filter(otherProject -> areProjectTimespansColliding(otherProject.getProjectTimespan(), project.getProjectTimespan()) && !project.getProjectId().equals(otherProject.getProjectId()))
                 .toList();
 
         if (collidingProjectsOfEmployee.isEmpty()) {
@@ -40,7 +40,7 @@ public class ProjectService {
         return project.getTeamMembers().stream()
                 .filter(teamMember -> projectRepository.getAllProjectsOfEmployee(teamMember.getEmployeeId())
                         .stream()
-                        .anyMatch(otherProject -> projectTimespansCollide(otherProject.getProjectTimespan(), timespan) && !project.getProjectId().equals(otherProject.getProjectId()))
+                        .anyMatch(otherProject -> areProjectTimespansColliding(otherProject.getProjectTimespan(), timespan) && !project.getProjectId().equals(otherProject.getProjectId()))
                 ).toList();
     }
 
@@ -63,7 +63,7 @@ public class ProjectService {
                         new FailureMessage("Employee could not be assigned to Project. The following other Projects of this Employee fall into the same timespan: " + collidingProjectIds)));
     }
 
-    private boolean projectTimespansCollide(Optional<ProjectTimespan> timespanA, Optional<ProjectTimespan> timespanB) {
+    private boolean areProjectTimespansColliding(Optional<ProjectTimespan> timespanA, Optional<ProjectTimespan> timespanB) {
         return timespanA.isPresent() && timespanB.isPresent() && timespanA.get().contains(timespanB.get());
     }
 

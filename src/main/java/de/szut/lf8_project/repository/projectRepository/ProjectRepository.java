@@ -40,6 +40,15 @@ public class ProjectRepository {
     }
 
     public Project saveProject(Project project) throws RepositoryException {
+        ProjectData projectData = mapProjectToProjectData(project);
+        try {
+            return mapProjectDataToProject(projectDataRepository.save(projectData));
+        } catch (Exception e) {
+            throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
+        }
+    }
+
+    private ProjectData mapProjectToProjectData(Project project) {
         ProjectData projectData = ProjectData.builder()
                 .projectId(project.getProjectId().map(ValueType::unbox).orElse(null))
                 .projectName(project.getProjectName().unbox())
@@ -53,12 +62,8 @@ public class ProjectRepository {
                 .startDate(project.getStartDate().map(ValueType::unbox).orElse(null))
                 .teamMembers(project.getTeamMembers().stream().map(teamMemberMapper::mapTo).collect(Collectors.toSet()))
                 .build();
-        projectData.getTeamMembers().stream().forEach(teamMemberData -> teamMemberData.setProjectData(projectData));
-        try {
-            return mapProjectDataToProject(projectDataRepository.save(projectData));
-        } catch (Exception e) {
-            throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
-        }
+        projectData.getTeamMembers().forEach(teamMemberData -> teamMemberData.setProjectData(projectData));
+        return projectData;
     }
 
     public Project getProject(ProjectId projectId) throws RepositoryException {

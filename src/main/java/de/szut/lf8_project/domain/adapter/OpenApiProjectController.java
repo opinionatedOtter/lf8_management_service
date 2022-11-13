@@ -63,7 +63,7 @@ public interface OpenApiProjectController {
     );
 
 
-    @Operation(summary = "Updates a existing project. Accepts a force-flag to remove all team members which are unavailable in the new project duration.")
+    @Operation(summary = "Updates an existing project. Accepts a force-flag to remove all team members who are unavailable in the new project duration.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The project was successfully updated",
