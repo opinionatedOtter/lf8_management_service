@@ -17,9 +17,7 @@ import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -92,10 +90,7 @@ public class ProjectApplicationService {
         List<TeamMember> unavailableTeamMember= projectService.getUnavailableTeamMember(projectToUpdate, ProjectTimespan.of(newStart, RelevantEndDate.of(newPlannedEnd, newActualEnd)));
 
         if(unavailableTeamMember.isEmpty() || forceFlag){
-            projectToUpdate.getTeamMembers()
-                    .stream()
-                    .filter(unavailableTeamMember::contains)
-                    .forEach(teamMember -> projectToUpdate.getTeamMembers().remove(teamMember));
+            unavailableTeamMember.forEach(projectToUpdate.getTeamMembers()::remove);
 
             return mapProjectToViewModel(saveProject(Project.builder()
                     .projectId(projectToUpdate.getProjectId())
@@ -107,6 +102,7 @@ public class ProjectApplicationService {
                     .actualEndDate(cmd.getActualEndDate().isPresent() ? cmd.getActualEndDate() : projectToUpdate.getActualEndDate())
                     .plannedEndDate(cmd.getPlannedEndDate().isPresent() ? cmd.getPlannedEndDate() : projectToUpdate.getPlannedEndDate())
                     .startDate(cmd.getStartDate().isPresent() ? cmd.getStartDate() : projectToUpdate.getStartDate())
+                    .teamMembers(projectToUpdate.getTeamMembers())
                     .build()));
         } else {
             throw new ApplicationServiceException(new ErrorDetail(Errorcode.EMPLOYEE_UNAVAILABLE,
