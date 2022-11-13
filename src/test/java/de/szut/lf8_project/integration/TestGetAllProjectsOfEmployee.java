@@ -40,19 +40,21 @@ public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
 
         result
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].projectId").value(project.getProjectId().get().unbox()))
-                .andExpect(jsonPath("$[0].projectName").value(project.getProjectName().unbox()))
-                .andExpect(jsonPath("$[0].startDate").value(project.getStartDate().get().unbox().toString()))
-                .andExpect(jsonPath("$[0].plannedEndDate").value(project.getPlannedEndDate().get().unbox().toString()))
-                .andExpect(jsonPath("$[0].actualEndDate").value(project.getActualEndDate().get().unbox().toString()))
-                .andExpect(jsonPath("$[0].projectRole").value(projectRole.unbox()))
+                .andExpect(jsonPath("$.employeeId").value(employee.getId().unbox()))
 
-                .andExpect(jsonPath("$[1].projectId").value(differentProject.getProjectId().get().unbox()))
-                .andExpect(jsonPath("$[1].projectName").value(differentProject.getProjectName().unbox()))
-                .andExpect(jsonPath("$[1].startDate").value(differentProject.getStartDate().get().unbox().toString()))
-                .andExpect(jsonPath("$[1].plannedEndDate").value(differentProject.getPlannedEndDate().get().unbox().toString()))
-                .andExpect(jsonPath("$[1].actualEndDate").value(differentProject.getActualEndDate().get().unbox().toString()))
-                .andExpect(jsonPath("$[1].projectRole").value(projectRole.unbox()));
+                .andExpect(jsonPath("$.projects.[0].projectId").value(project.getProjectId().get().unbox()))
+                .andExpect(jsonPath("$.projects[0].projectName").value(project.getProjectName().unbox()))
+                .andExpect(jsonPath("$.projects[0].startDate").value(project.getStartDate().get().unbox().toString()))
+                .andExpect(jsonPath("$.projects[0].plannedEndDate").value(project.getPlannedEndDate().get().unbox().toString()))
+                .andExpect(jsonPath("$.projects[0].actualEndDate").value(project.getActualEndDate().get().unbox().toString()))
+                .andExpect(jsonPath("$.projects[0].projectRole").value(projectRole.unbox()))
+
+                .andExpect(jsonPath("$.projects[1].projectId").value(differentProject.getProjectId().get().unbox()))
+                .andExpect(jsonPath("$.projects[1].projectName").value(differentProject.getProjectName().unbox()))
+                .andExpect(jsonPath("$.projects[1].startDate").value(differentProject.getStartDate().get().unbox().toString()))
+                .andExpect(jsonPath("$.projects[1].plannedEndDate").value(differentProject.getPlannedEndDate().get().unbox().toString()))
+                .andExpect(jsonPath("$.projects[1].actualEndDate").value(differentProject.getActualEndDate().get().unbox().toString()))
+                .andExpect(jsonPath("$.projects[1].projectRole").value(projectRole.unbox()));
     }
 
     @Test

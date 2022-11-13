@@ -66,15 +66,17 @@ public class ProjectApplicationService {
         return mapProjectToViewModel(saveProject(newProject));
     }
 
-    public List<EmployeeProjectView> getAllProjectOfEmployee(EmployeeId employeeId, JWT jwt) {
+    public EmployeeProjectViewWrapper getAllProjectOfEmployee(EmployeeId employeeId, JWT jwt) {
         Employee employee = getEmployee(employeeId, jwt);
 
         List<Project> projects = projectRepository.getAllProjectsOfEmployee(employee.getId());
 
-        return projects
-                .stream()
-                .map(project -> mapProjectToEmployeeProjectViewModel(project , getEmployeeRoleInProject(employeeId, project)))
-                .toList();
+        return new EmployeeProjectViewWrapper(
+                employeeId,
+                projects.stream()
+                        .map(project -> mapProjectToEmployeeProjectViewModel(project, getEmployeeRoleInProject(employeeId, project)))
+                        .toList()
+        );
     }
 
     public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt, boolean forceFlag) {

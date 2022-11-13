@@ -212,7 +212,7 @@ public interface OpenApiProjectController {
             )
     })
     @GetMapping("/byEmployee/{employeeId}")
-    ResponseEntity<List<EmployeeProjectView>> getAllProjectsOfEmployee(
+    ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
             @Valid @PathVariable Long employeeId,
             @RequestHeader("Authorization") String authHeader
     );

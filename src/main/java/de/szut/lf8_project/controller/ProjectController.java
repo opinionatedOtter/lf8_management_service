@@ -65,7 +65,7 @@ public class ProjectController implements OpenApiProjectController {
     }
 
     @GetMapping("/byEmployee/{employeeId}")
-    public ResponseEntity<List<EmployeeProjectView>> getAllProjectsOfEmployee(
+    public ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
             @Valid @PathVariable Long employeeId,
             @RequestHeader("Authorization") String authHeader
     ) {
