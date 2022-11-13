@@ -15,6 +15,8 @@ public class Employee {
     @NonNull LastName lastName;
     @NonNull FirstName firstName;
     @NonNull Street street;
+    @NonNull City city;
     @NonNull Postcode postcode;
+    @NonNull Phonenumber phonenumber;
     @NonNull List<ProjectRole> skillset;
 }

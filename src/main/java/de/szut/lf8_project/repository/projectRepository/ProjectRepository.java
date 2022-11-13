@@ -31,6 +31,14 @@ public class ProjectRepository {
         this.teamMemberMapper = teamMemberMapper;
     }
 
+    public List<Project> getAllProjects() throws RepositoryException {
+        try {
+            return projectDataRepository.findAll().stream().map(this::mapProjectDataToProject).toList();
+        } catch (Exception e) {
+            throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
+        }
+    }
+
     public Project saveProject(Project project) throws RepositoryException {
         try {
             return mapProjectDataToProject(projectDataRepository.save(ProjectData.builder()
@@ -51,9 +59,12 @@ public class ProjectRepository {
         }
     }
 
-    public Project getProjectById(ProjectId projectId) throws RepositoryException {
-        return mapProjectDataToProject(projectDataRepository.findById(projectId.unbox())
-                .orElseThrow(() -> new RepositoryException(new ErrorDetail(Errorcode.ENTITY_NOT_FOUND, new FailureMessage("A project with this id does not exist")))));
+    public Project getProject(ProjectId projectId) throws RepositoryException {
+        Optional<ProjectData> projectData = projectDataRepository.findById(projectId.unbox());
+        return mapProjectDataToProject(projectData
+                .orElseThrow(() -> new RepositoryException(
+                        new ErrorDetail(Errorcode.ENTITY_NOT_FOUND, new FailureMessage(String.format("Project Id %d not found", projectId.unbox())))
+                )));
     }
 
     public List<Project> getAllProjectsOfEmployee(EmployeeId employeeId) {

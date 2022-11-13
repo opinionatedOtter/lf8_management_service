@@ -24,7 +24,8 @@ public class TestUpdateProject extends FullIntegrationTest {
     @Test
     @DisplayName("ein Projekt erfolgreich komplett updaten")
     void fullUpdate() throws Exception {
-        Project project = ;
+        Project project = createAndSaveDefaultProjectWithProjectLead();
+        saveProjectInDatabase(project);
         String jsonUpdateBody = "";
 
         ResultActions result = mockMvc.perform(
@@ -41,7 +42,8 @@ public class TestUpdateProject extends FullIntegrationTest {
     @MethodSource
     @DisplayName("ein Projekt erfolgreich teilweise updaten")
     void partialUpdate(String fieldToUpdate, String newValue, String jsonResultPath) throws Exception {
-        Project project = ???;
+        Project project = createAndSaveDefaultProjectWithProjectLead();
+        saveProjectInDatabase(project);
         String jsonUpdateBody = "{\"" + fieldToUpdate + "\": \"" + newValue + "\"}";
 
         ResultActions result = mockMvc.perform(

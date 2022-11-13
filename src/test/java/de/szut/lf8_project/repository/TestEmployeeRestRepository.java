@@ -37,7 +37,7 @@ public class TestEmployeeRestRepository {
 
     @BeforeEach
     public void setUp() {
-        employeeRestRepository = new EmployeeRestRepository(baseUrl, mockTemplate);
+        employeeRestRepository = new EmployeeRestRepository(baseUrl, mockTemplate, new EmployeeMapper());
         header = new HttpHeaders();
         header.set("Authorization", jwt.jwt());
     }
@@ -94,6 +94,8 @@ public class TestEmployeeRestRepository {
                 .firstName("Tester")
                 .lastName("Mester")
                 .postcode("28311")
+                .city("Bremen")
+                .phone("0421 22 33 44")
                 .street("Am Graben 26")
                 .skillSet(List.of("Schubsen", "Tanzen", "Smalltalk"))
                 .build();
@@ -105,6 +107,8 @@ public class TestEmployeeRestRepository {
                 .firstName(new FirstName("Tester"))
                 .lastName(new LastName("Mester"))
                 .postcode(new Postcode("28311"))
+                .city(new City("Bremen"))
+                .phonenumber(new Phonenumber("0421 22 33 44"))
                 .street(new Street("Am Graben 26"))
                 .skillset(List.of(new ProjectRole("Schubsen"), new ProjectRole("Tanzen"), new ProjectRole("Smalltalk")))
                 .build();

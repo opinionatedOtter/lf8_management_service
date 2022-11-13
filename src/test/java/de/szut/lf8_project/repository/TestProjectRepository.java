@@ -84,20 +84,8 @@ public class TestProjectRepository extends WithAppContextContainerTest {
                 .teamMembers(Collections.emptySet());
     }
 
-    private Project getProjectFromDb(ProjectId projectId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM project WHERE project_id=?",
-                (rs, rowNum) -> Project.builder()
-                        .projectId(Optional.of(new ProjectId(rs.getLong("project_id"))))
-                        .projectName(new ProjectName(rs.getString("project_name")))
-                        .projectLead(new ProjectLead(new ProjectLeadId(rs.getLong("project_lead_id"))))
-                        .customerContact(new CustomerContact(rs.getString("customer_contact")))
-                        .customer(new Customer(new CustomerId(rs.getLong("customer_id"))))
-                        .startDate(rs.getDate("start_date") == null ? Optional.empty() : Optional.of(new StartDate(rs.getDate("start_date").toLocalDate())))
-                        .plannedEndDate(rs.getDate("planned_end_date") == null ? Optional.empty() : Optional.of(new PlannedEndDate(rs.getDate("planned_end_date").toLocalDate())))
-                        .actualEndDate(rs.getDate("actual_end_date") == null ? Optional.empty() : Optional.of(new ActualEndDate(rs.getDate("actual_end_date").toLocalDate())))
-                        .projectDescription(rs.getString("project_description") == null ? Optional.empty() : Optional.of(new ProjectDescription(rs.getString("project_description"))))
-                        .teamMembers(Collections.emptySet())
-                        .build(),
-                projectId.unbox());
+    private Project getProjectFromDb(ProjectId projectId) throws RepositoryException {
+
+        return projectRepository.getProject(projectId);
     }
 }

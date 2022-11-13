@@ -1,14 +1,20 @@
 package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
+import de.szut.lf8_project.domain.project.Project;
+import de.szut.lf8_project.domain.project.ProjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Der Create Project Rest-Endpunkt")
@@ -18,7 +24,8 @@ public class TestCreateProject extends FullIntegrationTest {
     @Test
     @DisplayName("sollte erfolgreich ein Projekt erstellen")
     void createProject() throws Exception {
-        EmployeeId newEmployee = createEmployeeInRemoteRepository();
+        Employee employee = createDefaultEmployeeWithout0Id();
+        EmployeeId newEmployee = saveEmployeeInRemoteRepository(employee).getId();
         String jsonBody = String.format("""
                  {
                         "projectName": "foobar",
@@ -29,30 +36,35 @@ public class TestCreateProject extends FullIntegrationTest {
                         "startDate": "2022-09-23"
                         }
                 """, newEmployee.unbox());
-        String expectedJsonContent = String.format("""
-                    {
-                    "projectId": 1,
-                    "projectName": "foobar",
-                    "projectDescription": "foobar at the beach",
-                    "startDate": "2022-09-23",
-                     "projectLead": {
-                        "projectLeadId": %d
-                    },
-                    "customer" : {
-                        "customerId": 789
-                        }
-                    }
-                """, newEmployee.unbox());
 
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
                 .content(jsonBody)
         );
+        ProjectId projectId = getProjectIdFromMvcJsonResponse(result.andReturn());
 
         result
-                .andExpect(content().json(expectedJsonContent))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.projectId").isNotEmpty())
+                .andExpect(jsonPath("$.projectName").value("foobar"))
+                .andExpect(jsonPath("$.projectLead.projectLeadId").value(newEmployee.unbox()))
+                .andExpect(jsonPath("$.customer.customerId").value(789))
+                .andExpect(jsonPath("$.customerContact").value("Testkontakt"))
+                .andExpect(jsonPath("$.startDate").value("2022-09-23"))
+                .andExpect(jsonPath("$.plannedEndDate").isEmpty())
+                .andExpect(jsonPath("$.actualEndDate").isEmpty())
+                .andExpect(jsonPath("$.teamMember").isEmpty());
+        Project savedProject = getProjectByIdFromDatabase(projectId);
+        assertThat(savedProject.getProjectLead().getProjectLeadId().unbox()).isEqualTo(newEmployee.unbox());
+        assertThat(savedProject.getProjectName().unbox()).isEqualTo("foobar");
+        assertThat(savedProject.getProjectDescription().get().unbox()).isEqualTo("foobar at the beach");
+        assertThat(savedProject.getStartDate().get().unbox()).isEqualTo(LocalDate.of(2022, 9, 23));
+        assertThat(savedProject.getActualEndDate()).isEmpty();
+        assertThat(savedProject.getPlannedEndDate()).isEmpty();
+        assertThat(savedProject.getCustomer().getCustomerId().unbox()).isEqualTo(789);
+
+
     }
 
     @Test
@@ -73,7 +85,9 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().isNotFound());
+        result
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
@@ -94,12 +108,14 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().is(401));
+        result
+                .andExpect(status().is(401))
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
     @DisplayName("einen 400 Fehler werfen wenn die Request invalide Parameter enhält")
-    void invalidParameBadRequest() throws Exception {
+    void invalidParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
@@ -115,12 +131,14 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().is(400));
+        result
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
     @DisplayName("einen 400 Fehler werfen wenn die Request nicht vollständig ist")
-    void missingParamBadRequest() throws Exception {
+    void missingParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
@@ -133,7 +151,9 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().is(400));
+        result
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
 
