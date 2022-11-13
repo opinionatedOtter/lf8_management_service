@@ -138,6 +138,37 @@ public interface OpenApiProjectController {
             @Valid @PathVariable Long id
     );
 
+    @Operation(summary = "Get a Project via it's ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "The Project was successfully deleted",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "Malformed request or invalid parameter",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Please provide a valid bearer token",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "503",
+                    description = "The service is currently unavailable",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "500",
+                    description = "An unknown error occurred, please try again later",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            )
+    })
+    ResponseEntity deleteProject(
+            @Valid @PathVariable Long id
+    );
+
     @Operation(summary = "Get a list of all Projects")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",

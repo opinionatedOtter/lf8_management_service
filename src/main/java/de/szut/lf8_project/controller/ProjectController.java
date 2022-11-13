@@ -76,7 +76,7 @@ public class ProjectController implements OpenApiProjectController {
     }
 
     @DeleteMapping("/{projectId}")
-    public ResponseEntity deleteProjects(
+    public ResponseEntity deleteProject(
             @Valid @PathVariable Long projectId
     ) {
         projectApplicationService.deleteProject(new ProjectId(projectId));
