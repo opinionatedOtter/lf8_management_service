@@ -1,4 +1,4 @@
-package de.szut.lf8_project.hello.config;
+package de.szut.lf8_project.domain.adapter;
 
 
 import io.swagger.v3.oas.models.Components;
@@ -31,9 +31,9 @@ public class OpenAPIConfiguration {
         return new OpenAPI()
                 .addServersItem(new Server().url(this.context.getContextPath()))
                 .info(new Info()
-                        .title("LF8 project starter")
+                        .title("LF8 Project Management")
                         .description("\n## Auth\n" +
-                                "\n## Authentication\n" + "\nThis Hello service uses JWTs to authenticate requests. You will receive a bearer token by making a POST-Request in IntelliJ on:\n\n" +
+                                "\n## Authentication\n" + "\nThis Project Management service uses JWTs to authenticate requests. You will receive a bearer token by making a POST-Request in IntelliJ on:\n\n" +
                                 "\n" +
                                 "```\nPOST http://keycloak.szut.dev/auth/realms/szut/protocol/openid-connect/token\nContent-Type: application/x-www-form-urlencoded\ngrant_type=password&client_id=employee-management-service&username=user&password=test\n```\n" +
                                 "\n" +
