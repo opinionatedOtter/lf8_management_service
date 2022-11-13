@@ -1,13 +1,14 @@
 package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.domain.employee.Employee;
+import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
+import de.szut.lf8_project.domain.project.TeamMember;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,7 +20,10 @@ public class TestGetProjectById extends FullIntegrationTest {
     @Test
     @DisplayName("sollte erfolgreich ein Projekt zurückgeben")
     void getProject() throws Exception {
-        Project project = createProjectInDatabase();
+        Project project = createAndSaveDefaultProjectWithProjectLead();
+        Employee employee = createDefaultEmployeeWithout0Id();
+        project.getTeamMembers().add(new TeamMember(employee.getId(), new ProjectRole("Some Role")));
+        saveProjectInDatabase(project);
 
         ResultActions result = mockMvc.perform(get("/api/v1/project/" + project.getProjectId().get().unbox())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

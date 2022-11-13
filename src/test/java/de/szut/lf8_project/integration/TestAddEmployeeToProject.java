@@ -30,9 +30,10 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
     @Test
     @DisplayName("sollte einen existierenden Mitarbeiter erfolgreich hinzufügen")
     void shouldAdd() throws Exception {
-        Project project = createProjectInDatabase();
-        ProjectRole role = createQualificationInRemoteRepository();
-        EmployeeId employeeId = createEmployeeWithSkillInRemoteRepository(role).getId();
+        Project project = saveProjectInDatabase(createAndSaveDefaultProjectWithProjectLead());
+        ProjectRole role = createAndSaveQualificationInRemoteRepository();
+        Employee employee = createDefaultEmployeeWithRolesWithout0Id(List.of(role));
+        EmployeeId employeeId = saveEmployeeInRemoteRepository(employee).getId();
         String jsonRequestBody = String.format("""
                 {
                 "employeeId" : %d,
@@ -66,7 +67,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         @Test
         @DisplayName("wenn dieser nicht existiert")
         void employee404() throws Exception {
-            Project project = createProjectInDatabase();
+            Project project = createAndSaveDefaultProjectWithProjectLead();
 
             String jsonRequestBody = """
                     {
@@ -90,10 +91,18 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         @Test
         @DisplayName("wenn er zu diesem Zeitpunkt bereits in einem anderen Projekt ist")
         void alreadyPlanned() throws Exception {
-            ProjectRole role = createQualificationInRemoteRepository();
-            EmployeeId employeeId = createEmployeeWithSkillInRemoteRepository(role).getId();
-            createProjectInDatabaseWithTeamMember(employeeId);
-            Project collidingProject = createProjectInDatabase();
+            ProjectRole role = createAndSaveQualificationInRemoteRepository();
+            Employee employee = createDefaultEmployeeWithRolesWithout0Id(List.of(role));
+            EmployeeId employeeId = saveEmployeeInRemoteRepository(employee).getId();
+            Project project = createAndSaveDefaultProjectWithProjectLead();
+            project.getTeamMembers().add(
+                    new TeamMember(
+                            employeeId,
+                            role
+                    )
+            );
+            saveProjectInDatabase(project);
+            Project collidingProject = createAndSaveDefaultProjectWithProjectLead();
 
             String jsonRequestBody = String.format("""
                     {
@@ -118,9 +127,10 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         @Test
         @DisplayName("wenn er die gefragte Rolle nicht hat")
         void wrongRole() throws Exception {
-            Project project = createProjectInDatabase();
-            EmployeeId employeeIdOhneSkill = createEmployeeInRemoteRepository().getId();
-            ProjectRole role = createQualificationInRemoteRepository();
+            Project project = createAndSaveDefaultProjectWithProjectLead();
+            Employee employee = createDefaultEmployeeWithout0Id();
+            EmployeeId employeeIdOhneSkill = saveEmployeeInRemoteRepository(employee).getId();
+            ProjectRole role = createAndSaveQualificationInRemoteRepository();
             String jsonRequestBody = String.format("""
                     {
                     "employeeId" : %d,
@@ -211,9 +221,15 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         @Test
         @DisplayName("nicht verändern wenn alle Daten identisch sind")
         void identicalUpdate() throws Exception {
-            ProjectRole role = createQualificationInRemoteRepository();
-            EmployeeId employeeId = createEmployeeWithSkillInRemoteRepository(role).getId();
-            Project project = createProjectInDatabaseWithTeamMember(employeeId);
+            ProjectRole role = createAndSaveQualificationInRemoteRepository();
+            Employee employee = createDefaultEmployeeWithRolesWithout0Id(List.of(role));
+            EmployeeId employeeId = saveEmployeeInRemoteRepository(employee).getId();
+            Project project = createAndSaveDefaultProjectWithProjectLead();
+            project.getTeamMembers().add(new TeamMember(
+                    employeeId,
+                    role
+            ));
+            saveProjectInDatabase(project);
             String jsonRequestBody = String.format("""
                     {
                     "employeeId" : %d,
@@ -238,10 +254,15 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         @DisplayName("die Rolle updaten, wenn neu und valide")
         @Disabled(value = "PUT /employees/{id} funktioniert nicht wie erwartet")
         void updateDifferentRole() throws Exception {
-            ProjectRole oldRole = createQualificationInRemoteRepository();
-            Employee employee = createEmployeeWithSkillInRemoteRepository(oldRole);
-            Project project = createProjectInDatabaseWithTeamMember(employee.getId(), oldRole);
-            ProjectRole newRole = createQualificationInRemoteRepository();
+            ProjectRole oldRole = createAndSaveQualificationInRemoteRepository();
+            ProjectRole newRole = createAndSaveQualificationInRemoteRepository();
+            Employee employee = saveEmployeeInRemoteRepository(createDefaultEmployeeWithRolesWithout0Id(List.of(oldRole, newRole)));
+            Project project = createAndSaveDefaultProjectWithProjectLead();
+            project.getTeamMembers().add(new TeamMember(
+                    employee.getId(),
+                    oldRole
+            ));
+            saveProjectInDatabase(project);
             employee.setSkillset(List.of(newRole));
             updateEmployeeInRemoteRepository(employee);
             String jsonRequestBody = String.format("""

@@ -2,6 +2,7 @@ package de.szut.lf8_project.integration;
 
 import com.jayway.jsonpath.JsonPath;
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.Project;
 import de.szut.lf8_project.domain.project.ProjectId;
@@ -25,7 +26,8 @@ public class TestCreateProject extends FullIntegrationTest {
     @Test
     @DisplayName("sollte erfolgreich ein Projekt erstellen")
     void createProject() throws Exception {
-        EmployeeId newEmployee = createEmployeeInRemoteRepository().getId();
+        Employee employee = createDefaultEmployeeWithout0Id();
+        EmployeeId newEmployee = saveEmployeeInRemoteRepository(employee).getId();
         String jsonBody = String.format("""
                  {
                         "projectName": "foobar",

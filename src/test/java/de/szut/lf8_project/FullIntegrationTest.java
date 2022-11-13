@@ -6,9 +6,7 @@ import com.jayway.jsonpath.JsonPath;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
-import de.szut.lf8_project.domain.employee.Employee;
-import de.szut.lf8_project.domain.employee.EmployeeId;
-import de.szut.lf8_project.domain.employee.ProjectRole;
+import de.szut.lf8_project.domain.employee.*;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.EmployeeData;
 import de.szut.lf8_project.repository.EmployeeMapper;
@@ -36,12 +34,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -79,7 +78,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         });
 
         objectsToBeClearedAfterTest.forEach(thing -> {
-            if(thing instanceof TransferProjectRole) {
+            if (thing instanceof TransferProjectRole) {
                 deleteQualificationInRemoteRepository((TransferProjectRole) thing);
             }
         });
@@ -133,18 +132,62 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return new HttpEntity<>(bodyParamMap, headers);
     }
 
-    protected Employee createEmployeeInRemoteRepository() {
+
+
+    protected Employee createDefaultEmployeeWithout0Id() {
+        return createDefaultEmployeeWithRolesWithout0Id(Collections.emptyList());
+    }
+
+    protected Employee createDefaultEmployeeWithRolesWithout0Id(List<ProjectRole> projectRoles) {
+        return new Employee(
+                new EmployeeId(0L),
+                new LastName(UUID.randomUUID().toString()),
+                new FirstName("Testnutzer mit Qualifikation für Integrationstest"),
+                new Street("Teststr."),
+                new City("Bremen"),
+                new Postcode("28282"),
+                new Phonenumber("0111778899"),
+                projectRoles
+        );
+    }
+
+
+    protected Project createDefaultProject(final ProjectLeadId projectLeadId) {
+        Project project = Project.builder()
+                .projectId(Optional.empty())
+                .projectName(new ProjectName("Name"))
+                .projectDescription(Optional.of(new ProjectDescription("Beschreibung")))
+                .projectLead(new ProjectLead(projectLeadId))
+                .customer(new Customer(new CustomerId(16L)))
+                .customerContact(new CustomerContact("Franz-Ferdinand Falke"))
+                .startDate(Optional.of(new StartDate(LocalDate.of(2022, 1, 20))))
+                .plannedEndDate(Optional.of(new PlannedEndDate(LocalDate.of(2022, 4, 24))))
+                .actualEndDate(Optional.of(new ActualEndDate(LocalDate.of(2022, 6, 26))))
+                .teamMembers(Collections.emptySet())
+                .build();
+        return project;
+    }
+
+    protected Employee saveEmployeeInRemoteRepository(Employee employee) {
         String jsonBody = String.format("""
                 {
-                  "firstName": "Testnutzer für Integrationstest",
+                  "firstName": "%s",
                   "lastName": "%s",
-                  "street": "Teststr",
-                  "postcode": "28282",
-                  "city": "Bremen",
-                  "phone": "0111778899",
-                  "skillSet": []
+                  "street": "%s",
+                  "postcode": "%s",
+                  "city": "%s",
+                  "phone": "%s",
+                  "skillSet": [%s]
                 }
-                """, UUID.randomUUID());
+                """,
+                employee.getFirstName().unbox(),
+                employee.getLastName().unbox(),
+                employee.getStreet().unbox(),
+                employee.getPostcode().unbox(),
+                employee.getCity().unbox(),
+                employee.getPhonenumber().unbox(),
+                employee.getSkillset().stream().map(projectRole -> "\"" + projectRole.unbox() + "\"").collect(Collectors.joining(","))
+                );
         EmployeeData rawEmployee = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
@@ -159,33 +202,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return employeeMapper.dtoToEntity(rawEmployee);
     }
 
-    protected Employee createEmployeeWithSkillInRemoteRepository(ProjectRole role) {
-        String jsonBody = String.format("""
-                {
-                  "firstName": "Testnutzer mit Qualifikation für Integrationstest",
-                  "lastName": "%s",
-                  "street": "Teststr",
-                  "postcode": "28282",
-                  "city": "Bremen",
-                  "phone": "0111778899",
-                  "skillSet": ["%s"]
-                }
-                """, UUID.randomUUID(), role.unbox());
-        EmployeeData rawEmployee = new RestTemplate()
-                .postForEntity(
-                        Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
-                        buildRequestEntity(jsonBody),
-                        EmployeeData.class)
-                .getBody();
-
-        EmployeeId employeeId = new EmployeeId(rawEmployee.getId());
-        objectsToBeClearedAfterTest.add(employeeId);
-
-
-        return employeeMapper.dtoToEntity(rawEmployee);
-    }
-
-    protected ProjectRole createQualificationInRemoteRepository() {
+    protected ProjectRole createAndSaveQualificationInRemoteRepository() {
         ProjectRole projectRole = new ProjectRole(
                 "Skill " + UUID.randomUUID()
         );
@@ -203,53 +220,35 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
 
     }
 
-    protected Project createProjectInDatabase() throws RepositoryException {
-
-        return createProjectInDatabaseWithTeamMember(new EmployeeId(456L));
-    }
-
-    protected Project createProjectInDatabaseWithTeamMember(EmployeeId employeeId) throws RepositoryException {
-
-        return createProjectInDatabaseWithTeamMember(employeeId, new ProjectRole("Developer"));
-    }
-
-    protected Project createProjectInDatabaseWithTeamMember(EmployeeId employeeId, ProjectRole role) throws RepositoryException {
-        ProjectLead projectLead = new ProjectLead( new ProjectLeadId(createEmployeeInRemoteRepository().getId().unbox()));
-        Project project = Project.builder()
-                .projectId( Optional.empty())
-                .projectName( new ProjectName("Name"))
-                .projectDescription( Optional.of(new ProjectDescription("Beschreibung")))
-                .projectLead( projectLead)
-                .customer(new Customer(new CustomerId(16L)))
-                .customerContact( new CustomerContact("Franz-Ferdinand Falke"))
-                .startDate( Optional.of(new StartDate( LocalDate.of(2022, 1, 20))))
-                .plannedEndDate( Optional.of(new PlannedEndDate( LocalDate.of(2022, 4, 24))))
-                .actualEndDate( Optional.of(new ActualEndDate( LocalDate.of(2022, 6, 26))))
-                .teamMembers(Set.of(new TeamMember(employeeId, role)))
-                .build();
+    protected Project saveProjectInDatabase(Project project) throws RepositoryException {
 
         return projectRepository.saveProject(project);
     }
 
+    protected Project createAndSaveDefaultProjectWithProjectLead() throws RepositoryException {
+        Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWithout0Id());
+        return saveProjectInDatabase(createDefaultProject(new ProjectLeadId(projectLead.getId().unbox())));
+    }
+
     protected Employee updateEmployeeInRemoteRepository(Employee employee) {
         String jsonBody = String.format("""
-                {
-                  "firstName": "%s",
-                  "lastName": "%s",
-                  "street": "%s",
-                  "postcode": "%s",
-                  "city": "%s",
-                  "phone": "%s",
-                  "skillSet": ["%s"]
-                }
-                """,
+                        {
+                          "firstName": "%s",
+                          "lastName": "%s",
+                          "street": "%s",
+                          "postcode": "%s",
+                          "city": "%s",
+                          "phone": "%s",
+                          "skillSet": [%s]
+                        }
+                        """,
                 employee.getFirstName().unbox(),
                 employee.getLastName().unbox(),
                 employee.getStreet().unbox(),
                 employee.getPostcode().unbox(),
                 employee.getCity().unbox(),
                 employee.getPhonenumber().unbox(),
-                employee.getSkillset().get(0)
+                employee.getSkillset().stream().map(projectRole -> "\"" + projectRole.unbox() + "\"").collect(Collectors.joining(","))
         );
 
         EmployeeData rawUpdatedEmployee = new RestTemplate()
