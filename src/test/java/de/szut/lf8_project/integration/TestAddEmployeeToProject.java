@@ -50,7 +50,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         result
                 .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("employeeId", employeeId.unbox().intValue()))))
                 .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("projectRole", role.unbox()))))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
 
         Project updatedProjectInDb = getProjectByIdFromDatabase(project.getProjectId().get());
         assertThat(updatedProjectInDb.getTeamMembers()).contains(new TeamMember(
