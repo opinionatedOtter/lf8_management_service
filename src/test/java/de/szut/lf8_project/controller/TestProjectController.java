@@ -252,7 +252,7 @@ public class TestProjectController extends WithAppContextContainerTest {
         }
 
         @Test
-        @DisplayName("properly recognize true force flag")
+        @DisplayName("properly recognize false force flag")
         public void forceFlagFalse() throws Exception {
             UpdateProjectCommand validUpdate = aDefaultUpdateCommand().build();
             ProjectId projectToUpdateId = new ProjectId(projectId);

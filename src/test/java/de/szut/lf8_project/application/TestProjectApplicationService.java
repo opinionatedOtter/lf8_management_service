@@ -234,8 +234,8 @@ public class TestProjectApplicationService {
         }
 
         @Test
-        @DisplayName("update a project")
-        public void createProject() throws ServiceException, RepositoryException {
+        @DisplayName("update a project successfully")
+        public void updateProject() throws ServiceException, RepositoryException {
             ProjectView expectedView = aDefaultUpdatedView().build();
             UpdateProjectCommand cmd = aDefaultUpdateCommand().build();
             Project projectToSave = aDefaultUpdatedProject().build();

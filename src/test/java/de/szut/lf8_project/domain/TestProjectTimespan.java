@@ -20,7 +20,7 @@ public class TestProjectTimespan {
     ProjectTimespan defaultTimespan = ProjectTimespan.of(startDate, relevantEndDate).get();
 
     @Test
-    @DisplayName("assert true if it conflicts with another timespan")
+    @DisplayName("return true if it conflicts with another timespan")
     public void assertTrueTimespan() {
         ProjectTimespan conflictingTimespan = ProjectTimespan.of(
                 Optional.of(new StartDate("2020-03-03")),
@@ -31,7 +31,7 @@ public class TestProjectTimespan {
     }
 
     @Test
-    @DisplayName("assert false if doesnt conflict with another timespan")
+    @DisplayName("return false if doesnt conflict with another timespan")
     public void assertFalseTimespan() {
         ProjectTimespan conflictingTimespan = ProjectTimespan.of(
                 Optional.of(new StartDate("2020-01-01")),
@@ -43,7 +43,7 @@ public class TestProjectTimespan {
 
 
     @Test
-    @DisplayName("assert true if it conflicts with another timespan on the same start day")
+    @DisplayName("return true if it conflicts with another timespan on the same start day")
     public void assertFalseTimespanSameStart() {
         ProjectTimespan conflictingTimespan = ProjectTimespan.of(
                 startDate,
@@ -54,7 +54,7 @@ public class TestProjectTimespan {
     }
 
     @Test
-    @DisplayName("assert true if it conflicts with another timespan on the same end day")
+    @DisplayName("return true if it conflicts with another timespan on the same end day")
     public void assertFalseTimespanSameEnd() {
         ProjectTimespan conflictingTimespan = ProjectTimespan.of(
                 Optional.of(new StartDate(relevantEndDate.get().unbox())),
