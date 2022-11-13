@@ -6,6 +6,7 @@ import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
+import de.szut.lf8_project.domain.project.TeamMember;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -49,6 +51,12 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
                 .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("employeeId" , employeeId.unbox().intValue()))))
                 .andExpect(jsonPath("$.teamMember", hasItem(hasEntry("projectRole" , role.unbox()))))
                 .andExpect(status().isCreated());
+
+        Project updatedProjectInDb = getProjectByIdFromDatabase(project.getProjectId().get());
+        assertThat(updatedProjectInDb.getTeamMembers()).contains(new TeamMember(
+                employeeId,
+                role
+        ));
     }
 
     @Nested
@@ -74,7 +82,8 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
                             .header("Authorization", jwt.jwt())
             );
 
-            result.andExpect(status().isNotFound())
+            result
+                    .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
         }
 
@@ -100,7 +109,8 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
                             .header("Authorization", jwt.jwt())
             );
 
-            result.andExpect(status().isBadRequest())
+            result
+                    .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.title", is(Errorcode.EMPLOYEE_UNAVAILABLE.toString())));
 
         }
@@ -147,7 +157,8 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
                             .header("Authorization", jwt.jwt())
             );
 
-            result.andExpect(status().isNotFound())
+            result
+                    .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
         }
 
@@ -167,7 +178,8 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
                             .header("Authorization", jwt.jwt())
             );
 
-            result.andExpect(status().isBadRequest())
+            result
+                    .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.title", is(Errorcode.INVALID_REQUEST_PARAMETER.toString())));
         }
 
@@ -187,7 +199,8 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
                             .content(jsonRequestBody)
             );
 
-            result.andExpect(status().is(401));
+            result.andExpect(status().is(401))
+                    .andExpect(jsonPath("$.projectId").doesNotExist());
         }
     }
 
