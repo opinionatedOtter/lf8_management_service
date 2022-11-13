@@ -51,6 +51,15 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{projectId}")
+    public ResponseEntity<ProjectView> updateProject(
+            @PathVariable Long projectId,
+            @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        return new ResponseEntity<>(projectApplicationService.updateProject(updateProjectCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
+    }
+
 
     @PostMapping("/{projectId}")
     public ResponseEntity<ProjectView> addEmployee(
@@ -59,16 +68,6 @@ public class ProjectController implements OpenApiProjectController {
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
-    }
-
-    @PutMapping("/{projectId}")
-    public ResponseEntity<ProjectView> updateProject(
-            @PathVariable Long projectId,
-            @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
-            @RequestHeader("Authorization") String authHeader
-    ) {
-        return new ResponseEntity<>(projectApplicationService.updateProject(updateProjectCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
-
     }
 
 
