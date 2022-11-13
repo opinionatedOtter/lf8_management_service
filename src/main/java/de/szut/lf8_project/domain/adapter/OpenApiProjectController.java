@@ -1,5 +1,6 @@
 package de.szut.lf8_project.domain.adapter;
 
+import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
@@ -15,8 +16,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -190,14 +193,40 @@ public interface OpenApiProjectController {
                     description = "You do not have the required user permissions for this action.",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
-            @ApiResponse(responseCode = "503",
-                    description = "The service is currently unavailable",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
-            ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
             )
     })
     ResponseEntity<List<ProjectView>> getAllProjects();
+
+    @Operation(summary = "Add an Employee to an existing Project")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "The Employee was added successfully to the project",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "Malformed request or invalid parameter",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Please provide a valid bearer token",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "500",
+                    description = "An unknown error occurred, please try again later",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            )
+    })
+    @PostMapping("/{projectId}")
+    public ResponseEntity<ProjectView> addEmployee(
+            @Valid @PathVariable Long projectId,
+            @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
+            @RequestHeader("Authorization") String authHeader
+    );
 }
