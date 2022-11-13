@@ -1,6 +1,7 @@
 package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
@@ -12,9 +13,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("The GET all projects from employee route should")
 public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
@@ -32,7 +33,7 @@ public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
         saveProjectInDatabase(differentProject);
 
 
-        ResultActions result = mockMvc.perform(get("/api/v1/project/byEmployee/"+employee.getId())
+        ResultActions result = mockMvc.perform(get("/api/v1/project/byEmployee/" + employee.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
         );
@@ -53,5 +54,48 @@ public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
                 .andExpect(jsonPath("$[1].actualEndDate").value(differentProject.getActualEndDate().get().unbox().toString()))
                 .andExpect(jsonPath("$[1].projectRole").value(projectRole.unbox()));
     }
+
+    @Test
+    @DisplayName("successfully get all projects of an employee even if projects are empty")
+    void getAllProjectsEmpty() throws Exception {
+        Employee employee = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
+
+        ResultActions result = mockMvc.perform(get("/api/v1/project/byEmployee/" + employee.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+        );
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
+    }
+
+    @Test
+    @DisplayName("returns 400 if employee does not exist")
+    void getAllProjectsNoEmployee() throws Exception {
+
+        ResultActions result = mockMvc.perform(get("/api/v1/project/byEmployee/12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", jwt.jwt())
+        );
+
+        result
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
+    }
+
+    @Test
+    @DisplayName("returns 403 if not authorized")
+    void getAllProjectsNotAuthorized() throws Exception {
+
+        ResultActions result = mockMvc.perform(get("/api/v1/project/byEmployee/12345")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        result
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$").doesNotExist());
+    }
+
 
 }

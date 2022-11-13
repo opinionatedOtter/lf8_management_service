@@ -203,7 +203,7 @@ public interface OpenApiProjectController {
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "403",
-                    description = "You do not have the required user permissions for this action.",
+                    description = "You do not have the required user permissions for this action",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "500",
