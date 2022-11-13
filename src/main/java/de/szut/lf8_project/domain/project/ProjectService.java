@@ -69,7 +69,7 @@ public class ProjectService {
 
     private void checkQualification(ProjectRole roleInProject, Employee employee) throws ServiceException {
         if (!employee.getSkillset().contains(roleInProject)) {
-            throw new ServiceException(new ErrorDetail(Errorcode.INVALID_REQUEST_PARAMETER,
+            throw new ServiceException(new ErrorDetail(Errorcode.EMPLOYEE_UNSUITABLE,
                     new FailureMessage("The Employee with the ID " + employee.getId() + " is missing the Qualification: " + roleInProject)));
         }
     }

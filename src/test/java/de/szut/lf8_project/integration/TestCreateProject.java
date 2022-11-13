@@ -1,14 +1,19 @@
 package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
+import de.szut.lf8_project.domain.project.Project;
+import de.szut.lf8_project.domain.project.ProjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,7 +24,8 @@ public class TestCreateProject extends FullIntegrationTest {
     @Test
     @DisplayName("sollte erfolgreich ein Projekt erstellen")
     void createProject() throws Exception {
-        EmployeeId newEmployee = createEmployeeInRemoteRepository();
+        Employee employee = createDefaultEmployeeWithout0Id();
+        EmployeeId newEmployee = saveEmployeeInRemoteRepository(employee).getId();
         String jsonBody = String.format("""
                  {
                         "projectName": "foobar",
@@ -36,6 +42,7 @@ public class TestCreateProject extends FullIntegrationTest {
                 .header("Authorization", jwt.jwt())
                 .content(jsonBody)
         );
+        ProjectId projectId = getProjectIdFromMvcJsonResponse(result.andReturn());
 
         result
                 .andExpect(status().isCreated())
@@ -48,6 +55,16 @@ public class TestCreateProject extends FullIntegrationTest {
                 .andExpect(jsonPath("$.plannedEndDate").isEmpty())
                 .andExpect(jsonPath("$.actualEndDate").isEmpty())
                 .andExpect(jsonPath("$.teamMember").isEmpty());
+        Project savedProject = getProjectByIdFromDatabase(projectId);
+        assertThat(savedProject.getProjectLead().getProjectLeadId().unbox()).isEqualTo(newEmployee.unbox());
+        assertThat(savedProject.getProjectName().unbox()).isEqualTo("foobar");
+        assertThat(savedProject.getProjectDescription().get().unbox()).isEqualTo("foobar at the beach");
+        assertThat(savedProject.getStartDate().get().unbox()).isEqualTo(LocalDate.of(2022, 9, 23));
+        assertThat(savedProject.getActualEndDate()).isEmpty();
+        assertThat(savedProject.getPlannedEndDate()).isEmpty();
+        assertThat(savedProject.getCustomer().getCustomerId().unbox()).isEqualTo(789);
+
+
     }
 
     @Test
@@ -68,7 +85,9 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().isNotFound());
+        result
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
@@ -89,7 +108,9 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().is(401));
+        result
+                .andExpect(status().is(401))
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
@@ -110,7 +131,9 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().is(400));
+        result
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
     @Test
@@ -128,7 +151,9 @@ public class TestCreateProject extends FullIntegrationTest {
                         """)
         );
 
-        result.andExpect(status().is(400));
+        result
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.projectId").doesNotExist());
     }
 
 
