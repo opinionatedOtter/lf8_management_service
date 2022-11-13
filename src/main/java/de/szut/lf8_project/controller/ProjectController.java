@@ -30,6 +30,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -66,6 +67,11 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
     }
 
+    @GetMapping()
+    public ResponseEntity<List<ProjectView>> getAllProjects() {
+        return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
+    }
+
     @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
         return new ResponseEntity<>(
@@ -100,5 +106,4 @@ public class ProjectController implements OpenApiProjectController {
                 )),
                 Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
     }
-
 }

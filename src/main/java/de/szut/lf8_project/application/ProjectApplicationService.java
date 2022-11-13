@@ -16,6 +16,7 @@ import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -84,6 +85,14 @@ public class ProjectApplicationService {
 
     public ProjectView getProjectView(ProjectId id) {
         return mapProjectToViewModel(getProject(id));
+    }
+
+    public List<ProjectView> getAllProjects() {
+        try {
+            return projectRepository.getAllProjects().stream().map(this::mapProjectToViewModel).toList();
+        } catch (RepositoryException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 
     private void validateCustomer(CustomerId customerId) {

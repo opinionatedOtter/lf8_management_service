@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Configuration
 @SecurityScheme(
@@ -60,7 +61,7 @@ public interface OpenApiProjectController {
             @RequestHeader("Authorization") String authHeader
     );
 
-    @Operation(summary = "Create a new Project")
+    @Operation(summary = "Get a Project via it's ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The Project was successfully returned",
@@ -90,4 +91,29 @@ public interface OpenApiProjectController {
     ResponseEntity<ProjectView> getProjectById(
             @Valid @PathVariable Long id
     );
+
+    @Operation(summary = "Get a list of all Projects")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "The list of all Projects was returned",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Please provide a valid bearer token",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "503",
+                    description = "The service is currently unavailable",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "500",
+                    description = "An unknown error occurred, please try again later",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            )
+    })
+    ResponseEntity<List<ProjectView>> getAllProjects();
 }
