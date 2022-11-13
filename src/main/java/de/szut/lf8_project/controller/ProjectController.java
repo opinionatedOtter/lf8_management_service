@@ -30,6 +30,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -54,7 +55,7 @@ public class ProjectController implements OpenApiProjectController {
     public ResponseEntity<ProjectView> getProjectById(
             @Valid @PathVariable Long id
     ) {
-        return new ResponseEntity<>(projectApplicationService.getProjectByID(new ProjectId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(projectApplicationService.getProjectView(new ProjectId(id)), HttpStatus.OK);
     }
 
     @PostMapping("/{projectId}")
@@ -64,6 +65,11 @@ public class ProjectController implements OpenApiProjectController {
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<ProjectView>> getAllProjects() {
+        return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
     @ExceptionHandler
@@ -100,5 +106,4 @@ public class ProjectController implements OpenApiProjectController {
                 )),
                 Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
     }
-
 }
