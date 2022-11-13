@@ -138,7 +138,7 @@ public interface OpenApiProjectController {
             @Valid @PathVariable Long id
     );
 
-    @Operation(summary = "Get a Project via it's ID")
+    @Operation(summary = "Delete a Project by it's ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The Project was successfully deleted",
