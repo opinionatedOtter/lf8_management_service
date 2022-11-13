@@ -37,10 +37,7 @@ public class Project {
     Set<TeamMember> teamMembers = Collections.emptySet();
 
     public Optional<RelevantEndDate> getRelevantEndDate(){
-        if(actualEndDate.isEmpty() && plannedEndDate.isEmpty()){
-            return Optional.empty();
-        }
-        return actualEndDate.map((date) -> new RelevantEndDate(date.unbox())).or(() -> Optional.of(new RelevantEndDate(plannedEndDate.get().unbox())));
+        return RelevantEndDate.of(plannedEndDate, actualEndDate);
     }
 
     public Optional<ProjectTimespan> getProjectTimespan(){
