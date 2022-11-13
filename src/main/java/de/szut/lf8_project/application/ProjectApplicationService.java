@@ -107,10 +107,58 @@ public class ProjectApplicationService {
         validateProjectStartAndEnd(cmd.getStartDate(), cmd.getPlannedEndDate());
         validateProjectStartAndEnd(cmd.getStartDate(), projectToUpdate.getPlannedEndDate());
         validateProjectStartAndEnd(projectToUpdate.getStartDate(), cmd.getPlannedEndDate());
+    }
 
-        validateProjectStartAndActualEnd(cmd.getStartDate(), cmd.getActualEndDate());
-        validateProjectStartAndActualEnd(projectToUpdate.getStartDate(), cmd.getActualEndDate());
-        validateProjectStartAndActualEnd(cmd.getStartDate(), projectToUpdate.getActualEndDate());
+    public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt, boolean forceFlag) {
+        Project projectToUpdate = getProject(projectId);
+
+        Optional<StartDate> newStart = cmd.getStartDate().isPresent() ? cmd.getStartDate() : projectToUpdate.getStartDate();
+        Optional<PlannedEndDate> newPlannedEnd = cmd.getPlannedEndDate().isPresent() ? cmd.getPlannedEndDate() : projectToUpdate.getPlannedEndDate();
+        Optional<ActualEndDate> newActualEnd = cmd.getActualEndDate().isPresent() ? cmd.getActualEndDate() : projectToUpdate.getActualEndDate();
+
+        validateDates(newStart, newPlannedEnd, newActualEnd);
+
+        cmd.getCustomerId().ifPresent(this::validateCustomer);
+        ProjectLead projectLead = cmd.getProjectLeadId().map(id -> getProjectLead(id, jwt)).orElse(projectToUpdate.getProjectLead());
+
+        List<TeamMember> unavailableTeamMember = projectService.getUnavailableTeamMember(projectToUpdate, ProjectTimespan.of(newStart, RelevantEndDate.of(newPlannedEnd, newActualEnd)));
+
+        if (unavailableTeamMember.isEmpty() || forceFlag) {
+            unavailableTeamMember.forEach(projectToUpdate.getTeamMembers()::remove);
+
+            return mapProjectToViewModel(saveProject(Project.builder()
+                    .projectId(projectToUpdate.getProjectId())
+                    .projectLead(projectLead)
+                    .projectName(cmd.getProjectName().orElse(projectToUpdate.getProjectName()))
+                    .customerContact(cmd.getCustomerContact().orElse(projectToUpdate.getCustomerContact()))
+                    .customer(cmd.getCustomerId().map(Customer::new).orElse(projectToUpdate.getCustomer()))
+                    .projectDescription(cmd.getProjectDescription().isPresent() ? cmd.getProjectDescription() : projectToUpdate.getProjectDescription())
+                    .actualEndDate(cmd.getActualEndDate().isPresent() ? cmd.getActualEndDate() : projectToUpdate.getActualEndDate())
+                    .plannedEndDate(cmd.getPlannedEndDate().isPresent() ? cmd.getPlannedEndDate() : projectToUpdate.getPlannedEndDate())
+                    .startDate(cmd.getStartDate().isPresent() ? cmd.getStartDate() : projectToUpdate.getStartDate())
+                    .teamMembers(projectToUpdate.getTeamMembers())
+                    .build()));
+        } else {
+            throw new ApplicationServiceException(new ErrorDetail(Errorcode.EMPLOYEE_UNAVAILABLE,
+                    new FailureMessage(String.format("""
+                            Project could not be updated. The following team member are unavailable in the given project duration : %s.
+                            Either remove them or set the force flag when updating the project.""", String.join(", ", unavailableTeamMember.stream().map(m -> m.getEmployeeId().toString()).toList())))));
+        }
+    }
+
+    private void validateDates(Optional<StartDate> newStart, Optional<PlannedEndDate> newPlannedEnd, Optional<ActualEndDate> newActualEnd) {
+        try {
+            if (newStart.isPresent()) {
+                if (newPlannedEnd.isPresent()) {
+                    dateService.validateProjectStartAndPlannedEnd(newStart.get(), newPlannedEnd.get());
+                }
+                if (newActualEnd.isPresent()) {
+                    dateService.validateProjectStartAndActualEnd(newStart.get(), newActualEnd.get());
+                }
+            }
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 
     private Project getProject(ProjectId projectId) {
@@ -161,22 +209,10 @@ public class ProjectApplicationService {
         return new ProjectLead(new ProjectLeadId(getEmployee(projectLeadId, jwt).getId().unbox()));
     }
 
-    private void validateProjectStartAndActualEnd(Optional<StartDate> start, Optional<ActualEndDate> end) {
-        if (start.isPresent() && end.isPresent()) {
-            try {
-                dateService.validateProjectStartAndActualEnd(
-                        start.get(),
-                        end.get());
-            } catch (ServiceException e) {
-                throw new ApplicationServiceException(e.getErrorDetail());
-            }
-        }
-    }
-
     private void validateProjectStartAndEnd(Optional<StartDate> start, Optional<PlannedEndDate> end) {
         if (start.isPresent() && end.isPresent()) {
             try {
-                dateService.validateProjectStartAndEnd(
+                dateService.validateProjectStartAndPlannedEnd(
                         start.get(),
                         end.get());
             } catch (ServiceException e) {

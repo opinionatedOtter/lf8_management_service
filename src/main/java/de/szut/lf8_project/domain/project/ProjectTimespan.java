@@ -1,13 +1,11 @@
 package de.szut.lf8_project.domain.project;
 
-import de.szut.lf8_project.common.ValueType;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Value
@@ -39,11 +37,6 @@ public class ProjectTimespan {
     }
 
     public boolean contains(ProjectTimespan timespan) {
-        return containsAny(timespan.getStartDate(), timespan.getEndDate());
-    }
-
-    @SafeVarargs
-    public final boolean containsAny(ValueType<LocalDate>... dates) {
-        return Arrays.stream(dates).anyMatch(date -> contains(date.unbox()));
+        return !timespan.getStartDate().unbox().isAfter(endDate.unbox()) && !startDate.unbox().isAfter(timespan.getEndDate().unbox());
     }
 }
