@@ -1,6 +1,7 @@
 package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.project.Project;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,38 +116,107 @@ public class TestUpdateProject extends FullIntegrationTest {
 
         @Test
         @DisplayName("wenn das neue Startdatum nicht vor dem geplanten Enddatum liegt")
-        void invalidStartdate() {
+        void invalidStartdate() throws Exception {
+            Project project = createAndSaveDefaultProjectWithProjectLead();
+            LocalDate invalidStartDate = project.getPlannedEndDate().get().unbox().plus(10, ChronoUnit.DAYS);
+
+            ResultActions result = mockMvc.perform(
+                    put("/api/v1/project/" + project.getProjectId().get().unbox())
+                            .header("Authorization", jwt.jwt())
+                            .content("{\"startDate\":\"" + invalidStartDate + "\"}")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+            );
+
+            result
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is(Errorcode.END_DATE_BEFORE_START.toString())));
 
         }
 
         @Test
         @DisplayName("wenn das neue tatsächliche Enddatum vor dem Startdatum liegt")
-        void invalidActualEnddate() {
+        void invalidActualEnddate() throws Exception {
+            Project project = createAndSaveDefaultProjectWithProjectLead();
+            LocalDate invalidEndDate = project.getActualEndDate().get().unbox().plus(10, ChronoUnit.DAYS);
 
+            ResultActions result = mockMvc.perform(
+                    put("/api/v1/project/" + project.getProjectId().get().unbox())
+                            .header("Authorization", jwt.jwt())
+                            .content("{\"startDate\":\"" + invalidEndDate + "\"}")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+            );
+
+            result
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is(Errorcode.END_DATE_BEFORE_START.toString())));
         }
 
         @Test
         @DisplayName("wenn der neue Team Lead nicht existiert")
-        void missingTeamLead() {
+        void missingTeamLead() throws Exception {
+            Project project = createAndSaveDefaultProjectWithProjectLead();
+
+            ResultActions result = mockMvc.perform(
+                    put("/api/v1/project/" + project.getProjectId().get().unbox())
+                            .header("Authorization", jwt.jwt())
+                            .content("{\"projectLeadId\":989898989}")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+            );
+
+            result
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
 
         }
 
         @Test
-        @DisplayName("wenn die Anfrage nicht richtig strukturiert ist")
-        void badRequest() {
+        @DisplayName("wenn die Anfrage nicht richtig strukturiert ist / der Body fehlt")
+        void badRequest() throws Exception {
+            ResultActions result = mockMvc.perform(
+                    put("/api/v1/project/1" )
+                            .header("Authorization", jwt.jwt())
+                            .content("")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+            );
+
+            result
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is(Errorcode.INVALID_REQUEST_PARAMETER.toString())));
 
         }
 
         @Test
         @DisplayName("wenn das Projekt nicht existiert")
-        void notFound() {
+        void notFound() throws Exception {
+            ResultActions result = mockMvc.perform(
+                    put("/api/v1/project/787878" )
+                            .header("Authorization", jwt.jwt())
+                            .content("{\"projectName\":\"Ein neuer Name\"}")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+            );
+
+            result
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
 
         }
 
         @Test
         @DisplayName("wenn die Anfrage nicht authentifiziert ist")
-        void notAuthenticated() {
+        void notAuthenticated() throws Exception {
+            ResultActions result = mockMvc.perform(
+                    put("/api/v1/project/1" )
+                            .content("{\"projectName\":\"Ein neuer Name\"}")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+            );
 
+            result.andExpect(status().is(401));
         }
     }
 
