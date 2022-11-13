@@ -14,11 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestGetAllProjects extends FullIntegrationTest {
 
     @Test
-    @DisplayName("sollte erfolgreich ein Projekt löschen")
-    void deleteProject() throws Exception {
+    @DisplayName("sollte alle Projekte anzeigen")
+    void getAllProjects() throws Exception {
         // Project project = createProjectInDatabase();
 
-        ResultActions result = mockMvc.perform(get("/api/v1/project/")
+        ResultActions result = mockMvc.perform(get("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header("Authorization", jwt.jwt())
         );
@@ -28,20 +28,9 @@ public class TestGetAllProjects extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("sollte unparsbare Anfragen abblocken")
-    void badRequest() throws Exception {
-        ResultActions result = mockMvc.perform(get("/api/v1/project/xyz")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header("Authorization", jwt.jwt())
-        );
-
-        result.andExpect(status().isBadRequest());
-    }
-
-    @Test
     @DisplayName("sollte unauthentifizierte Anfragen abblocken")
     void notAuthorized() throws Exception {
-        ResultActions result = mockMvc.perform(get("/api/v1/project/1")
+        ResultActions result = mockMvc.perform(get("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
 
