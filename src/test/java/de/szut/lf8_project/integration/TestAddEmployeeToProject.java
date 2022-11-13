@@ -252,7 +252,6 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
 
         @Test
         @DisplayName("die Rolle updaten, wenn neu und valide")
-        @Disabled(value = "PUT /employees/{id} funktioniert nicht wie erwartet")
         void updateDifferentRole() throws Exception {
             ProjectRole oldRole = createAndSaveQualificationInRemoteRepository();
             ProjectRole newRole = createAndSaveQualificationInRemoteRepository();
@@ -263,8 +262,6 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
                     oldRole
             ));
             saveProjectInDatabase(project);
-            employee.setSkillset(List.of(newRole));
-            updateEmployeeInRemoteRepository(employee);
             String jsonRequestBody = String.format("""
                     {
                     "employeeId" : %d,
