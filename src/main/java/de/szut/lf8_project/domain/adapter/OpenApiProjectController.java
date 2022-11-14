@@ -7,7 +7,9 @@ import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
 import de.szut.lf8_project.domain.project.ProjectId;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -69,7 +71,7 @@ public interface OpenApiProjectController {
     })
     ResponseEntity<ProjectView> createProject(
             @Valid @RequestBody CreateProjectCommand createProjectCommand,
-            @RequestHeader("Authorization") String authHeader
+            @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 
 
@@ -100,7 +102,7 @@ public interface OpenApiProjectController {
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
             @PathVariable(required = false) boolean forceFlag,
-            @RequestHeader("Authorization") String authHeader
+            @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 
     @Operation(summary = "Get a specfic project via it's ID")
@@ -194,6 +196,6 @@ public interface OpenApiProjectController {
     public ResponseEntity<ProjectView> addEmployee(
             @Valid @PathVariable Long projectId,
             @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
-            @RequestHeader("Authorization") String authHeader
+            @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 }
