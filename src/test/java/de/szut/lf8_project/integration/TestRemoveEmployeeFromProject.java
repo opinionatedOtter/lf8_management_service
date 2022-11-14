@@ -9,6 +9,7 @@ import de.szut.lf8_project.domain.project.TeamMember;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +35,7 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
         ResultActions result = mockMvc.perform(
                 delete("/api/v1/project/" + project.getProjectId().get().unbox() + "/removeEmployee/" + employee.getId().unbox())
                         .header("Authorization", jwt.jwt())
+                        .contentType(MediaType.APPLICATION_JSON)
         );
 
         result.andExpect(status().isOk());
@@ -49,7 +51,10 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
         @DisplayName("wenn das Projekt nicht existiert")
         void projectNotFound() throws Exception {
 
-            ResultActions result = mockMvc.perform(delete("/api/v1/project/868668/removeEmployee/2323"));
+            ResultActions result = mockMvc.perform(delete("/api/v1/project/868668/removeEmployee/2323")
+                    .header("Authorization", jwt.jwt())
+                    .contentType(MediaType.APPLICATION_JSON)
+            );
 
             result
                     .andExpect(status().isNotFound())
@@ -62,7 +67,10 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
         void employeeNotInProject() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
 
-            ResultActions result = mockMvc.perform(delete("/api/v1/project/" + project.getProjectId().get().unbox() + "/removeEmployee/2323"));
+            ResultActions result = mockMvc.perform(delete("/api/v1/project/" + project.getProjectId().get().unbox() + "/removeEmployee/2323")
+                    .header("Authorization", jwt.jwt())
+                    .contentType(MediaType.APPLICATION_JSON)
+            );
 
             result
                     .andExpect(status().isNotFound())
@@ -77,7 +85,8 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
 
             ResultActions result = mockMvc.perform(
                     delete("/api/v1/project/" + project.getProjectId().get().unbox() + "/removeEmployee/2323")
-                    .header("Authorization", jwt.jwt())
+                            .header("Authorization", jwt.jwt())
+                            .contentType(MediaType.APPLICATION_JSON)
             );
 
             result

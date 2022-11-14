@@ -13,6 +13,7 @@ import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
+import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -84,6 +85,19 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(
                 projectApplicationService.updateProject(updateProjectCommand, new ProjectId(projectId), new JWT(authHeader), Boolean.TRUE.equals(isForced)),
                 HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/removeEmployee/{employeeId}")
+    public ResponseEntity removeEmployeeFromProject(
+            @Valid @PathVariable Long id,
+            @Valid @PathVariable Long employeeId
+    ) {
+        projectApplicationService.removeEmployee(
+                new ProjectId(id),
+                new EmployeeId(employeeId)
+        );
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 
