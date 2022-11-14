@@ -132,13 +132,11 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return new HttpEntity<>(bodyParamMap, headers);
     }
 
-
-
-    protected Employee createDefaultEmployeeWithout0Id() {
-        return createDefaultEmployeeWithRolesWithout0Id(Collections.emptyList());
+    protected Employee createDefaultEmployeeWith0Id() {
+        return createDefaultEmployeeWithRolesWith0Id(Collections.emptyList());
     }
 
-    protected Employee createDefaultEmployeeWithRolesWithout0Id(List<ProjectRole> projectRoles) {
+    protected Employee createDefaultEmployeeWithRolesWith0Id(List<ProjectRole> projectRoles) {
         return new Employee(
                 new EmployeeId(0L),
                 new LastName(UUID.randomUUID().toString()),
@@ -150,7 +148,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 projectRoles
         );
     }
-
 
     protected Project createDefaultProject(final ProjectLeadId projectLeadId) {
         Project project = Project.builder()
@@ -226,7 +223,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     }
 
     protected Project createAndSaveDefaultProjectWithProjectLead() throws RepositoryException {
-        Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWithout0Id());
+        Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
         return saveProjectInDatabase(createDefaultProject(new ProjectLeadId(projectLead.getId().unbox())));
     }
 

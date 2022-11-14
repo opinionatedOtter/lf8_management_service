@@ -24,7 +24,7 @@ public class TestCreateProject extends FullIntegrationTest {
     @Test
     @DisplayName("sollte erfolgreich ein Projekt erstellen")
     void createProject() throws Exception {
-        Employee employee = createDefaultEmployeeWithout0Id();
+        Employee employee = createDefaultEmployeeWith0Id();
         EmployeeId newEmployee = saveEmployeeInRemoteRepository(employee).getId();
         String jsonBody = String.format("""
                  {

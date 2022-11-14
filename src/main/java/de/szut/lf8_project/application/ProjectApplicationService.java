@@ -152,7 +152,6 @@ public class ProjectApplicationService {
         try {
             Project project = projectRepository.getProject(projectId);
             projectRepository.deleteProject(projectId);
-            return;
         } catch (RepositoryException e) {
             throw new ApplicationServiceException(e.getErrorDetail());
         }
