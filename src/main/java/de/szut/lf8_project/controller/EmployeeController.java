@@ -2,12 +2,14 @@ package de.szut.lf8_project.controller;
 
 
 import de.szut.lf8_project.application.ApplicationServiceException;
+import de.szut.lf8_project.application.EmployeeApplicationService;
 import de.szut.lf8_project.common.ErrorDetail;
 import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
-import de.szut.lf8_project.controller.dtos.EmployeesOfProject;
+import de.szut.lf8_project.controller.dtos.EmployeesOfProjectView;
 import de.szut.lf8_project.domain.adapter.OpenApiEmployeeController;
+import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +30,18 @@ import java.util.Map;
 @RequestMapping(value = "/api/v1/employee", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class EmployeeController implements OpenApiEmployeeController {
 
-    @GetMapping("/byProject/{id}")
-    public ResponseEntity<EmployeesOfProject> getEmployeesByProject(
-            @Valid @PathVariable Long id
-    ) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    private final EmployeeApplicationService employeeApplicationService;
+
+    public EmployeeController(final EmployeeApplicationService employeeApplicationService) {
+        this.employeeApplicationService = employeeApplicationService;
     }
 
-
+    @GetMapping("/byProject/{id}")
+    public ResponseEntity<EmployeesOfProjectView> getEmployeesByProject(
+            @Valid @PathVariable Long id
+    ) {
+        return new ResponseEntity<>(employeeApplicationService.getEmployeesOfProject(new ProjectId(id)), HttpStatus.OK);
+    }
 
 
     @ExceptionHandler

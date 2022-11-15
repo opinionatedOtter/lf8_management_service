@@ -1,8 +1,7 @@
 package de.szut.lf8_project.domain.adapter;
 
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
-import de.szut.lf8_project.controller.dtos.EmployeesOfProject;
-import de.szut.lf8_project.controller.dtos.ProjectView;
+import de.szut.lf8_project.controller.dtos.EmployeesOfProjectView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,7 +31,7 @@ public interface OpenApiEmployeeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "List of employees is returned",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeesOfProject.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeesOfProjectView.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request or invalid parameter",
@@ -60,7 +59,7 @@ public interface OpenApiEmployeeController {
             )
     })
     @GetMapping("/byProject/{id}")
-    ResponseEntity<EmployeesOfProject> getEmployeesByProject(
+    ResponseEntity<EmployeesOfProjectView> getEmployeesByProject(
             @Valid @PathVariable Long id
     );
 }
