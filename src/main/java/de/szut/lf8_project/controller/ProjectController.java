@@ -64,7 +64,6 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
-    @PutMapping(value = {"/{projectId}"})
     @GetMapping("/byEmployee/{employeeId}")
     public ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
             @Valid @PathVariable Long employeeId,
@@ -73,7 +72,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjectsOfEmployee(new EmployeeId(employeeId), new JWT(authHeader)), HttpStatus.OK);
     }
 
-    @PutMapping(value = {"/{projectId}", "/{projectId}/{isForced}"})
+    @PutMapping(value = {"/{projectId}"})
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
