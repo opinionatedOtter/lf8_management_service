@@ -30,7 +30,7 @@ public class TestUpdateProject extends FullIntegrationTest {
     @DisplayName("ein Projekt erfolgreich komplett updaten")
     void fullUpdate() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
-        Employee newProjectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWithout0Id());
+        Employee newProjectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
         String jsonUpdateBody = String.format("""
                 {
                 "projectName" : "Neuer Name",
@@ -91,7 +91,7 @@ public class TestUpdateProject extends FullIntegrationTest {
     @DisplayName("ein Projekt erfolgreich teilweise updaten (ProjektLead)")
     void partialUpdateProjektLead() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
-        Employee employee = createDefaultEmployeeWithout0Id();
+        Employee employee = createDefaultEmployeeWith0Id();
         employee = saveEmployeeInRemoteRepository(employee);
         saveProjectInDatabase(project);
         String jsonUpdateBody = "{\"projectLeadId\": " + employee.getId() + "}";

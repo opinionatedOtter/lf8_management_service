@@ -25,7 +25,7 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
     @DisplayName("sollte einen Mitarbeiter erfolgreich entfernen")
     void shouldRemove() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
-        Employee employee = saveEmployeeInRemoteRepository(createDefaultEmployeeWithout0Id());
+        Employee employee = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
         project.getTeamMembers().add(new TeamMember(
                employee.getId(),
                new ProjectRole("egal")

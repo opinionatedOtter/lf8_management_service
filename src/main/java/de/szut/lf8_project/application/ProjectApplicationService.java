@@ -182,14 +182,6 @@ public class ProjectApplicationService {
                 .getProjectRole();
     }
 
-    private Project addProjectMember(AddEmployeeCommand cmd, Project project, Employee employee) {
-        try {
-            return projectService.addEmployeeToProject(cmd.getProjectRoles(), project, employee);
-        } catch (ServiceException e) {
-            throw new ApplicationServiceException(e.getErrorDetail());
-        }
-    }
-
     private void validateCustomer(CustomerId customerId) {
         try {
             customerService.validateCustomer(customerId);
