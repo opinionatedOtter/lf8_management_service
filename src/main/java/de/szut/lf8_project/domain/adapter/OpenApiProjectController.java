@@ -1,12 +1,7 @@
 package de.szut.lf8_project.domain.adapter;
 
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
-import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
-import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
-import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
-import de.szut.lf8_project.domain.project.ProjectId;
-import io.swagger.v3.oas.annotations.Hidden;
+import de.szut.lf8_project.controller.dtos.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -18,10 +13,12 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,7 +30,7 @@ import java.util.List;
         bearerFormat = "JWT",
         scheme = "bearer"
 )
-@Tag(name="Project Methods")
+@Tag(name = "Project Methods")
 public interface OpenApiProjectController {
 
     @Operation(summary = "Create a new project")
@@ -99,7 +96,7 @@ public interface OpenApiProjectController {
     ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
-            @PathVariable(required = false) boolean forceFlag,
+            @RequestParam (required = false) boolean isForced,
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 
@@ -191,9 +188,75 @@ public interface OpenApiProjectController {
             )
     })
     @PostMapping("/{projectId}")
-    public ResponseEntity<ProjectView> addEmployee(
+    ResponseEntity<ProjectView> addEmployee(
             @Valid @PathVariable Long projectId,
             @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
+    );
+
+    @Operation(summary = "Get all projects from an employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Projects of the employee were successfully returned",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeProjectView.class))}
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "Malformed request or invalid parameter",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Please provide a valid bearer token",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have the required user permissions for this action",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "500",
+                    description = "An unknown error occurred, please try again later",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            )
+    })
+    @GetMapping("/byEmployee/{employeeId}")
+    ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
+            @Valid @PathVariable Long employeeId,
+            @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
+    );
+
+    @Operation(summary = "Remove an employee from an existing project")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Employee was removed",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "Malformed request and/or invalid parameter",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "401",
+                    description = "Please provide a valid bearer token",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "403",
+                    description = "You do not have the required user permissions for this action.",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "404",
+                    description = "No project or employee in project found",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            ),
+            @ApiResponse(responseCode = "415",
+                    description = "Invalid content type",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
+            @ApiResponse(responseCode = "500",
+                    description = "An unknown error occurred, please try again later",
+                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+            )
+    })
+    @DeleteMapping("/{id}/removeEmployee/{employeeId}")
+    public ResponseEntity removeEmployeeFromProject(
+            @Valid @PathVariable Long id,
+            @Valid @PathVariable Long employeeId
     );
 }

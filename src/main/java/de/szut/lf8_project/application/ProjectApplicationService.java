@@ -1,10 +1,7 @@
 package de.szut.lf8_project.application;
 
 import de.szut.lf8_project.common.*;
-import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
-import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
-import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
+import de.szut.lf8_project.controller.dtos.*;
 import de.szut.lf8_project.domain.DateService;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import de.szut.lf8_project.domain.customer.Customer;
@@ -12,9 +9,11 @@ import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.customer.CustomerService;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.EmployeeId;
+import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -67,6 +66,22 @@ public class ProjectApplicationService {
 
         return mapProjectToViewModel(saveProject(newProject));
     }
+    
+    public ProjectView removeEmployee(ProjectId projectId, EmployeeId employeeId) {
+        Project protectToUpdate = getProject(projectId);
+
+        Project updatedProject = removeProjectMember(employeeId, protectToUpdate);
+
+        return mapProjectToViewModel(saveProject(updatedProject));
+    }
+
+    private Project removeProjectMember(final EmployeeId employeeId, final Project protectToUpdate) {
+        try {
+            return projectService.removeProjectMember(employeeId, protectToUpdate);
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
+    }
 
     private Project addProjectMember(AddEmployeeCommand cmd, Project project, Employee employee) {
         try {
@@ -74,6 +89,19 @@ public class ProjectApplicationService {
         } catch (ServiceException e) {
             throw new ApplicationServiceException(e.getErrorDetail());
         }
+    }
+
+    public EmployeeProjectViewWrapper getAllProjectsOfEmployee(EmployeeId employeeId, JWT jwt) {
+        Employee employee = getEmployee(employeeId, jwt);
+
+        List<Project> projects = projectRepository.getAllProjectsOfEmployee(employee.getId());
+
+        return new EmployeeProjectViewWrapper(
+                employeeId,
+                projects.stream()
+                        .map(project -> mapProjectToEmployeeProjectViewModel(project, getEmployeeRoleInProject(employeeId, project)))
+                        .toList()
+        );
     }
 
     public ProjectView updateProject(UpdateProjectCommand cmd, ProjectId projectId, JWT jwt, boolean forceFlag) {
@@ -148,6 +176,20 @@ public class ProjectApplicationService {
         }
     }
 
+    private ProjectRole getEmployeeRoleInProject(EmployeeId employeeId, Project project) {
+        return project.getTeamMembers().stream().filter(member -> member.getEmployeeId().equals(employeeId)).findFirst()
+                .orElseThrow(() -> new ApplicationServiceException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("Oops, something went wrong."))))
+                .getProjectRole();
+    }
+
+    private Project addProjectMember(AddEmployeeCommand cmd, Project project, Employee employee) {
+        try {
+            return projectService.addEmployeeToProject(cmd.getProjectRoles(), project, employee);
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
+    }
+
     private void validateCustomer(CustomerId customerId) {
         try {
             customerService.validateCustomer(customerId);
@@ -201,5 +243,18 @@ public class ProjectApplicationService {
                 .customerContact(project.getCustomerContact())
                 .teamMember(project.getTeamMembers())
                 .build();
+    }
+
+    private EmployeeProjectView mapProjectToEmployeeProjectViewModel(Project project, ProjectRole employeeRoleInProject) {
+        return EmployeeProjectView.builder()
+                .projectId(project.getProjectId().get())
+                .projectName(project.getProjectName())
+                .startDate(project.getStartDate())
+                .plannedEndDate(project.getPlannedEndDate())
+                .actualEndDate(project.getActualEndDate())
+                .projectRole(employeeRoleInProject)
+                .build();
+
+
     }
 }
