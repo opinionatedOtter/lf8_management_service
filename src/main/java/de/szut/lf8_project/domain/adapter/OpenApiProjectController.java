@@ -191,7 +191,7 @@ public interface OpenApiProjectController {
     @Operation(summary = "Get all projects from an employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "Projects of the Employee were successfully returned",
+                    description = "Projects of the employee were successfully returned",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeProjectView.class))}
             ),
             @ApiResponse(responseCode = "400",
