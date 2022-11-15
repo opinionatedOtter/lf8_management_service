@@ -30,7 +30,7 @@ public interface OpenApiEmployeeController {
     @Operation(summary = "List all employees of a project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "List of employees is returned",
+                    description = "List of employees was returned",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeesOfProjectView.class))}
             ),
             @ApiResponse(responseCode = "400",
