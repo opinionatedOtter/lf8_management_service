@@ -1,6 +1,7 @@
 package de.szut.lf8_project;
 
 import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -11,7 +12,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.sql.DataSource;
+import static org.springframework.orm.hibernate5.SessionFactoryUtils.getDataSource;
 
 @Testcontainers
 @SpringBootTest
@@ -19,9 +20,10 @@ import javax.sql.DataSource;
 public abstract class WithAppContextContainerTest {
 
     @Container
-    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:13.3");
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.3");
 
-    protected static JdbcTemplate jdbcTemplate;
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
 
 
     static class Initializer
