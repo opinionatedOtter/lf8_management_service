@@ -3,13 +3,11 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&client_id=employee-management-service&username=user&password=test
 
-
-###
+### Create a project
 POST http://localhost:8089/api/v1/project
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
-
 
 {
   "projectName": "Test description",
@@ -21,25 +19,25 @@ Accept: application/json
   "projectLeadId": 9
 }
 
-###
+### Create a conflicting project
 POST http://localhost:8089/api/v1/project
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
-
 
 {
   "projectName": "Test2",
   "customerId": 1,
   "projectDescription": "Test2",
   "customerContact": "Lars",
-  "startDate": "2020-01-09",
-  "plannedEndDate": "2020-01-12",
+  "startDate": "2000-01-09",
+  "plannedEndDate": "2000-01-12",
+  "actualEndDate": "2030-01-12",
   "projectLeadId": 9
 }
 
-###
-POST http://localhost:8089/api/v1/project/2
+### Add Employee to project
+POST http://localhost:8089/api/v1/project/1
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
@@ -48,3 +46,9 @@ Accept: application/json
   "employeeId": 9,
   "projectRoles": "weise"
 }
+
+### Get all projects of employee
+GET http://localhost:8089/api/v1/project/byEmployee/9
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
