@@ -69,7 +69,7 @@ public class ProjectController implements OpenApiProjectController {
             @Valid @PathVariable Long employeeId,
             @RequestHeader("Authorization") String authHeader
     ) {
-        return new ResponseEntity<>(projectApplicationService.getAllProjectOfEmployee(new EmployeeId(employeeId), new JWT(authHeader)), HttpStatus.OK);
+        return new ResponseEntity<>(projectApplicationService.getAllProjectsOfEmployee(new EmployeeId(employeeId), new JWT(authHeader)), HttpStatus.OK);
     }
 
     @PutMapping(value = {"/{projectId}", "/{projectId}/{isForced}"})

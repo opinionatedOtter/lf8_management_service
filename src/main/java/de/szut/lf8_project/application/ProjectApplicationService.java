@@ -152,7 +152,9 @@ public class ProjectApplicationService {
     }
 
     private ProjectRole getEmployeeRoleInProject(EmployeeId employeeId, Project project) {
-        return project.getTeamMembers().stream().filter(member -> member.getEmployeeId().equals(employeeId)).findFirst().get().getProjectRole();
+        return project.getTeamMembers().stream().filter(member -> member.getEmployeeId().equals(employeeId)).findFirst()
+                .orElseThrow(() -> new ApplicationServiceException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("Oops, something went wrong."))))
+                .getProjectRole();
     }
 
     private Project addProjectMember(AddEmployeeCommand cmd, Project project, Employee employee) {

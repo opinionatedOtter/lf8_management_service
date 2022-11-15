@@ -168,22 +168,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return project;
     }
 
-    protected Project createDifferentProject(final ProjectLeadId projectLeadId) {
-        Project project = Project.builder()
-                .projectId(Optional.empty())
-                .projectName(new ProjectName("Different"))
-                .projectDescription(Optional.of(new ProjectDescription("Unique")))
-                .projectLead(new ProjectLead(projectLeadId))
-                .customer(new Customer(new CustomerId(69L)))
-                .customerContact(new CustomerContact("Freundschaft mit Franz-Ferdinand Falke endet"))
-                .startDate(Optional.of(new StartDate(LocalDate.of(2023, 1, 20))))
-                .plannedEndDate(Optional.of(new PlannedEndDate(LocalDate.of(2023, 4, 24))))
-                .actualEndDate(Optional.of(new ActualEndDate(LocalDate.of(2023, 6, 26))))
-                .teamMembers(Collections.emptySet())
-                .build();
-        return project;
-    }
-
     protected Employee saveEmployeeInRemoteRepository(Employee employee) {
         String jsonBody = String.format("""
                 {
@@ -244,11 +228,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     protected Project createAndSaveDefaultProjectWithProjectLead() throws RepositoryException {
         Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
         return saveProjectInDatabase(createDefaultProject(new ProjectLeadId(projectLead.getId().unbox())));
-    }
-
-    protected Project createAndSaveDifferentProjectWithProjectLead() throws RepositoryException {
-        Employee projectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
-        return saveProjectInDatabase(createDifferentProject(new ProjectLeadId(projectLead.getId().unbox())));
     }
 
     protected Project getProjectByIdFromDatabase(ProjectId projectId) throws RepositoryException {
