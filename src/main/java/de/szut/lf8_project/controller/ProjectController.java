@@ -84,7 +84,6 @@ public class ProjectController implements OpenApiProjectController {
                 HttpStatus.OK);
     }
 
-
     @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
         return new ResponseEntity<>(
