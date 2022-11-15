@@ -84,14 +84,14 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
             Project project = createAndSaveDefaultProjectWithProjectLead();
 
             ResultActions result = mockMvc.perform(
-                    delete("/api/v1/project/" + project.getProjectId().get().unbox() + "/removeEmployee/2323")
+                    delete("/api/v1/project/xyz/removeEmployee/xyz")
                             .header("Authorization", jwt.jwt())
                             .contentType(MediaType.APPLICATION_JSON)
             );
 
             result
-                    .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is(Errorcode.INVALID_REQUEST_PARAMETER.toString())));
 
         }
 
