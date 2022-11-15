@@ -21,7 +21,7 @@ public class TestGetProjectById extends FullIntegrationTest {
     @DisplayName("sollte erfolgreich ein Projekt zurückgeben")
     void getProject() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
-        Employee employee = createDefaultEmployeeWithout0Id();
+        Employee employee = createDefaultEmployeeWith0Id();
         project.getTeamMembers().add(new TeamMember(employee.getId(), new ProjectRole("Some Role")));
         saveProjectInDatabase(project);
 
