@@ -91,7 +91,7 @@ public interface OpenApiProjectController {
     ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
-            @PathVariable(required = false) boolean forceFlag,
+            @RequestParam (required = false) boolean isForced,
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 
