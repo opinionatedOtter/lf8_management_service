@@ -3,43 +3,40 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&client_id=employee-management-service&username=user&password=test
 
-
-###
+### Create a project
 POST http://localhost:8089/api/v1/project
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
-
 
 {
   "projectName": "Test description",
   "customerId": 1,
   "projectDescription": "Test comment",
   "customerContact": "Lars",
-  "startDate": "2020-01-08",
-  "plannedEndDate": "2020-01-10",
+  "startDate": "2000-01-08",
+  "plannedEndDate": "2001-01-10",
   "projectLeadId": 9
 }
 
-###
+### Create a conflicting project
 POST http://localhost:8089/api/v1/project
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
-
 
 {
   "projectName": "Test2",
   "customerId": 1,
   "projectDescription": "Test2",
   "customerContact": "Lars",
-  "startDate": "2020-01-09",
-  "plannedEndDate": "2020-01-12",
+  "startDate": "2000-01-09",
+  "plannedEndDate": "2030-01-12",
   "projectLeadId": 9
 }
 
-###
-POST http://localhost:8089/api/v1/project/2
+### Add Employee to project
+POST http://localhost:8089/api/v1/project/1
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
@@ -48,3 +45,36 @@ Accept: application/json
   "employeeId": 9,
   "projectRoles": "weise"
 }
+
+### Add another Employee to project
+POST http://localhost:8089/api/v1/project/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "employeeId": 538,
+  "projectRoles": "java"
+}
+
+### Update a project
+PUT http://localhost:8089/api/v1/project/1/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json
+
+{
+  "projectName": "updated",
+  "customerId": 1,
+  "projectDescription": "updated21321",
+  "customerContact": "Lars updated",
+  "startDate": "1990-01-09",
+  "plannedEndDate": "2100-01-12",
+  "projectLeadId": 9
+}
+
+### Get all projects of employee
+GET http://localhost:8089/api/v1/project/byEmployee/9
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept: application/json

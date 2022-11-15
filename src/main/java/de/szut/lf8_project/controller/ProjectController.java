@@ -8,10 +8,7 @@ import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.JWT;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
-import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
-import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
-import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
+import de.szut.lf8_project.controller.dtos.*;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.ProjectId;
@@ -69,11 +66,19 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
-    @PutMapping(value = {"/{projectId}", "/{projectId}/{isForced}"})
+    @GetMapping("/byEmployee/{employeeId}")
+    public ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
+            @Valid @PathVariable Long employeeId,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        return new ResponseEntity<>(projectApplicationService.getAllProjectsOfEmployee(new EmployeeId(employeeId), new JWT(authHeader)), HttpStatus.OK);
+    }
+
+    @PutMapping(value = {"/{projectId}"})
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
-            @PathVariable(required = false) boolean isForced,
+            @RequestParam (required = false)  boolean isForced,
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(
@@ -93,7 +98,6 @@ public class ProjectController implements OpenApiProjectController {
 
         return new ResponseEntity(HttpStatus.OK);
     }
-
 
     @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
