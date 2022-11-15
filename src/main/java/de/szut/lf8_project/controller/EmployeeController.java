@@ -10,10 +10,10 @@ import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.EmployeesOfProjectView;
 import de.szut.lf8_project.domain.adapter.OpenApiEmployeeController;
 import de.szut.lf8_project.domain.project.ProjectId;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,7 +70,7 @@ public class EmployeeController implements OpenApiEmployeeController {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ProblemDetails> serializeNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ProblemDetails> serializeNotReadableException(TypeMismatchException ex) {
         return new ResponseEntity<>(
                 ProblemDetails.fromErrorDetail(new ErrorDetail(
                         Errorcode.INVALID_REQUEST_PARAMETER,

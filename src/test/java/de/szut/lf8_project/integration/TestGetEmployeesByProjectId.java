@@ -1,6 +1,7 @@
 package de.szut.lf8_project.integration;
 
 import de.szut.lf8_project.FullIntegrationTest;
+import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.domain.employee.Employee;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.Project;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +46,9 @@ public class TestGetEmployeesByProjectId extends FullIntegrationTest {
                 .header("Authorization", jwt.jwt())
         );
 
-        result.andExpect(status().isNotFound());
+        result
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title", is(Errorcode.ENTITY_NOT_FOUND.toString())));
     }
 
     @Test
@@ -54,7 +58,8 @@ public class TestGetEmployeesByProjectId extends FullIntegrationTest {
                 .header("Authorization", jwt.jwt())
         );
 
-        result.andExpect(status().isBadRequest());
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title", is(Errorcode.INVALID_REQUEST_PARAMETER.toString())));
     }
 
     @Test
