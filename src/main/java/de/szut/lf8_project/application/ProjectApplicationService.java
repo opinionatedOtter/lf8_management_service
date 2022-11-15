@@ -66,7 +66,7 @@ public class ProjectApplicationService {
         return mapProjectToViewModel(saveProject(newProject));
     }
 
-    public EmployeeProjectViewWrapper getAllProjectOfEmployee(EmployeeId employeeId, JWT jwt) {
+    public EmployeeProjectViewWrapper getAllProjectsOfEmployee(EmployeeId employeeId, JWT jwt) {
         Employee employee = getEmployee(employeeId, jwt);
 
         List<Project> projects = projectRepository.getAllProjectsOfEmployee(employee.getId());
