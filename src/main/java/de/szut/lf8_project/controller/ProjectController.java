@@ -7,12 +7,10 @@ import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
-import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.*;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.ProjectId;
-import org.hibernate.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -51,11 +45,11 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{projectId}")
     public ResponseEntity<ProjectView> getProjectById(
-            @Valid @PathVariable Long id
+            @Valid @PathVariable Long projectId
     ) {
-        return new ResponseEntity<>(projectApplicationService.getProjectView(new ProjectId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(projectApplicationService.getProjectView(new ProjectId(projectId)), HttpStatus.OK);
     }
 
     @PostMapping("/{projectId}")
@@ -92,13 +86,13 @@ public class ProjectController implements OpenApiProjectController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}/removeEmployee/{employeeId}")
+    @DeleteMapping("/{projectId}/removeEmployee/{employeeId}")
     public ResponseEntity removeEmployeeFromProject(
-            @Valid @PathVariable Long id,
+            @Valid @PathVariable Long projectId,
             @Valid @PathVariable Long employeeId
     ) {
         projectApplicationService.removeEmployee(
-                new ProjectId(id),
+                new ProjectId(projectId),
                 new EmployeeId(employeeId)
         );
 

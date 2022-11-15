@@ -13,7 +13,6 @@ import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

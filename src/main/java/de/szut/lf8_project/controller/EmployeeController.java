@@ -25,11 +25,11 @@ public class EmployeeController implements OpenApiEmployeeController {
         this.employeeApplicationService = employeeApplicationService;
     }
 
-    @GetMapping("/byProject/{id}")
+    @GetMapping("/byProject/{projectId}")
     public ResponseEntity<EmployeesOfProjectView> getEmployeesByProject(
-            @Valid @PathVariable Long id
+            @Valid @PathVariable Long projectId
     ) {
-        return new ResponseEntity<>(employeeApplicationService.getEmployeesOfProject(new ProjectId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(employeeApplicationService.getEmployeesOfProject(new ProjectId(projectId)), HttpStatus.OK);
     }
 
 }
