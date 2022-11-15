@@ -20,10 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -101,7 +98,7 @@ public interface OpenApiProjectController {
     ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
-            @PathVariable(required = false) boolean forceFlag,
+            @RequestParam (required = false) boolean isForced,
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 

@@ -257,7 +257,7 @@ public class TestProjectController extends WithAppContextContainerTest {
             UpdateProjectCommand validUpdate = aDefaultUpdateCommand().build();
             ProjectId projectToUpdateId = new ProjectId(projectId);
 
-            mockMvc.perform(put("/api/v1/project/" + projectToUpdateId.unbox() + "/false")
+            mockMvc.perform(put("/api/v1/project/" + projectToUpdateId.unbox() + "/?isForced=false")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header("Authorization", dummyJwt.jwt())
                     .content(String.format("""
@@ -283,7 +283,7 @@ public class TestProjectController extends WithAppContextContainerTest {
             UpdateProjectCommand validUpdate = aDefaultUpdateCommand().build();
             ProjectId projectToUpdateId = new ProjectId(projectId);
 
-            mockMvc.perform(put("/api/v1/project/" + projectToUpdateId.unbox() + "/true")
+            mockMvc.perform(put("/api/v1/project/" + projectToUpdateId.unbox() + "/?isForced=true")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header("Authorization", dummyJwt.jwt())
                     .content(String.format("""
@@ -307,7 +307,7 @@ public class TestProjectController extends WithAppContextContainerTest {
         @DisplayName("not accept gibberish as force flag")
         public void forceFlagGibberish() throws Exception {
 
-            ResultActions result = mockMvc.perform(put("/api/v1/project/" + projectId + "/gibberish")
+            ResultActions result = mockMvc.perform(put("/api/v1/project/" + projectId + "/?isForced=gibberish")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .header("Authorization", dummyJwt.jwt())
                     .content(String.format("""

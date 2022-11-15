@@ -74,11 +74,11 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
-    @PutMapping(value = {"/{projectId}", "/{projectId}/{isForced}"})
+    @PutMapping(value = {"/{projectId}"})
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
-            @PathVariable(required = false) boolean isForced,
+            @RequestParam (required = false)  boolean isForced,
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(
