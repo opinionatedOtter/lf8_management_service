@@ -74,6 +74,7 @@ public class TestDeleteProject extends FullIntegrationTest {
         assertThat(projectFromDb.getProjectId().equals(project.getProjectId().get().unbox()));
         assertThrows(RepositoryException.class, () -> getProjectByIdFromDatabase(finalProject.getProjectId().get()));
         assertThrows(EmptyResultDataAccessException.class, () -> getProjectFromDb(project.getProjectId().get()));
+        assertThat(countTeamMembersOfProject(project.getProjectId().get())).isEqualTo(0);
     }
 
     @Test
@@ -128,5 +129,13 @@ public class TestDeleteProject extends FullIntegrationTest {
                 .plannedEndDate(rs.getDate("planned_end_date").toLocalDate())
                 .startDate(rs.getDate("start_date").toLocalDate())
                 .build();
+    }
+
+    private int countTeamMembersOfProject(ProjectId projectId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT count(*) as counter from team_member where project_id = ?",
+                (rs, i)  -> rs.getInt("counter"),
+                projectId.unbox()
+        );
     }
 }
