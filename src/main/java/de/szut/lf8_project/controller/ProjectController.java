@@ -12,6 +12,7 @@ import de.szut.lf8_project.controller.dtos.*;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.ProjectId;
+import org.hibernate.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -84,6 +86,19 @@ public class ProjectController implements OpenApiProjectController {
                 HttpStatus.OK);
     }
 
+    @DeleteMapping("/{id}/removeEmployee/{employeeId}")
+    public ResponseEntity removeEmployeeFromProject(
+            @Valid @PathVariable Long id,
+            @Valid @PathVariable Long employeeId
+    ) {
+        projectApplicationService.removeEmployee(
+                new ProjectId(id),
+                new EmployeeId(employeeId)
+        );
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
         return new ResponseEntity<>(
@@ -110,7 +125,16 @@ public class ProjectController implements OpenApiProjectController {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ProblemDetails> serializeTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        return getBadRequestResponse();
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ProblemDetails> serializeNotReadableException(HttpMessageNotReadableException ex) {
+        return getBadRequestResponse();
+    }
+
+    private ResponseEntity<ProblemDetails> getBadRequestResponse() {
         return new ResponseEntity<>(
                 ProblemDetails.fromErrorDetail(new ErrorDetail(
                         Errorcode.INVALID_REQUEST_PARAMETER,

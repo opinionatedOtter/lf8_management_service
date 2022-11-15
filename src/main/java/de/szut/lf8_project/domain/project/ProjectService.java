@@ -1,10 +1,12 @@
 package de.szut.lf8_project.domain.project;
 
+import de.szut.lf8_project.application.ApplicationServiceException;
 import de.szut.lf8_project.common.ErrorDetail;
 import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.ServiceException;
 import de.szut.lf8_project.domain.employee.Employee;
+import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,26 @@ public class ProjectService {
                         .stream()
                         .anyMatch(otherProject -> areProjectTimespansColliding(otherProject.getProjectTimespan(), timespan) && !project.getProjectId().equals(otherProject.getProjectId()))
                 ).toList();
+    }
+
+    public Project removeProjectMember(final EmployeeId employeeId, Project projectToUpdate) throws ServiceException {
+        Optional<TeamMember> memberToRemove = projectToUpdate.getTeamMembers().stream().filter(
+                (teamMember ->
+                    teamMember.getEmployeeId().equals(employeeId)
+                )
+        ).findFirst();
+
+        if(memberToRemove.isPresent()) {
+            projectToUpdate.getTeamMembers().remove(memberToRemove.get());
+            return projectToUpdate;
+        } else {
+            throw new ServiceException(
+                    new ErrorDetail(
+                            Errorcode.ENTITY_NOT_FOUND,
+                            new FailureMessage("Employee " + employeeId.unbox() + " was not found in the project.")
+                    )
+            );
+        }
     }
 
     private Project addOrUpdateTeamMember(TeamMember teamMember, Project project) {

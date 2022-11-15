@@ -13,6 +13,7 @@ import de.szut.lf8_project.domain.employee.ProjectRole;
 import de.szut.lf8_project.domain.project.*;
 import de.szut.lf8_project.repository.RepositoryException;
 import de.szut.lf8_project.repository.projectRepository.ProjectRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,6 +65,30 @@ public class ProjectApplicationService {
         Project newProject = addProjectMember(cmd, protectToUpdate, employee);
 
         return mapProjectToViewModel(saveProject(newProject));
+    }
+    
+    public ProjectView removeEmployee(ProjectId projectId, EmployeeId employeeId) {
+        Project protectToUpdate = getProject(projectId);
+
+        Project updatedProject = removeProjectMember(employeeId, protectToUpdate);
+
+        return mapProjectToViewModel(saveProject(updatedProject));
+    }
+
+    private Project removeProjectMember(final EmployeeId employeeId, final Project protectToUpdate) {
+        try {
+            return projectService.removeProjectMember(employeeId, protectToUpdate);
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
+    }
+
+    private Project addProjectMember(AddEmployeeCommand cmd, Project project, Employee employee) {
+        try {
+            return projectService.addEmployeeToProject(cmd.getProjectRoles(), project, employee);
+        } catch (ServiceException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 
     public EmployeeProjectViewWrapper getAllProjectsOfEmployee(EmployeeId employeeId, JWT jwt) {

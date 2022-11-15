@@ -28,6 +28,6 @@ public class ProjectData {
     LocalDate plannedEndDate;
     LocalDate actualEndDate;
 
-    @OneToMany(mappedBy = "projectData" ,cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval=true)
+    @OneToMany(mappedBy = "projectData" ,cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     Set<TeamMemberData> teamMembers;
 }
