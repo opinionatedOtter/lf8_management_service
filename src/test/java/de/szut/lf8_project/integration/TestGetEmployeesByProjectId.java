@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Die get employees by proejct id-Methode")
+@DisplayName("Die get employees by project id-Methode")
 public class TestGetEmployeesByProjectId extends FullIntegrationTest {
 
     @Test
