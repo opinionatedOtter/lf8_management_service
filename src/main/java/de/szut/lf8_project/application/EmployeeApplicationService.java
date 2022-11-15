@@ -32,7 +32,7 @@ public class EmployeeApplicationService {
                                 () -> new ApplicationServiceException(
                                 new ErrorDetail(
                                         Errorcode.UNEXPECTED_ERROR,
-                                        new FailureMessage("Project should have had an ID")
+                                        new FailureMessage("Oops, something went wrong.")
                                 )
                         )
                 ))
