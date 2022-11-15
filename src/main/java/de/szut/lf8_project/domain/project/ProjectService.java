@@ -47,20 +47,20 @@ public class ProjectService {
     }
 
     public Project removeProjectMember(final EmployeeId employeeId, Project projectToUpdate) throws ServiceException {
-        List<TeamMember> membersToRemove = projectToUpdate.getTeamMembers().stream().filter(
+        Optional<TeamMember> memberToRemove = projectToUpdate.getTeamMembers().stream().filter(
                 (teamMember ->
                     teamMember.getEmployeeId().equals(employeeId)
                 )
-        ).toList();
+        ).findFirst();
 
-        if(membersToRemove.size() > 0) {
-            projectToUpdate.getTeamMembers().removeAll(membersToRemove);
+        if(memberToRemove.isPresent()) {
+            projectToUpdate.getTeamMembers().remove(memberToRemove.get());
             return projectToUpdate;
         } else {
             throw new ServiceException(
                     new ErrorDetail(
                             Errorcode.ENTITY_NOT_FOUND,
-                            new FailureMessage("No employee was removed from the project.")
+                            new FailureMessage("Employee " + employeeId.unbox() + " was not found in the project.")
                     )
             );
         }
