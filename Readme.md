@@ -19,7 +19,7 @@ Force-Flag: Für die Update Project methode wurde eine optionale Force-Flag impl
 - Github Pipeline, die für jeden Push alle Integrations- und Unittests ausführt.
 ![Github Pipeline](https://github.com/opinionatedOtter/lf8_management_service/blob/main/Github_Pipeline_2022-11-16.png)
 - Testabdeckung (Stand 16.11.22)
-[Testabdeckung](https://github.com/opinionatedOtter/lf8_management_service/blob/main/Test_Coverage_2022-11-16.png)
+![Testabdeckung](https://github.com/opinionatedOtter/lf8_management_service/blob/main/Test_Coverage_2022-11-16.png)
 - Objekte in externen Ressourcen (Employee Service) werden vor jedem Testlauf angelegt und nach den Tests wieder gelöscht
 
 # Technische Merkmale:
