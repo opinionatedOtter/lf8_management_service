@@ -17,9 +17,9 @@ Force-Flag: Für die Update Project methode wurde eine optionale Force-Flag impl
 
 # Test-Merkmale:
 - Github Pipeline, die für jeden Push alle Integrations- und Unittests ausführt.
-- Github Workflows (picture)
+![Github Pipeline](https://github.com/opinionatedOtter/lf8_management_service/blob/main/Github_Pipeline_2022-11-16.png)
 - Testabdeckung (Stand 16.11.22)
-Testabdeckung (picture)
+[Testabdeckung](https://github.com/opinionatedOtter/lf8_management_service/blob/main/Test_Coverage_2022-11-16.png)
 - Objekte in externen Ressourcen (Employee Service) werden vor jedem Testlauf angelegt und nach den Tests wieder gelöscht
 
 # Technische Merkmale:
@@ -30,6 +30,7 @@ standardisierte Fehlermeldung. Problem Details kapselt sämtliche serverseitigen
 `public static Optional<ProjectTimespan> of(Optional<StartDate> startDate, Optional<RelevantEndDate> relevantEndDate)`   
 Durch die starke Typisierung wird zum Beispiel bereits compilerseitig verhindert, dass die beiden Daten in den Funktionsparametern vertauscht sind.
 - Kein `null` im Code, stattdessen wird `Optional<?>` verwendet, um unter Anderem null-checks und null-pointer-exceptions  auszuschließen.
+- Alle HTTP Routen sind standardmäßig gesichert und müssen einzeln freigegeben werden.
 
 
 # Starter für das LF08 Projekt
