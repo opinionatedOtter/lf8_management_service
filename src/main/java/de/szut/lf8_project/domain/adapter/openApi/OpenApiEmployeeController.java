@@ -1,7 +1,8 @@
 package de.szut.lf8_project.domain.adapter.openApi;
 
-import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.EmployeesOfProjectView;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.EmployeeProjectViewSchema;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.ProblemDetailsSchema;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,11 +32,11 @@ public interface OpenApiEmployeeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "List of employees was returned",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeesOfProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request or invalid parameter",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -47,11 +48,11 @@ public interface OpenApiEmployeeController {
             ),
             @ApiResponse(responseCode = "404",
                     description = "No project found for given ID",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     @GetMapping("/byProject/{id}")

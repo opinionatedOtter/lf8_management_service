@@ -1,12 +1,15 @@
 package de.szut.lf8_project.domain.adapter.openApi;
 
+import de.szut.lf8_project.controller.dtos.EmployeeProjectViewWrapper;
+import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.commands.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.commands.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.commands.UpdateProjectCommand;
 import de.szut.lf8_project.domain.adapter.openApi.schemas.AddEmployeeCommandSchema;
 import de.szut.lf8_project.domain.adapter.openApi.schemas.CreateProjectCommandSchema;
-import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
-import de.szut.lf8_project.controller.dtos.*;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.EmployeeProjectViewSchema;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.ProblemDetailsSchema;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.ProjectViewSchema;
 import de.szut.lf8_project.domain.adapter.openApi.schemas.UpdateProjectCommandSchema;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,11 +23,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -43,11 +47,11 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
                     description = "Your project was successfully created",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request or invalid parameter",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -63,11 +67,11 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "503",
                     description = "The service is currently unavailable",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     ResponseEntity<ProjectView> createProject(
@@ -80,11 +84,11 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The project was successfully updated",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request or invalid parameter",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -100,7 +104,7 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     ResponseEntity<ProjectView> updateProject(
@@ -114,11 +118,11 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The project was successfully returned",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request or invalid parameter",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -130,11 +134,11 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "503",
                     description = "The service is currently unavailable",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     ResponseEntity<ProjectView> getProjectById(
@@ -145,11 +149,11 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The project was successfully deleted",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request or invalid parameter",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -161,11 +165,11 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "503",
                     description = "The service is currently unavailable",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     ResponseEntity<Void> deleteProject(
@@ -176,7 +180,7 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "The list of all Projects was returned",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -188,7 +192,7 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     ResponseEntity<List<ProjectView>> getAllProjects();
@@ -197,11 +201,11 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Employee was added, Project is returned",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request, invalid parameter, employee has wrong role, employee already planned in other project",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -213,7 +217,7 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "404",
                     description = "No project found for given ID or no employee found for given ID",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "415",
                     description = "Invalid content type",
@@ -221,7 +225,7 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     @PostMapping("/{projectId}")
@@ -235,11 +239,11 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Projects of the employee were successfully returned",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request or invalid parameter",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -251,7 +255,7 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     @GetMapping("/byEmployee/{employeeId}")
@@ -264,11 +268,11 @@ public interface OpenApiProjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Employee was removed",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectView.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProjectViewSchema.class))}
             ),
             @ApiResponse(responseCode = "400",
                     description = "Malformed request and/or invalid parameter",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "401",
                     description = "Please provide a valid bearer token",
@@ -280,7 +284,7 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "404",
                     description = "No project or employee in project found",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             ),
             @ApiResponse(responseCode = "415",
                     description = "Invalid content type",
@@ -288,7 +292,7 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
-                    content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
+                    content = {@Content(schema = @Schema(implementation = ProblemDetailsSchema.class))}
             )
     })
     @DeleteMapping("/{id}/removeEmployee/{employeeId}")
