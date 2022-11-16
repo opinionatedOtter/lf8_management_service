@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DirtiesContext
 @DisplayName("Die GET All Projects Rest-Methode")
 public class TestGetAllProjects extends FullIntegrationTest {
 
