@@ -50,7 +50,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{projectId}")
+    @GetMapping(value = "/{projectId}", consumes="*/*")
     public ResponseEntity<ProjectView> getProjectById(
             @Valid @PathVariable Long projectId
     ) {
@@ -66,12 +66,12 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(consumes="*/*")
     public ResponseEntity<List<ProjectView>> getAllProjects() {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
-    @GetMapping("/byEmployee/{employeeId}")
+    @GetMapping(value = "/byEmployee/{employeeId}", consumes="*/*")
     public ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
             @Valid @PathVariable Long employeeId,
             @RequestHeader("Authorization") String authHeader
@@ -79,7 +79,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjectsOfEmployee(new EmployeeId(employeeId), new JWT(authHeader)), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{projectId}")
+    @DeleteMapping(value = "/{projectId}", consumes="*/*")
     public ResponseEntity deleteProject(
             @Valid @PathVariable Long projectId
     ) {
@@ -99,7 +99,7 @@ public class ProjectController implements OpenApiProjectController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping("/{projectId}/removeEmployee/{employeeId}")
+    @DeleteMapping(value = "/{projectId}/removeEmployee/{employeeId}", consumes="*/*")
     public ResponseEntity removeEmployeeFromProject(
             @Valid @PathVariable Long projectId,
             @Valid @PathVariable Long employeeId
