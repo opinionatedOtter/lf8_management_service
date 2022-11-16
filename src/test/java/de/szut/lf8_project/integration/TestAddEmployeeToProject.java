@@ -36,7 +36,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         String jsonRequestBody = String.format("""
                 {
                 "employeeId" : %d,
-                "projectRoles" : "%s"
+                "projectRole" : "%s"
                 }
                 """, employeeId.unbox(), role.unbox());
 
@@ -71,7 +71,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             String jsonRequestBody = """
                     {
                     "employeeId" : 999999999,
-                    "projectRoles" : "Macher"
+                    "projectRole" : "Macher"
                     }
                     """;
 
@@ -106,7 +106,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             String jsonRequestBody = String.format("""
                     {
                     "employeeId" : %d,
-                    "projectRoles" : "%s"
+                    "projectRole" : "%s"
                     }
                     """, employeeId.unbox(), role.unbox());
 
@@ -133,7 +133,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             String jsonRequestBody = String.format("""
                     {
                     "employeeId" : %d,
-                    "projectRoles" : "%s"
+                    "projectRole" : "%s"
                     }
                     """, employeeIdOhneSkill.unbox(), role.unbox());
 
@@ -155,7 +155,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             String jsonRequestBody = """
                     {
                     "employeeId" : 95959595,
-                    "projectRoles" : "Egal"
+                    "projectRole" : "Egal"
                     }
                     """;
 
@@ -198,7 +198,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             String jsonRequestBody = """
                     {
                     "employeeId" : 1,
-                    "projectRoles" : "Egal"
+                    "projectRole" : "Egal"
                     }
                     """;
 
@@ -232,7 +232,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             String jsonRequestBody = String.format("""
                     {
                     "employeeId" : %d,
-                    "projectRoles" : "%s"
+                    "projectRole" : "%s"
                     }
                     """, employeeId.unbox(), role.unbox());
 
@@ -264,7 +264,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
             String jsonRequestBody = String.format("""
                     {
                     "employeeId" : %d,
-                    "projectRoles" : "%s"
+                    "projectRole" : "%s"
                     }
                     """, employee.getId().unbox(), newRole.unbox());
 

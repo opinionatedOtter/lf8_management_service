@@ -2,6 +2,9 @@ package de.szut.lf8_project.application;
 
 import de.szut.lf8_project.common.*;
 import de.szut.lf8_project.controller.dtos.*;
+import de.szut.lf8_project.controller.dtos.commands.AddEmployeeCommand;
+import de.szut.lf8_project.controller.dtos.commands.CreateProjectCommand;
+import de.szut.lf8_project.controller.dtos.commands.UpdateProjectCommand;
 import de.szut.lf8_project.domain.DateService;
 import de.szut.lf8_project.domain.adapter.EmployeeRepository;
 import de.szut.lf8_project.domain.customer.Customer;
@@ -84,7 +87,7 @@ public class ProjectApplicationService {
 
     private Project addProjectMember(AddEmployeeCommand cmd, Project project, Employee employee) {
         try {
-            return projectService.addEmployeeToProject(cmd.getProjectRoles(), project, employee);
+            return projectService.addEmployeeToProject(cmd.getProjectRole(), project, employee);
         } catch (ServiceException e) {
             throw new ApplicationServiceException(e.getErrorDetail());
         }

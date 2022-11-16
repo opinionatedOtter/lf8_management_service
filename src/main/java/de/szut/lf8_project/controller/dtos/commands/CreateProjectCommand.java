@@ -1,4 +1,4 @@
-package de.szut.lf8_project.controller.dtos;
+package de.szut.lf8_project.controller.dtos.commands;
 
 import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.project.*;

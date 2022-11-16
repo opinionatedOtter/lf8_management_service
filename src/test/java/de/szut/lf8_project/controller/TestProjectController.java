@@ -7,9 +7,9 @@ import de.szut.lf8_project.common.ErrorDetail;
 import de.szut.lf8_project.common.Errorcode;
 import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
+import de.szut.lf8_project.controller.dtos.commands.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
+import de.szut.lf8_project.controller.dtos.commands.UpdateProjectCommand;
 import de.szut.lf8_project.domain.customer.Customer;
 import de.szut.lf8_project.domain.customer.CustomerId;
 import de.szut.lf8_project.domain.project.*;
@@ -22,7 +22,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -31,7 +30,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
