@@ -1,4 +1,4 @@
-package de.szut.lf8_project.domain.adapter;
+package de.szut.lf8_project.domain.adapter.openApi;
 
 
 import io.swagger.v3.oas.models.Components;

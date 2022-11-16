@@ -1,4 +1,4 @@
-package de.szut.lf8_project.domain.adapter;
+package de.szut.lf8_project.domain.adapter.openApi;
 
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.EmployeesOfProjectView;
@@ -48,10 +48,6 @@ public interface OpenApiEmployeeController {
             @ApiResponse(responseCode = "404",
                     description = "No project found for given ID",
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
-            ),
-            @ApiResponse(responseCode = "415",
-                    description = "Invalid content type",
-                    content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",

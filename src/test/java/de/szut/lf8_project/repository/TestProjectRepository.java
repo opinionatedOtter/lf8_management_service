@@ -25,7 +25,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @DisplayName("The EmployeeRestRepository should")
 public class TestProjectRepository extends WithAppContextContainerTest {
 

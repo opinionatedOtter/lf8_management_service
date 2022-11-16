@@ -1,7 +1,13 @@
-package de.szut.lf8_project.domain.adapter;
+package de.szut.lf8_project.domain.adapter.openApi;
 
+import de.szut.lf8_project.controller.dtos.commands.AddEmployeeCommand;
+import de.szut.lf8_project.controller.dtos.commands.CreateProjectCommand;
+import de.szut.lf8_project.controller.dtos.commands.UpdateProjectCommand;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.AddEmployeeCommandSchema;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.CreateProjectCommandSchema;
 import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.*;
+import de.szut.lf8_project.domain.adapter.openApi.schemas.UpdateProjectCommandSchema;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -65,7 +71,7 @@ public interface OpenApiProjectController {
             )
     })
     ResponseEntity<ProjectView> createProject(
-            @Valid @RequestBody CreateProjectCommand createProjectCommand,
+            @Valid @RequestBody @Schema(implementation = CreateProjectCommandSchema.class) CreateProjectCommand createProjectCommand,
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 
@@ -88,6 +94,10 @@ public interface OpenApiProjectController {
                     description = "You do not have the required user permissions for this action.",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
+            @ApiResponse(responseCode = "415",
+                    description = "Invalid content type",
+                    content = {@Content(schema = @Schema(hidden = true))}
+            ),
             @ApiResponse(responseCode = "500",
                     description = "An unknown error occurred, please try again later",
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
@@ -95,7 +105,7 @@ public interface OpenApiProjectController {
     })
     ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
-            @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
+            @Valid @RequestBody @Schema(implementation = UpdateProjectCommandSchema.class) UpdateProjectCommand updateProjectCommand,
             @RequestParam (required = false) boolean isForced,
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
@@ -116,10 +126,6 @@ public interface OpenApiProjectController {
             ),
             @ApiResponse(responseCode = "403",
                     description = "You do not have the required user permissions for this action.",
-                    content = {@Content(schema = @Schema(hidden = true))}
-            ),
-            @ApiResponse(responseCode = "415",
-                    description = "Invalid content type",
                     content = {@Content(schema = @Schema(hidden = true))}
             ),
             @ApiResponse(responseCode = "500",
@@ -162,7 +168,7 @@ public interface OpenApiProjectController {
                     content = {@Content(schema = @Schema(implementation = ProblemDetails.class))}
             )
     })
-    ResponseEntity deleteProject(
+    ResponseEntity<Void> deleteProject(
             @Valid @PathVariable Long id
     );
 
@@ -221,7 +227,7 @@ public interface OpenApiProjectController {
     @PostMapping("/{projectId}")
     ResponseEntity<ProjectView> addEmployee(
             @Valid @PathVariable Long projectId,
-            @Valid @RequestBody AddEmployeeCommand addEmployeeCommand,
+            @Valid @RequestBody @Schema(implementation = AddEmployeeCommandSchema.class) AddEmployeeCommand addEmployeeCommand,
             @Parameter(hidden = true) @RequestHeader("Authorization") String authHeader
     );
 
@@ -286,7 +292,7 @@ public interface OpenApiProjectController {
             )
     })
     @DeleteMapping("/{id}/removeEmployee/{employeeId}")
-    public ResponseEntity removeEmployeeFromProject(
+    ResponseEntity<Void> removeEmployeeFromProject(
             @Valid @PathVariable Long id,
             @Valid @PathVariable Long employeeId
     );

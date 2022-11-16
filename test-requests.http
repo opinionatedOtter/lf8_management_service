@@ -43,7 +43,7 @@ Accept: application/json
 
 {
   "employeeId": 9,
-  "projectRoles": "weise"
+  "projectRole": "weise"
 }
 
 ### Add another Employee to project
@@ -54,7 +54,7 @@ Accept: application/json
 
 {
   "employeeId": 538,
-  "projectRoles": "java"
+  "projectRole": "java"
 }
 
 ### Update a project

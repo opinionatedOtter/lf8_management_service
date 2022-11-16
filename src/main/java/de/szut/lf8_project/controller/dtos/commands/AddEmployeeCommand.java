@@ -1,4 +1,4 @@
-package de.szut.lf8_project.controller.dtos;
+package de.szut.lf8_project.controller.dtos.commands;
 
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.employee.ProjectRole;
@@ -8,5 +8,5 @@ import lombok.Value;
 @Value
 public class AddEmployeeCommand {
     @NonNull EmployeeId employeeId;
-    @NonNull ProjectRole projectRoles;
+    @NonNull ProjectRole projectRole;
 }

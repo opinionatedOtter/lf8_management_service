@@ -3,7 +3,7 @@ package de.szut.lf8_project.controller;
 
 import de.szut.lf8_project.application.EmployeeApplicationService;
 import de.szut.lf8_project.controller.dtos.EmployeesOfProjectView;
-import de.szut.lf8_project.domain.adapter.OpenApiEmployeeController;
+import de.szut.lf8_project.domain.adapter.openApi.OpenApiEmployeeController;
 import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

@@ -3,21 +3,18 @@ package de.szut.lf8_project.controller;
 
 import de.szut.lf8_project.application.ProjectApplicationService;
 import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
-import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
+import de.szut.lf8_project.controller.dtos.commands.AddEmployeeCommand;
+import de.szut.lf8_project.controller.dtos.commands.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
-import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
+import de.szut.lf8_project.controller.dtos.commands.UpdateProjectCommand;
 import de.szut.lf8_project.controller.dtos.*;
-import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
+import de.szut.lf8_project.domain.adapter.openApi.OpenApiProjectController;
 import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -80,7 +76,7 @@ public class ProjectController implements OpenApiProjectController {
     }
 
     @DeleteMapping(value = "/{projectId}", consumes="*/*")
-    public ResponseEntity deleteProject(
+    public ResponseEntity<Void> deleteProject(
             @Valid @PathVariable Long projectId
     ) {
         projectApplicationService.deleteProject(new ProjectId(projectId));
@@ -100,7 +96,7 @@ public class ProjectController implements OpenApiProjectController {
     }
 
     @DeleteMapping(value = "/{projectId}/removeEmployee/{employeeId}", consumes="*/*")
-    public ResponseEntity removeEmployeeFromProject(
+    public ResponseEntity<Void> removeEmployeeFromProject(
             @Valid @PathVariable Long projectId,
             @Valid @PathVariable Long employeeId
     ) {
