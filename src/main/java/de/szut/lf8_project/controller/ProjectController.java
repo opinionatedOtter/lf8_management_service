@@ -1,18 +1,15 @@
 package de.szut.lf8_project.controller;
 
 
-import de.szut.lf8_project.application.ApplicationServiceException;
 import de.szut.lf8_project.application.ProjectApplicationService;
-import de.szut.lf8_project.common.ErrorDetail;
-import de.szut.lf8_project.common.Errorcode;
-import de.szut.lf8_project.common.FailureMessage;
 import de.szut.lf8_project.common.JWT;
-import de.szut.lf8_project.controller.ProblemDetails.ProblemDetails;
 import de.szut.lf8_project.controller.dtos.AddEmployeeCommand;
 import de.szut.lf8_project.controller.dtos.CreateProjectCommand;
 import de.szut.lf8_project.controller.dtos.ProjectView;
 import de.szut.lf8_project.controller.dtos.UpdateProjectCommand;
+import de.szut.lf8_project.controller.dtos.*;
 import de.szut.lf8_project.domain.adapter.OpenApiProjectController;
+import de.szut.lf8_project.domain.employee.EmployeeId;
 import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,11 +27,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/project", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -54,11 +50,11 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{projectId}")
     public ResponseEntity<ProjectView> getProjectById(
-            @Valid @PathVariable Long id
+            @Valid @PathVariable Long projectId
     ) {
-        return new ResponseEntity<>(projectApplicationService.getProjectView(new ProjectId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(projectApplicationService.getProjectView(new ProjectId(projectId)), HttpStatus.OK);
     }
 
     @PostMapping("/{projectId}")
@@ -75,6 +71,14 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
+    @GetMapping("/byEmployee/{employeeId}")
+    public ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
+            @Valid @PathVariable Long employeeId,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        return new ResponseEntity<>(projectApplicationService.getAllProjectsOfEmployee(new EmployeeId(employeeId), new JWT(authHeader)), HttpStatus.OK);
+    }
+
     @DeleteMapping("/{projectId}")
     public ResponseEntity deleteProject(
             @Valid @PathVariable Long projectId
@@ -83,11 +87,11 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping(value = {"/{projectId}", "/{projectId}/{isForced}"})
+    @PutMapping(value = {"/{projectId}"})
     public ResponseEntity<ProjectView> updateProject(
             @PathVariable Long projectId,
             @Valid @RequestBody UpdateProjectCommand updateProjectCommand,
-            @PathVariable(required = false) boolean isForced,
+            @RequestParam (required = false)  boolean isForced,
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(
@@ -95,39 +99,16 @@ public class ProjectController implements OpenApiProjectController {
                 HttpStatus.OK);
     }
 
+    @DeleteMapping("/{projectId}/removeEmployee/{employeeId}")
+    public ResponseEntity removeEmployeeFromProject(
+            @Valid @PathVariable Long projectId,
+            @Valid @PathVariable Long employeeId
+    ) {
+        projectApplicationService.removeEmployee(
+                new ProjectId(projectId),
+                new EmployeeId(employeeId)
+        );
 
-    @ExceptionHandler
-    public ResponseEntity<ProblemDetails> serializeApplicationServiceException(ApplicationServiceException ex, WebRequest request) {
-        return new ResponseEntity<>(
-                ProblemDetails.fromErrorDetail(ex.getErrorDetail()),
-                ex.getErrorDetail().getErrorCode().getHttpRepresentation());
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ProblemDetails> serializeInvalidParamsException(BindException ex, WebRequest request) {
-        Map<String, String> errorMap = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errorMap.put(error.getField(), error.getDefaultMessage());
-        });
-        String msg = String.join("\n", errorMap.entrySet().stream().map(Object::toString).toList());
-        return new ResponseEntity<>(
-                ProblemDetails.fromErrorDetail(new ErrorDetail(
-                        Errorcode.INVALID_REQUEST_PARAMETER,
-                        new FailureMessage(
-                                msg.isBlank() ?
-                                        "Your request contains invalid parameter. Please check if your field types are correct" :
-                                        msg)
-                )),
-                Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ProblemDetails> serializeNotReadableException(HttpMessageNotReadableException ex) {
-        return new ResponseEntity<>(
-                ProblemDetails.fromErrorDetail(new ErrorDetail(
-                        Errorcode.INVALID_REQUEST_PARAMETER,
-                        new FailureMessage("Your request could not be read or parsed" )
-                )),
-                Errorcode.INVALID_REQUEST_PARAMETER.getHttpRepresentation());
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

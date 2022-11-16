@@ -65,7 +65,6 @@ public class ProjectRepository {
         projectData.getTeamMembers().forEach(teamMemberData -> teamMemberData.setProjectData(projectData));
         return projectData;
     }
-
     public Project getProject(ProjectId projectId) throws RepositoryException {
         Optional<ProjectData> projectData = projectDataRepository.findById(projectId.unbox());
         return mapProjectDataToProject(projectData
