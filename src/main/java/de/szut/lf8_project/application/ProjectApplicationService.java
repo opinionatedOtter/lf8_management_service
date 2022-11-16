@@ -65,7 +65,7 @@ public class ProjectApplicationService {
 
         return mapProjectToViewModel(saveProject(newProject));
     }
-    
+
     public ProjectView removeEmployee(ProjectId projectId, EmployeeId employeeId) {
         Project protectToUpdate = getProject(projectId);
 
@@ -179,6 +179,15 @@ public class ProjectApplicationService {
         return project.getTeamMembers().stream().filter(member -> member.getEmployeeId().equals(employeeId)).findFirst()
                 .orElseThrow(() -> new ApplicationServiceException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("Oops, something went wrong."))))
                 .getProjectRole();
+    }
+
+    public void deleteProject(ProjectId projectId) throws ApplicationServiceException{
+        try {
+            Project project = projectRepository.getProject(projectId);
+            projectRepository.deleteProject(projectId);
+        } catch (RepositoryException e) {
+            throw new ApplicationServiceException(e.getErrorDetail());
+        }
     }
 
     private void validateCustomer(CustomerId customerId) {

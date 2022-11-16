@@ -132,8 +132,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         return new HttpEntity<>(bodyParamMap, headers);
     }
 
-
-
     protected Employee createDefaultEmployeeWith0Id() {
         return createDefaultEmployeeWithRolesWith0Id(Collections.emptyList());
     }
@@ -150,7 +148,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 projectRoles
         );
     }
-
 
     protected Project createDefaultProject(final ProjectLeadId projectLeadId) {
         Project project = Project.builder()
