@@ -1,3 +1,37 @@
+# Swagger Documentation:
+Die Swagger Dokumentation ist über folgende URL erreichbar: http://localhost:8089/swagger-ui/index.html
+
+Voraussetzungen:
+- Postgres Datenbank Container läuft
+- Anwendung läuft
+
+Besonderheiten:
+- `/index.html` am Ende der URL ist eine Voraussetzung, sonst gibt http://localhost:8089/swagger-ui/  HttpStatus: 404 zurück.
+
+# Zusätzliche Features:
+Force-Flag: Für die Update Project methode wurde eine optionale Force-Flag implementiert:
+- Ohne Force-Flag wird das Projekt nur geändert, wenn alle Mitarbeiter im Neuen Zeitraum ebenfalls frei sind
+- Mit Force-Flag werden alle Mitarbeiter, die nicht (mehr) im Zeitraum frei sind entfernt oder nicht hinzugefügt.
+- Partielle Projekt-Aktualisierung
+- Globaler authorization-header in Swagger.  Nicht jede Methode benötigt einen eigenen authorization-header, sondern es ist nur ein einmaliges Authentifizieren nötig.
+
+# Test-Merkmale:
+- Github Pipeline, die für jeden Push alle Integrations- und Unittests ausführt.
+- Github Workflows (picture)
+- Testabdeckung (Stand 16.11.22)
+Testabdeckung (picture)
+- Objekte in externen Ressourcen (Employee Service) werden vor jedem Testlauf angelegt und nach den Tests wieder gelöscht
+
+# Technische Merkmale:
+- Bei fehlerhaften HTTP-Requests gibt die Applikation neben dem Error-Code einen `ProblemDetails` response body zurück.   
+Hierin findet sich eine  ausführliche und nach [RFC 7807: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc7807)
+standardisierte Fehlermeldung. Problem Details kapselt sämtliche serverseitigen Fehler, inklusive Business-Logik Fehler, Datenbankfehler und SpringBoot Fehler.
+- starke Typisierung: Wir haben domänenspezifische Datentypen, wie `ProjectDescription` oder `ActualEndDate` erstellt. Dadurch vermeiden wir generics, wie `String` oder `Long`.   
+`public static Optional<ProjectTimespan> of(Optional<StartDate> startDate, Optional<RelevantEndDate> relevantEndDate)`   
+Durch die starke Typisierung wird zum Beispiel bereits compilerseitig verhindert, dass die beiden Daten in den Funktionsparametern vertauscht sind.
+- Kein `null` im Code, stattdessen wird `Optional<?>` verwendet, um unter Anderem null-checks und null-pointer-exceptions  auszuschließen.
+
+
 # Starter für das LF08 Projekt
 
 Erstellen Sie einen Fork dieses Projektes auf Github. Wählen Sie einen Namen und passen Sie diesen auch in der pom.xml in Zeile 12, 14 und 15 an.
