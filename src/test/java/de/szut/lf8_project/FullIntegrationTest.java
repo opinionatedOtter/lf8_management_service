@@ -18,13 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
@@ -34,16 +28,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -136,7 +122,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
     }
 
 
-
     protected Employee createDefaultEmployeeWith0Id() {
         return createDefaultEmployeeWithRolesWith0Id(Collections.emptyList());
     }
@@ -173,16 +158,16 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
 
     protected Employee saveEmployeeInRemoteRepository(Employee employee) {
         String jsonBody = String.format("""
-                {
-                  "firstName": "%s",
-                  "lastName": "%s",
-                  "street": "%s",
-                  "postcode": "%s",
-                  "city": "%s",
-                  "phone": "%s",
-                  "skillSet": [%s]
-                }
-                """,
+                        {
+                          "firstName": "%s",
+                          "lastName": "%s",
+                          "street": "%s",
+                          "postcode": "%s",
+                          "city": "%s",
+                          "phone": "%s",
+                          "skillSet": [%s]
+                        }
+                        """,
                 employee.getFirstName().unbox(),
                 employee.getLastName().unbox(),
                 employee.getStreet().unbox(),
@@ -190,7 +175,7 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
                 employee.getCity().unbox(),
                 employee.getPhonenumber().unbox(),
                 employee.getSkillset().stream().map(projectRole -> "\"" + projectRole.unbox() + "\"").collect(Collectors.joining(","))
-                );
+        );
         EmployeeData rawEmployee = new RestTemplate()
                 .postForEntity(
                         Objects.requireNonNull(env.getProperty("employeeapi.baseUrl")),
