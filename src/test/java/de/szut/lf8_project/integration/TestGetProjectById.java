@@ -14,11 +14,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Der get Project by ID Rest-Methode")
+@DisplayName("The get project by id method")
 public class TestGetProjectById extends FullIntegrationTest {
 
     @Test
-    @DisplayName("sollte erfolgreich ein Projekt zurückgeben")
+    @DisplayName("should return a project")
     void getProject() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
         Employee employee = createDefaultEmployeeWith0Id();
@@ -45,7 +45,7 @@ public class TestGetProjectById extends FullIntegrationTest {
 
 
     @Test
-    @DisplayName("sollte kein Projekt finden")
+    @DisplayName("should not find a project")
     void notFound() throws Exception {
         ResultActions result = mockMvc.perform(get("/api/v1/project/99999999")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -56,7 +56,7 @@ public class TestGetProjectById extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("sollte unparsbare Anfragen abblocken")
+    @DisplayName("should block requests with invalid parameters")
     void badRequest() throws Exception {
         ResultActions result = mockMvc.perform(get("/api/v1/project/xyz")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -67,7 +67,7 @@ public class TestGetProjectById extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("sollte unauthentifizierte Anfragen abblocken")
+    @DisplayName("should block unauthorized requests")
     void notAuthorized() throws Exception {
         ResultActions result = mockMvc.perform(get("/api/v1/project/1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

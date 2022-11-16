@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("The GET all projects from employee route should")
+@DisplayName("The GET all projects from employee method should")
 public class TestGetAllProjectsOfEmployee extends FullIntegrationTest {
 
     @Test

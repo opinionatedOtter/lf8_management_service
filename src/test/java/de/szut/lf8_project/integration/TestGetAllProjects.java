@@ -10,11 +10,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Die GET All Projects Rest-Methode")
+@DisplayName("The all-projects rest method")
 public class TestGetAllProjects extends FullIntegrationTest {
 
     @Test
-    @DisplayName("sollte alle Projekte anzeigen")
+    @DisplayName("should show all projects")
     void getAllProjects() throws Exception {
         // Project project = createProjectInDatabase();
 
@@ -28,7 +28,7 @@ public class TestGetAllProjects extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("sollte unauthentifizierte Anfragen abblocken")
+    @DisplayName("should block unauthorized requests")
     void notAuthorized() throws Exception {
         ResultActions result = mockMvc.perform(get("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
