@@ -45,7 +45,6 @@ public class TestDeleteProject extends FullIntegrationTest {
     @DisplayName("sollte erfolgreich ein komplexes Projekt löschen")
     void deleteProjectWithTeamMembers() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
-
         ProjectRole projectRole = createAndSaveQualificationInRemoteRepository();
         Employee employee = saveEmployeeInRemoteRepository(createDefaultEmployeeWithRolesWith0Id(List.of(projectRole)));
         project.getTeamMembers().add(new TeamMember(employee.getId(), projectRole));
