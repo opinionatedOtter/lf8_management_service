@@ -52,8 +52,7 @@ public class TestGetAllProjects extends FullIntegrationTest {
                 .andExpect(jsonPath("$[0].projectName").value(project1.getProjectName().unbox()))
                 .andExpect(jsonPath("$[1].projectName").value(project2.getProjectName().unbox()))
                 .andExpect(jsonPath("$[0].teamMember").isEmpty())
-                .andExpect(jsonPath("$[1].teamMember").isNotEmpty())
-                .andExpect(jsonPath("$[1].projectName").value(project2.getProjectName().unbox()));
+                .andExpect(jsonPath("$[1].teamMember").isNotEmpty());
     }
 
     @Test

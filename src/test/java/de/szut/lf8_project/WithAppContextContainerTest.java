@@ -5,13 +5,17 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
+
 @Testcontainers
 @SpringBootTest
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(initializers = {WithAppContextContainerTest.Initializer.class})
 public abstract class WithAppContextContainerTest {
 
