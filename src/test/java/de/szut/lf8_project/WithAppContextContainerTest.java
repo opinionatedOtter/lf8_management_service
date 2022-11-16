@@ -1,6 +1,5 @@
 package de.szut.lf8_project;
 
-import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;

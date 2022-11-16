@@ -40,7 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("A Project controller should")
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class TestProjectController extends WithAppContextContainerTest {
 
     private final JWT dummyJwt = new JWT("Bearer fake.fake.fake");

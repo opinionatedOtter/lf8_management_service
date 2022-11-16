@@ -10,7 +10,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 @DisplayName("The CustomerService should")
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class TestCustomerService {
 
     private final CustomerService customerService = new CustomerService();
