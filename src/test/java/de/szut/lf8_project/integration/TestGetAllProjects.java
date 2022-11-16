@@ -9,7 +9,6 @@ import de.szut.lf8_project.domain.project.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
