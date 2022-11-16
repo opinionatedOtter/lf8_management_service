@@ -92,4 +92,12 @@ public class ProjectRepository {
                 .teamMembers(Objects.isNull(projectData.teamMembers) ? Collections.emptySet() : projectData.teamMembers.stream().map(teamMemberMapper::mapTo).collect(Collectors.toSet()))
                 .build();
     }
+
+    public void deleteProject(ProjectId projectId) throws RepositoryException {
+        try {
+            projectDataRepository.deleteById(projectId.unbox());
+        } catch (Exception e) {
+            throw new RepositoryException(new ErrorDetail(Errorcode.UNEXPECTED_ERROR, new FailureMessage("An unknown error occurred")));
+        }
+    }
 }

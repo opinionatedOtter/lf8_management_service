@@ -14,6 +14,10 @@ import de.szut.lf8_project.domain.project.ProjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,7 +50,7 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.createProject(createProjectCommand, new JWT(authHeader)), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{projectId}")
+    @GetMapping(value = "/{projectId}", consumes="*/*")
     public ResponseEntity<ProjectView> getProjectById(
             @Valid @PathVariable Long projectId
     ) {
@@ -61,17 +66,25 @@ public class ProjectController implements OpenApiProjectController {
         return new ResponseEntity<>(projectApplicationService.addEmployee(addEmployeeCommand, new ProjectId(projectId), new JWT(authHeader)), HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(consumes="*/*")
     public ResponseEntity<List<ProjectView>> getAllProjects() {
         return new ResponseEntity<>(projectApplicationService.getAllProjects(), HttpStatus.OK);
     }
 
-    @GetMapping("/byEmployee/{employeeId}")
+    @GetMapping(value = "/byEmployee/{employeeId}", consumes="*/*")
     public ResponseEntity<EmployeeProjectViewWrapper> getAllProjectsOfEmployee(
             @Valid @PathVariable Long employeeId,
             @RequestHeader("Authorization") String authHeader
     ) {
         return new ResponseEntity<>(projectApplicationService.getAllProjectsOfEmployee(new EmployeeId(employeeId), new JWT(authHeader)), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/{projectId}", consumes="*/*")
+    public ResponseEntity deleteProject(
+            @Valid @PathVariable Long projectId
+    ) {
+        projectApplicationService.deleteProject(new ProjectId(projectId));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(value = {"/{projectId}"})
@@ -86,7 +99,7 @@ public class ProjectController implements OpenApiProjectController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping("/{projectId}/removeEmployee/{employeeId}")
+    @DeleteMapping(value = "/{projectId}/removeEmployee/{employeeId}", consumes="*/*")
     public ResponseEntity removeEmployeeFromProject(
             @Valid @PathVariable Long projectId,
             @Valid @PathVariable Long employeeId

@@ -23,11 +23,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Die Update Project Methode sollte")
+@DisplayName("The update project method")
 public class TestUpdateProject extends FullIntegrationTest {
 
     @Test
-    @DisplayName("ein Projekt erfolgreich komplett updaten")
+    @DisplayName("should update a complete project")
     void fullUpdate() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
         Employee newProjectLead = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
@@ -65,9 +65,9 @@ public class TestUpdateProject extends FullIntegrationTest {
 
     }
 
-    @ParameterizedTest(name = "für das Feld {0}")
+    @ParameterizedTest(name = "in field {0}")
     @MethodSource
-    @DisplayName("ein Projekt erfolgreich teilweise updaten")
+    @DisplayName("should update a project partially")
     void partialUpdate(String fieldToUpdate, Object newValue, String jsonResultPath) throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
         saveProjectInDatabase(project);
@@ -88,7 +88,7 @@ public class TestUpdateProject extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("ein Projekt erfolgreich teilweise updaten (ProjektLead)")
+    @DisplayName("should update a project partially in field projectLeadId")
     void partialUpdateProjektLead() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
         Employee employee = createDefaultEmployeeWith0Id();
@@ -111,11 +111,11 @@ public class TestUpdateProject extends FullIntegrationTest {
     }
 
     @Nested
-    @DisplayName("eine Projekt nicht updaten")
+    @DisplayName("should not update an project")
     class TestDontUpdateProject {
 
         @Test
-        @DisplayName("wenn das neue Startdatum nicht vor dem geplanten Enddatum liegt")
+        @DisplayName("when the new start date is after the planned end date")
         void invalidStartdate() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
             LocalDate invalidStartDate = project.getPlannedEndDate().get().unbox().plus(10, ChronoUnit.DAYS);
@@ -135,15 +135,15 @@ public class TestUpdateProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn das neue tatsächliche Enddatum vor dem Startdatum liegt")
+        @DisplayName("when the new actual end date is before the start date")
         void invalidActualEnddate() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
-            LocalDate invalidEndDate = project.getActualEndDate().get().unbox().plus(10, ChronoUnit.DAYS);
+            LocalDate invalidEndDate = project.getStartDate().get().unbox().minus(10, ChronoUnit.DAYS);
 
             ResultActions result = mockMvc.perform(
                     put("/api/v1/project/" + project.getProjectId().get().unbox())
                             .header("Authorization", jwt.jwt())
-                            .content("{\"startDate\":\"" + invalidEndDate + "\"}")
+                            .content("{\"actualEndDate\":\"" + invalidEndDate + "\"}")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
             );
@@ -154,7 +154,7 @@ public class TestUpdateProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn der neue Team Lead nicht existiert")
+        @DisplayName("when the new team lead does not exist")
         void missingTeamLead() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
 
@@ -173,7 +173,7 @@ public class TestUpdateProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn die Anfrage nicht richtig strukturiert ist / der Body fehlt")
+        @DisplayName("when the request is invalid / incomplete")
         void badRequest() throws Exception {
             ResultActions result = mockMvc.perform(
                     put("/api/v1/project/1" )
@@ -190,7 +190,7 @@ public class TestUpdateProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn das Projekt nicht existiert")
+        @DisplayName("when the project does not exist")
         void notFound() throws Exception {
             ResultActions result = mockMvc.perform(
                     put("/api/v1/project/787878" )
@@ -207,7 +207,7 @@ public class TestUpdateProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn die Anfrage nicht authentifiziert ist")
+        @DisplayName("when the request is not authorized")
         void notAuthenticated() throws Exception {
             ResultActions result = mockMvc.perform(
                     put("/api/v1/project/1" )

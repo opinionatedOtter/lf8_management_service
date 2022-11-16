@@ -17,12 +17,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Der Create Project Rest-Endpunkt")
+@DisplayName("The create-project method")
 public class TestCreateProject extends FullIntegrationTest {
 
 
     @Test
-    @DisplayName("sollte erfolgreich ein Projekt erstellen")
+    @DisplayName("should create a project")
     void createProject() throws Exception {
         Employee employee = createDefaultEmployeeWith0Id();
         EmployeeId newEmployee = saveEmployeeInRemoteRepository(employee).getId();
@@ -68,7 +68,7 @@ public class TestCreateProject extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("einen 404 Fehler werfen wenn der angegebene Mitarbeiter nicht gefunden werden kann")
+    @DisplayName("should return 404 when the employee in the project does not exist")
     void missingEmployee() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -91,7 +91,7 @@ public class TestCreateProject extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("einen 401 Fehler werfen wenn die Authorisierung fehlschlägt")
+    @DisplayName("should block unauthorized requests")
     void noAuth() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -114,7 +114,7 @@ public class TestCreateProject extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("einen 400 Fehler werfen wenn die Request invalide Parameter enhält")
+    @DisplayName("should block invalid requests")
     void invalidParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -137,7 +137,7 @@ public class TestCreateProject extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("einen 400 Fehler werfen wenn die Request nicht vollständig ist")
+    @DisplayName("should block incomplete requests")
     void missingParameterBadRequest() throws Exception {
         ResultActions result = mockMvc.perform(post("/api/v1/project")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

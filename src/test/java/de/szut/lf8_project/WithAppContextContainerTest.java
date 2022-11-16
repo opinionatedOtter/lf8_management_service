@@ -1,5 +1,6 @@
 package de.szut.lf8_project;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -20,9 +21,10 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 public abstract class WithAppContextContainerTest {
 
     @Container
-    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:13.3");
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.3");
 
-    protected static JdbcTemplate jdbcTemplate;
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
 
 
     static class Initializer

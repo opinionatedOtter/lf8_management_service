@@ -18,11 +18,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Die remove employee from project Methode")
+@DisplayName("The remove employee from project method")
 public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
 
     @Test
-    @DisplayName("sollte einen Mitarbeiter erfolgreich entfernen")
+    @DisplayName("should remove an employee from a project")
     void shouldRemove() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
         Employee employee = saveEmployeeInRemoteRepository(createDefaultEmployeeWith0Id());
@@ -44,11 +44,11 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
     }
 
     @Nested
-    @DisplayName("sollte keinen Mitarbeiter entfernen")
+    @DisplayName("should not remove an employee")
     class TestDontRemoveEmployeeFromProject {
 
         @Test
-        @DisplayName("wenn das Projekt nicht existiert")
+        @DisplayName("when the project does not exist")
         void projectNotFound() throws Exception {
 
             ResultActions result = mockMvc.perform(delete("/api/v1/project/868668/removeEmployee/2323")
@@ -63,7 +63,7 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn der Mitarbeiter nicht im Projekt ist")
+        @DisplayName("when the employee is not in the project")
         void employeeNotInProject() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
 
@@ -79,7 +79,7 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn die Parameter der Anfrage invalide sind")
+        @DisplayName("when the requests has invalid parameters")
         void badRequest() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
 
@@ -96,7 +96,7 @@ public class TestRemoveEmployeeFromProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn die Anfrage nicht authorisiert ist")
+        @DisplayName("when the request is not authorized")
         void notAuthorized() throws Exception {
 
             ResultActions result = mockMvc.perform(delete("/api/v1/project/xyz/removeEmployee/abc"));

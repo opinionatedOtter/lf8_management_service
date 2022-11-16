@@ -78,3 +78,8 @@ GET http://localhost:8089/api/v1/project/byEmployee/9
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 Accept: application/json
+
+### Get all projects
+GET http://localhost:8089/api/v1/project/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}

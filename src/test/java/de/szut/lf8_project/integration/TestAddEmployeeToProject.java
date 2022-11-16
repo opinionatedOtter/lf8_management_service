@@ -23,11 +23,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Die Add-Employee Methode")
+@DisplayName("The add-employee method")
 public class TestAddEmployeeToProject extends FullIntegrationTest {
 
     @Test
-    @DisplayName("sollte einen existierenden Mitarbeiter erfolgreich hinzufügen")
+    @DisplayName("should successfully add an existing employee to a project")
     void shouldAdd() throws Exception {
         Project project = saveProjectInDatabase(createAndSaveDefaultProjectWithProjectLead());
         ProjectRole role = createAndSaveQualificationInRemoteRepository();
@@ -60,11 +60,11 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
     }
 
     @Nested
-    @DisplayName("sollte einen Mitarbeiter nicht hinzufügen")
+    @DisplayName("should not add an employee")
     class TestDontAddEmployeeToProject {
 
         @Test
-        @DisplayName("wenn dieser nicht existiert")
+        @DisplayName("when the employee doesn't exist")
         void employee404() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
 
@@ -88,7 +88,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn er zu diesem Zeitpunkt bereits in einem anderen Projekt ist")
+        @DisplayName("when the employee is currrently booked in another project")
         void alreadyPlanned() throws Exception {
             ProjectRole role = createAndSaveQualificationInRemoteRepository();
             Employee employee = createDefaultEmployeeWithRolesWith0Id(List.of(role));
@@ -124,7 +124,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn er die gefragte Rolle nicht hat")
+        @DisplayName("when he doesn't have the required role")
         void wrongRole() throws Exception {
             Project project = createAndSaveDefaultProjectWithProjectLead();
             Employee employee = createDefaultEmployeeWith0Id();
@@ -150,7 +150,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn das Projekt nicht vorhanden ist")
+        @DisplayName("when the project does not exist")
         void missingProject() throws Exception {
             String jsonRequestBody = """
                     {
@@ -172,7 +172,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn die Anfrage syntaktisch invalide ist")
+        @DisplayName("when the request is invalid")
         void malformedRequest() throws Exception {
             String invalidJsonRequestBody = """
                     {
@@ -193,7 +193,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("wenn die Anfrage nicht authentifiziert ist")
+        @DisplayName("when the request has no authentication")
         void unauthenticated() throws Exception {
             String jsonRequestBody = """
                     {
@@ -214,11 +214,11 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
     }
 
     @Nested
-    @DisplayName("sollte einen vorhandenen Mitarbeiter")
+    @DisplayName("when the employee is already in the project")
     class TestModifyAddedEmployeeToProject {
 
         @Test
-        @DisplayName("nicht verändern wenn alle Daten identisch sind")
+        @DisplayName("not change the employee")
         void identicalUpdate() throws Exception {
             ProjectRole role = createAndSaveQualificationInRemoteRepository();
             Employee employee = createDefaultEmployeeWithRolesWith0Id(List.of(role));
@@ -250,7 +250,7 @@ public class TestAddEmployeeToProject extends FullIntegrationTest {
         }
 
         @Test
-        @DisplayName("die Rolle updaten, wenn neu und valide")
+        @DisplayName("change the role of the employee if valid")
         void updateDifferentRole() throws Exception {
             ProjectRole oldRole = createAndSaveQualificationInRemoteRepository();
             ProjectRole newRole = createAndSaveQualificationInRemoteRepository();

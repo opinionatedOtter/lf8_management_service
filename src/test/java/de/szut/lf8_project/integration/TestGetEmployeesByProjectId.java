@@ -16,11 +16,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Die get employees by project id-Methode")
+@DisplayName("The get employees by project id-method")
 public class TestGetEmployeesByProjectId extends FullIntegrationTest {
 
     @Test
-    @DisplayName("sollte erfolgreich die Mitarbeiter zurückgeben")
+    @DisplayName("should return employees of a project")
     void getEmployees() throws Exception {
         Project project = createAndSaveDefaultProjectWithProjectLead();
         Employee employee = createDefaultEmployeeWith0Id();
@@ -40,7 +40,7 @@ public class TestGetEmployeesByProjectId extends FullIntegrationTest {
 
 
     @Test
-    @DisplayName("sollte kein Projekt finden")
+    @DisplayName("should not find a project")
     void notFound() throws Exception {
         ResultActions result = mockMvc.perform(get("/api/v1/employee/byProject/99999999")
                 .header("Authorization", jwt.jwt())
@@ -52,7 +52,7 @@ public class TestGetEmployeesByProjectId extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("sollte unparsbare Anfragen abblocken")
+    @DisplayName("should block requests with invalid parameters")
     void badRequest() throws Exception {
         ResultActions result = mockMvc.perform(get("/api/v1/employee/byProject/xyz")
                 .header("Authorization", jwt.jwt())
@@ -63,7 +63,7 @@ public class TestGetEmployeesByProjectId extends FullIntegrationTest {
     }
 
     @Test
-    @DisplayName("sollte unauthentifizierte Anfragen abblocken")
+    @DisplayName("should block unauthorized requests")
     void notAuthorized() throws Exception {
         ResultActions result = mockMvc.perform(get("/api/v1/employee/byProject/1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

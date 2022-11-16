@@ -139,7 +139,6 @@ public abstract class FullIntegrationTest extends WithAppContextContainerTest {
         );
     }
 
-
     protected Project createDefaultProject(final ProjectLeadId projectLeadId) {
         Project project = Project.builder()
                 .projectId(Optional.empty())
